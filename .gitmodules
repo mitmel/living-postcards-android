@@ -1,0 +1,3 @@
+[submodule "libs-src/ImageCache"]
+	path = libs-src/ImageCache
+	url = http://mel-tools.mit.edu/git-ro/ImageCache.git
