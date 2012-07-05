@@ -1,7 +1,10 @@
 package edu.mit.mobile.android.livingpostcards;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -23,11 +26,23 @@ public class MainActivity extends Activity implements OnClickListener {
         return true;
     }
 
+	private void createNewCard() {
+
+		final Intent intent = new Intent(this, CameraActivity.class);
+
+		final File mostRecentPicture = StorageUtils.getMostRecentPicture();
+		if (mostRecentPicture != null) {
+			intent.setAction(Intent.ACTION_INSERT);
+			intent.setData(Uri.fromFile(mostRecentPicture));
+		}
+		startActivity(intent);
+	}
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.new_card:
-				startActivity(new Intent(this, CameraActivity.class));
+				createNewCard();
 
 				break;
 		}

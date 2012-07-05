@@ -6,69 +6,69 @@
 
     <FrameLayout
         android:id="@+id/camera_preview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:orientation="horizontal">
-
-        <ToggleButton
-            android:id="@+id/grid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="Grid" />
-
-        <ToggleButton
-            android:id="@+id/onion_skin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="Onion Skin" />
-
-
-
-        <Button
-            android:id="@+id/capture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:layout_gravity="center"
-            android:layout_weight="1"
-            android:text="C" />
-
-
-
-        <ToggleButton
-            android:id="@+id/auto_manual"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_columnSpan="2"
-            app:layout_gravity="center"
-            android:textOff="manual"
-            android:layout_weight="2"
-            android:textOn="auto" />
+        android:layout_alignLeft="@+id/onion_skin_image"
+        android:layout_alignRight="@+id/onion_skin_image"
+        android:layout_alignTop="@+id/onion_skin_image"
+        android:layout_alignBottom="@+id/onion_skin_image" android:layout_alignWithParentIfMissing="true" />
 
     
-    </LinearLayout>
-
     <ImageView
         android:id="@+id/onion_skin_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY"
+        android:alpha="0.3"
+        android:contentDescription="@null"
         android:layout_alignParentTop="true" />
+    
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:stretchColumns="*" >
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <ToggleButton
+                android:id="@+id/grid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Grid" />
+
+            <ToggleButton
+                android:id="@+id/onion_skin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Onion Skin" />
+
+            <Button
+                android:id="@+id/capture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="C" />
+
+            <ToggleButton
+                android:id="@+id/auto_manual"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_span="2"
+                android:textOff="manual"
+                android:textOn="auto" />
+            <!-- <View android:layout_width="0dip" android:layout_height="0dip" android:layout_gravity="center"/> -->
+        </TableRow>
+    </TableLayout>
+
 
 </RelativeLayout>
