@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_gallery" android:showAsAction="ifRoom" android:title="Gallery" android:icon="@android:drawable/ic_menu_gallery"></item><item android:id="@+id/menu_settings"
+        android:title="@string/menu_settings"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom" android:icon="@android:drawable/ic_menu_preferences"/>
+    <item android:id="@+id/menu_help" android:showAsAction="ifRoom" android:title="Help" android:icon="@android:drawable/ic_menu_help"></item>
+    
+</menu>
