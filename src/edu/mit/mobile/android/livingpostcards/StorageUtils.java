@@ -13,6 +13,11 @@ public class StorageUtils {
 			Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
 			EXTERNAL_PICTURE_SUBDIR);
 
+	/**
+	 * Gets the most recent image in the {@link #EXTERNAL_PICTURES_DIR}.
+	 *
+	 * @return
+	 */
 	public static File getMostRecentPicture() {
 		if (!EXTERNAL_PICTURES_DIR.exists()) {
 			return null;
@@ -41,5 +46,4 @@ public class StorageUtils {
 
 		return pictures[pictures.length - 1];
 	}
-
 }

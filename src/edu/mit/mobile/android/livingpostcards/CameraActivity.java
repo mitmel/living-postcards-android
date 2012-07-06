@@ -8,6 +8,7 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
@@ -18,12 +19,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
+import edu.mit.mobile.android.imagecache.ImageCache;
+import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 
-public class CameraActivity extends Activity implements OnClickListener {
+public class CameraActivity extends Activity implements OnClickListener, OnImageLoadListener,
+		OnCheckedChangeListener {
 
 	private static final String TAG = CameraActivity.class.getSimpleName();
 
@@ -31,6 +36,8 @@ public class CameraActivity extends Activity implements OnClickListener {
 	private CameraPreview mPreview;
 
 	private FrameLayout mPreviewHolder;
+
+	private ImageCache mImageCache;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,10 @@ public class CameraActivity extends Activity implements OnClickListener {
 		mPreviewHolder = (FrameLayout) findViewById(R.id.camera_preview);
 
 		findViewById(R.id.capture).setOnClickListener(this);
+		((CompoundButton) findViewById(R.id.onion_skin_toggle)).setOnCheckedChangeListener(this);
+		((CompoundButton) findViewById(R.id.grid_toggle)).setOnCheckedChangeListener(this);
+
+		mImageCache = ImageCache.getInstance(this);
 
 		final Intent intent = getIntent();
 		final String action = intent.getAction();
@@ -54,6 +65,8 @@ public class CameraActivity extends Activity implements OnClickListener {
 	protected void onPause() {
 		super.onPause();
 
+		mImageCache.unregisterOnImageLoadListener(this);
+
 		mCamera.stopPreview();
 
 		releaseCamera();
@@ -62,6 +75,8 @@ public class CameraActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		mImageCache.registerOnImageLoadListener(this);
 
 		mCamera = getCameraInstance();
 
@@ -75,6 +90,7 @@ public class CameraActivity extends Activity implements OnClickListener {
 			finish();
 		}
 	}
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -93,19 +109,9 @@ public class CameraActivity extends Activity implements OnClickListener {
     }
 
 	private void showOnionskinImage(Uri image) {
-		final ImageView iv = (ImageView) findViewById(R.id.onion_skin_image);
-		iv.setImageURI(image);
-		iv.setAlpha(80);
 
-
+		mImageCache.scheduleLoadImage(R.id.camera_preview, image, 640, 480);
 	}
-
-	private void adjustPreviewToOnionSkin() {
-		final ImageView iv = (ImageView) findViewById(R.id.onion_skin_image);
-		final LayoutParams lp = mPreviewHolder.getLayoutParams();
-
-	}
-
 
     private void releaseCamera() {
 		if (mCamera != null) {
@@ -146,6 +152,9 @@ public class CameraActivity extends Activity implements OnClickListener {
 				final FileOutputStream fos = new FileOutputStream(outFile);
 				fos.write(data);
 				fos.close();
+
+				mImageCache.scheduleLoadImage(0, Uri.fromFile(outFile), 640, 480);
+
 			} catch (final IOException e) {
 				Log.e(TAG, "error writing file", e);
 			}
@@ -158,6 +167,29 @@ public class CameraActivity extends Activity implements OnClickListener {
 			case R.id.capture:
 				capture();
 				break;
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onImageLoaded(final long id, Uri imageUri, Drawable image) {
+		if (R.id.camera_preview == id) {
+			final ImageView iv = (ImageView) findViewById(R.id.onion_skin_image);
+			iv.setImageDrawable(image);
+			iv.setVisibility(View.VISIBLE);
+			iv.setAlpha(80);
+		}
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		switch (buttonView.getId()) {
+			case R.id.onion_skin_toggle:
+				findViewById(R.id.onion_skin_image).setVisibility(
+						isChecked ? View.VISIBLE : View.GONE);
+
+				break;
+
 		}
 	}
 }
