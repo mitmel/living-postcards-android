@@ -10,14 +10,13 @@
         android:layout_alignWithParentIfMissing="true"
         android:layout_centerInParent="true" />
 
-    <ImageView
+    <com.stackoverflow.android.widget.AspectRatioImageView
         android:id="@+id/onion_skin_image"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:adjustViewBounds="true"
         android:contentDescription="@null"
-        android:scaleType="fitCenter"
+        android:scaleType="fitXY"
         android:visibility="gone" />
 
     <TableLayout
