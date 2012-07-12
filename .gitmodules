@@ -1,3 +1,6 @@
 [submodule "libs-src/ImageCache"]
 	path = libs-src/ImageCache
 	url = http://mel-tools.mit.edu/git-ro/ImageCache.git
+[submodule "libs-src/SimpleContentProvider"]
+	path = libs-src/SimpleContentProvider
+	url = http://mel-tools.mit.edu/git-ro/SimpleContentProvider.git
