@@ -1,5 +1,5 @@
 <resources>
 
     <style name="AppTheme" parent="android:Theme.Light" />
-
+	<style name="CameraTheme" parent="android:Theme.Black" />
 </resources>
