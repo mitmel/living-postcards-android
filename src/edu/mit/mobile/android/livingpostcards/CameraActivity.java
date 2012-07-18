@@ -53,6 +53,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
 	private Uri mCard;
 
+	private ImageView mOnionSkin;
+
 	private static final int LOADER_CARD = 100, LOADER_CARDMEDIA = 101;
 
 	@Override
@@ -65,6 +67,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 		// getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		mPreviewHolder = (FrameLayout) findViewById(R.id.camera_preview);
+
+		mOnionSkin = (ImageView) findViewById(R.id.onion_skin_image);
 
 		findViewById(R.id.capture).setOnClickListener(this);
 		((CompoundButton) findViewById(R.id.onion_skin_toggle)).setOnCheckedChangeListener(this);
@@ -130,10 +134,31 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * Loads the given image in the onion skin. This requests the image cache to load it, so it
+	 * returns immediately.
+	 *
+	 * @param image
+	 */
 	private void showOnionskinImage(Uri image) {
 
 		mImageCache.scheduleLoadImage(R.id.camera_preview, image, 640, 480);
 	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onImageLoaded(final long id, Uri imageUri, Drawable image) {
+		if (R.id.camera_preview == id) {
+
+			mOnionSkin.setImageDrawable(image);
+			setOnionSkinVisible(true);
+			mOnionSkin.setAlpha(80);
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////
+	// /// camera
+	// ///////////////////////////////////////////////////////////
 
 	private void releaseCamera() {
 		if (mCamera != null) {
@@ -161,10 +186,17 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
+
 			savePicture(data);
 		}
 	};
 
+	/**
+	 * Saves the picture as a jpeg to disk and adds it as a media item. This method starts a task
+	 * and returns immediately.
+	 *
+	 * @param data
+	 */
 	private void savePicture(byte[] data) {
 		new SavePictureTask().execute(data);
 	}
@@ -178,28 +210,24 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void onImageLoaded(final long id, Uri imageUri, Drawable image) {
-		if (R.id.camera_preview == id) {
-			final ImageView iv = (ImageView) findViewById(R.id.onion_skin_image);
-			iv.setImageDrawable(image);
-			iv.setVisibility(View.VISIBLE);
-			iv.setAlpha(80);
-		}
-	}
-
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		switch (buttonView.getId()) {
 			case R.id.onion_skin_toggle:
-				findViewById(R.id.onion_skin_image).setVisibility(
-						isChecked ? View.VISIBLE : View.GONE);
+				setOnionSkinVisible(isChecked);
 
 				break;
-
 		}
 	}
+
+	private void setOnionSkinVisible(boolean isChecked) {
+
+		mOnionSkin.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+	}
+
+	// /////////////////////////////////////////////////////////////////////
+	// content loading
+	// /////////////////////////////////////////////////////////////////////
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loader, Bundle args) {
@@ -216,7 +244,6 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 			default:
 				return null;
 		}
-
 	}
 
 	@Override
@@ -234,9 +261,16 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 		}
 	}
 
-	private void showLastPhoto(Cursor c) {
-		if (c.moveToLast()) {
-			final String localUrl = c.getString(c.getColumnIndex(CardMedia.MEDIA_LOCAL_URL));
+	/**
+	 * Given a card media cursor, load the most recent photo. This assumes that the cursor was
+	 * queried such that the most recent item is last in the cursor (the default sort does this).
+	 *
+	 * @param cardMedia
+	 */
+	private void showLastPhoto(Cursor cardMedia) {
+		if (cardMedia.moveToLast()) {
+			final String localUrl = cardMedia.getString(cardMedia
+					.getColumnIndex(CardMedia.MEDIA_LOCAL_URL));
 			if (localUrl != null) {
 				showOnionskinImage(Uri.parse(localUrl));
 			}
@@ -249,6 +283,11 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
 	}
 
+	/**
+	 * Saves the given jpeg bytes to disk and adds an entry to the CardMedia list. Pictures are
+	 * stored to external storage under {@link StorageUtils#EXTERNAL_PICTURE_SUBDIR}.
+	 *
+	 */
 	private class SavePictureTask extends AsyncTask<byte[], Long, Uri> {
 		private Exception mErr;
 
