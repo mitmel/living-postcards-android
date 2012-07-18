@@ -1,16 +1,20 @@
 package edu.mit.mobile.android.livingpostcards;
 
-import java.io.File;
+import java.util.UUID;
 
-import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import edu.mit.mobile.android.livingpostcards.data.Card;
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends FragmentActivity implements OnClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,13 +32,19 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	private void createNewCard() {
 
-		final Intent intent = new Intent(this, CameraActivity.class);
+		final ContentResolver cr = getContentResolver();
 
-		final File mostRecentPicture = StorageUtils.getMostRecentPicture();
-		if (mostRecentPicture != null) {
-			intent.setAction(Intent.ACTION_INSERT);
-			intent.setData(Uri.fromFile(mostRecentPicture));
-		}
+		final ContentValues cv = new ContentValues();
+
+		cv.put(Card.UUID, UUID.randomUUID().toString());
+
+		cv.put(Card.NAME, DateUtils.formatDateTime(this, System.currentTimeMillis(),
+				DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
+
+		final Uri card = cr.insert(Card.CONTENT_URI, cv);
+
+		final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
+
 		startActivity(intent);
 	}
 

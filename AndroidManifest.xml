@@ -40,7 +40,20 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.mit.mobile.android.livingpostcards.MainActivity" />
+
+            <intent-filter>
+                <action android:name="edu.mit.mobile.android.ACTION_ADD_PHOTO" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card" />
+            </intent-filter>
         </activity>
+
+        <provider
+            android:name=".data.CardProvider"
+            android:authorities="edu.mit.mobile.android.livingpostcards"
+            android:exported="false" />
     </application>
 
 </manifest>

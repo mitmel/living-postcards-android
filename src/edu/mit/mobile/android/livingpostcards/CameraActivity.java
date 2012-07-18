@@ -5,20 +5,28 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
-import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
@@ -26,11 +34,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
+import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.livingpostcards.data.CardMedia;
 
-public class CameraActivity extends Activity implements OnClickListener, OnImageLoadListener,
-		OnCheckedChangeListener {
+public class CameraActivity extends FragmentActivity implements OnClickListener,
+		OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor> {
 
 	private static final String TAG = CameraActivity.class.getSimpleName();
+
+	public static final String ACTION_ADD_PHOTO = "edu.mit.mobile.android.ACTION_ADD_PHOTO";
 
 	private Camera mCamera;
 	private CameraPreview mPreview;
@@ -39,10 +51,17 @@ public class CameraActivity extends Activity implements OnClickListener, OnImage
 
 	private ImageCache mImageCache;
 
+	private Uri mCard;
+
+	private static final int LOADER_CARD = 100, LOADER_CARDMEDIA = 101;
+
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		setContentView(R.layout.activity_camera);
+
 		// getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		mPreviewHolder = (FrameLayout) findViewById(R.id.camera_preview);
@@ -56,10 +75,14 @@ public class CameraActivity extends Activity implements OnClickListener, OnImage
 		final Intent intent = getIntent();
 		final String action = intent.getAction();
 
-		if (Intent.ACTION_INSERT.equals(action)) {
-			showOnionskinImage(intent.getData());
+		if (ACTION_ADD_PHOTO.equals(action)) {
+			mCard = intent.getData();
+
+			getSupportLoaderManager().initLoader(LOADER_CARD, null, this);
+
+			getSupportLoaderManager().initLoader(LOADER_CARDMEDIA, null, this);
 		}
-    }
+	}
 
 	@Override
 	protected void onPause() {
@@ -91,47 +114,44 @@ public class CameraActivity extends Activity implements OnClickListener, OnImage
 		}
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_camera, menu);
+		return true;
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_camera, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				NavUtils.navigateUpFromSameTask(this);
+				return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
 	private void showOnionskinImage(Uri image) {
 
 		mImageCache.scheduleLoadImage(R.id.camera_preview, image, 640, 480);
 	}
 
-    private void releaseCamera() {
+	private void releaseCamera() {
 		if (mCamera != null) {
 			mCamera.release(); // release the camera for other applications
 			mCamera = null;
 		}
 	}
 
-
-    /** A safe way to get an instance of the Camera object. */
+	/** A safe way to get an instance of the Camera object. */
 	public static Camera getCameraInstance() {
 		Camera c = null;
-        try {
+		try {
 			c = Camera.open(); // attempt to get a Camera instance
-        }
-        catch (final Exception e){
+		} catch (final Exception e) {
 			Log.e(TAG, "Error acquiring camera", e);
-        }
-        return c; // returns null if camera is unavailable
-    }
+		}
+		return c; // returns null if camera is unavailable
+	}
 
 	private void capture() {
 		mCamera.takePicture(null, null, mPictureCallback);
@@ -141,25 +161,13 @@ public class CameraActivity extends Activity implements OnClickListener, OnImage
 
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
-
-
-			StorageUtils.EXTERNAL_PICTURES_DIR.mkdirs();
-
-			final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-			final File outFile = new File(StorageUtils.EXTERNAL_PICTURES_DIR, "IMG_" + timeStamp + ".jpg");
-
-			try {
-				final FileOutputStream fos = new FileOutputStream(outFile);
-				fos.write(data);
-				fos.close();
-
-				mImageCache.scheduleLoadImage(0, Uri.fromFile(outFile), 640, 480);
-
-			} catch (final IOException e) {
-				Log.e(TAG, "error writing file", e);
-			}
+			savePicture(data);
 		}
 	};
+
+	private void savePicture(byte[] data) {
+		new SavePictureTask().execute(data);
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -190,6 +198,100 @@ public class CameraActivity extends Activity implements OnClickListener, OnImage
 
 				break;
 
+		}
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int loader, Bundle args) {
+
+		switch (loader) {
+			case LOADER_CARD:
+				return new CursorLoader(this, mCard, null, null, null,
+						null);
+
+			case LOADER_CARDMEDIA:
+				return new CursorLoader(this, Card.MEDIA.getUri(mCard), null, null, null,
+						null);
+
+			default:
+				return null;
+		}
+
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
+		switch (loader.getId()) {
+			case LOADER_CARD:
+				if (c.moveToFirst()) {
+					setTitle(c.getString(c.getColumnIndex(Card.NAME)));
+				}
+				break;
+
+			case LOADER_CARDMEDIA:
+				showLastPhoto(c);
+				break;
+		}
+	}
+
+	private void showLastPhoto(Cursor c) {
+		if (c.moveToLast()) {
+			final String localUrl = c.getString(c.getColumnIndex(CardMedia.MEDIA_LOCAL_URL));
+			if (localUrl != null) {
+				showOnionskinImage(Uri.parse(localUrl));
+			}
+		}
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+
+
+	}
+
+	private class SavePictureTask extends AsyncTask<byte[], Long, Uri> {
+		private Exception mErr;
+
+		@Override
+		protected void onPreExecute() {
+			CameraActivity.this.setProgressBarIndeterminateVisibility(true);
+			super.onPreExecute();
+		}
+
+		@Override
+		protected Uri doInBackground(byte[]... data) {
+			final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+			final File outFile = new File(StorageUtils.EXTERNAL_PICTURES_DIR, "IMG_" + timeStamp
+					+ ".jpg");
+
+			StorageUtils.EXTERNAL_PICTURES_DIR.mkdirs();
+
+			try {
+				final FileOutputStream fos = new FileOutputStream(outFile);
+				fos.write(data[0]);
+				fos.close();
+
+				mImageCache.scheduleLoadImage(0, Uri.fromFile(outFile), 640, 480);
+
+				final ContentValues cv = new ContentValues();
+
+				cv.put(CardMedia.MEDIA_LOCAL_URL, Uri.fromFile(outFile).toString());
+				cv.put(CardMedia.UUID, UUID.randomUUID().toString());
+
+				return Card.MEDIA.insert(getContentResolver(), mCard, cv);
+
+			} catch (final IOException e) {
+				mErr = e;
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Uri result) {
+			if (mErr != null) {
+				Log.e(TAG, "error writing file", mErr);
+			}
+			CameraActivity.this.setProgressBarIndeterminateVisibility(false);
 		}
 	}
 }
