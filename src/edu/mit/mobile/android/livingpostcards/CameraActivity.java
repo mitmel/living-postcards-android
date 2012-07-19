@@ -217,6 +217,9 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 				setOnionSkinVisible(isChecked);
 
 				break;
+
+			case R.id.grid_toggle:
+				findViewById(R.id.grid).setVisibility(isChecked ? View.VISIBLE : View.GONE);
 		}
 	}
 
