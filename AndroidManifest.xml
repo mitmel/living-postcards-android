@@ -49,6 +49,15 @@
                 <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card" />
             </intent-filter>
         </activity>
+        <activity android:name=".CardViewActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <provider
             android:name=".data.CardProvider"

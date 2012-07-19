@@ -75,7 +75,7 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		final Uri item = ContentUris.withAppendedId(LIST_URI, id);
-		startActivity(new Intent(CameraActivity.ACTION_ADD_PHOTO, item));
+		startActivity(new Intent(Intent.ACTION_VIEW, item));
 
 	}
 }
