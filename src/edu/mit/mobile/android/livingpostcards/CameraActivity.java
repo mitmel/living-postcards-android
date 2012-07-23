@@ -3,6 +3,8 @@ package edu.mit.mobile.android.livingpostcards;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -15,6 +17,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -27,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
@@ -62,6 +66,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
 		setContentView(R.layout.activity_camera);
 
 		// getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -73,6 +78,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 		findViewById(R.id.capture).setOnClickListener(this);
 		((CompoundButton) findViewById(R.id.onion_skin_toggle)).setOnCheckedChangeListener(this);
 		((CompoundButton) findViewById(R.id.grid_toggle)).setOnCheckedChangeListener(this);
+
+		setFullscreen(true);
 
 		mImageCache = ImageCache.getInstance(this);
 
@@ -111,10 +118,37 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 			mPreview = new CameraPreview(this, mCamera);
 
 			mPreviewHolder.addView(mPreview);
+
 		} else {
 			Toast.makeText(this, "Error initializing camera", Toast.LENGTH_LONG).show();
 			setResult(RESULT_CANCELED);
 			finish();
+		}
+	}
+
+	public void setFullscreen(boolean fullscreen) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			try {
+				final Method setSystemUiVisibility = View.class.getMethod("setSystemUiVisibility",
+						int.class);
+				setSystemUiVisibility.invoke(mPreviewHolder,
+						fullscreen ? View.SYSTEM_UI_FLAG_LOW_PROFILE : 0);
+
+			} catch (final NoSuchMethodException e) {
+				Log.e(TAG, "missing setSystemUiVisibility method, despite version checking", e);
+			} catch (final IllegalArgumentException e) {
+				Log.e(TAG, "reflection error", e);
+			} catch (final IllegalAccessException e) {
+				Log.e(TAG, "reflection error", e);
+			} catch (final InvocationTargetException e) {
+				Log.e(TAG, "reflection error", e);
+			}
+		}
+
+		if (fullscreen) {
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		} else {
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		}
 	}
 
@@ -186,7 +220,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
-
+			setFullscreen(false);
 			savePicture(data);
 		}
 	};
