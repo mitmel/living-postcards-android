@@ -12,10 +12,12 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Gallery;
 import android.widget.ImageView;
+
+import com.scvngr.levelup.views.gallery.AdapterView;
+import com.scvngr.levelup.views.gallery.AdapterView.OnItemSelectedListener;
+import com.scvngr.levelup.views.gallery.Gallery;
+
 import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 import edu.mit.mobile.android.imagecache.ImageLoaderAdapter;
