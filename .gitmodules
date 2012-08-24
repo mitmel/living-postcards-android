@@ -6,4 +6,4 @@
 	url = http://mel-tools.mit.edu/git-ro/SimpleContentProvider.git
 [submodule "libs-src/android-left-locked-gallery"]
 	path = libs-src/android-left-locked-gallery
-	url = https://github.com/TheLevelUp/android-left-locked-gallery.git
+	url = http://mel-tools.mit.edu/git-ro/InfiniteGallery.git
