@@ -28,6 +28,8 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
 		OnItemSelectedListener, OnImageLoadListener {
 	public static final String ARGUMENT_URI = "uri";
 
+	private static final String TAG = CardMediaViewFragment.class.getSimpleName();
+
 	private Uri mUri;
 
 	private SimpleThumbnailCursorAdapter mAdapter;
@@ -81,9 +83,10 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
 		mGallery = (Gallery) v.findViewById(R.id.gallery);
 
 		mGallery.setAdapter(new ImageLoaderAdapter(mAdapter, mImageCache,
-				new int[] { R.id.card_media_thumbnail }, 300, 300));
+				new int[] { R.id.card_media_thumbnail }, 100, 100));
 
-
+		mGallery.setWrap(true);
+		mGallery.setInfiniteScroll(true);
 
 		mGallery.setOnItemSelectedListener(this);
 
@@ -96,6 +99,7 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
 	@Override
 	public void onPause() {
 		super.onPause();
+		mGallery.pause();
 
 		mImageCache.unregisterOnImageLoadListener(this);
 	}
@@ -103,8 +107,9 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
 	@Override
 	public void onResume() {
 		super.onResume();
-
 		mImageCache.registerOnImageLoadListener(this);
+
+		mGallery.resume();
 	}
 
 	@Override

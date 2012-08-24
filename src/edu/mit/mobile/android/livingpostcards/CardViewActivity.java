@@ -3,6 +3,7 @@ package edu.mit.mobile.android.livingpostcards;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,9 +29,13 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
 
 		final FragmentTransaction ft = fm.beginTransaction();
 
-		ft.replace(R.id.card_media_viewer,
-				CardMediaViewFragment.newInstance(Card.MEDIA.getUri(mCard)));
+		final Fragment f = fm.findFragmentById(R.id.card_media_viewer);
+		if (f != null) {
 
+		} else {
+			ft.replace(R.id.card_media_viewer,
+					CardMediaViewFragment.newInstance(Card.MEDIA.getUri(mCard)));
+		}
 		ft.commit();
 	}
 
