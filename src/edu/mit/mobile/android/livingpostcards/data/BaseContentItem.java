@@ -7,14 +7,13 @@ import edu.mit.mobile.android.content.column.TextColumn;
 
 public interface BaseContentItem extends ContentItem {
 
-	@DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
-	public static final String CREATION_DATE = "creation_date";
+    @DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
+    public static final String CREATION_DATE = "creation_date";
 
-	@DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
-	public static final String MODIFICATION_DATE = "modification_date";
+    @DBColumn(type = DatetimeColumn.class, defaultValue = DatetimeColumn.NOW_IN_MILLISECONDS)
+    public static final String MODIFICATION_DATE = "modification_date";
 
-	@DBColumn(type = TextColumn.class)
-	public static final String PUBLIC_URL = "public_url";
-
+    @DBColumn(type = TextColumn.class)
+    public static final String PUBLIC_URL = "public_url";
 
 }

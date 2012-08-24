@@ -25,135 +25,133 @@ import edu.mit.mobile.android.imagecache.SimpleThumbnailCursorAdapter;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
 
 public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<Cursor>,
-		OnItemSelectedListener, OnImageLoadListener {
-	public static final String ARGUMENT_URI = "uri";
+        OnItemSelectedListener, OnImageLoadListener {
+    public static final String ARGUMENT_URI = "uri";
 
-	private static final String TAG = CardMediaViewFragment.class.getSimpleName();
+    private static final String TAG = CardMediaViewFragment.class.getSimpleName();
 
-	private Uri mUri;
+    private Uri mUri;
 
-	private SimpleThumbnailCursorAdapter mAdapter;
-	private Gallery mGallery;
-	private ImageView mFrame;
+    private SimpleThumbnailCursorAdapter mAdapter;
+    private Gallery mGallery;
+    private ImageView mFrame;
 
-	private ImageCache mImageCache;
+    private ImageCache mImageCache;
 
-	public static CardMediaViewFragment newInstance(Uri cardMedia) {
-		final CardMediaViewFragment cmf = new CardMediaViewFragment();
+    public static CardMediaViewFragment newInstance(Uri cardMedia) {
+        final CardMediaViewFragment cmf = new CardMediaViewFragment();
 
-		final Bundle args = new Bundle();
-		args.putParcelable(ARGUMENT_URI, cardMedia);
-		cmf.setArguments(args);
-		return cmf;
-	}
+        final Bundle args = new Bundle();
+        args.putParcelable(ARGUMENT_URI, cardMedia);
+        cmf.setArguments(args);
+        return cmf;
+    }
 
-	@Override
-	public void onAttach(Activity activity) {
+    @Override
+    public void onAttach(Activity activity) {
 
-		super.onAttach(activity);
+        super.onAttach(activity);
 
-		mImageCache = ImageCache.getInstance(activity);
+        mImageCache = ImageCache.getInstance(activity);
 
-	}
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		if (getArguments() != null) {
-			mUri = getArguments().getParcelable(ARGUMENT_URI);
+        if (getArguments() != null) {
+            mUri = getArguments().getParcelable(ARGUMENT_URI);
 
-			if (mUri != null) {
-				getLoaderManager().initLoader(0, null, this);
-			}
-		}
-	}
+            if (mUri != null) {
+                getLoaderManager().initLoader(0, null, this);
+            }
+        }
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		final View v = inflater.inflate(R.layout.card_media_view_fragment, container, false);
+        final View v = inflater.inflate(R.layout.card_media_view_fragment, container, false);
 
+        mAdapter = new SimpleThumbnailCursorAdapter(getActivity(),
+                R.layout.card_media_thumb_square, null, new String[] { CardMedia.MEDIA_LOCAL_URL },
+                new int[] { R.id.card_media_thumbnail }, new int[] { R.id.card_media_thumbnail }, 0);
 
-		mAdapter = new SimpleThumbnailCursorAdapter(getActivity(),
-				R.layout.card_media_thumb_square, null, new String[] { CardMedia.MEDIA_LOCAL_URL },
-				new int[] { R.id.card_media_thumbnail }, new int[] { R.id.card_media_thumbnail }, 0);
+        mGallery = (Gallery) v.findViewById(R.id.gallery);
 
-		mGallery = (Gallery) v.findViewById(R.id.gallery);
+        mGallery.setAdapter(new ImageLoaderAdapter(mAdapter, mImageCache,
+                new int[] { R.id.card_media_thumbnail }, 100, 100));
 
-		mGallery.setAdapter(new ImageLoaderAdapter(mAdapter, mImageCache,
-				new int[] { R.id.card_media_thumbnail }, 100, 100));
+        mGallery.setWrap(true);
+        mGallery.setInfiniteScroll(true);
 
-		mGallery.setWrap(true);
-		mGallery.setInfiniteScroll(true);
+        mGallery.setOnItemSelectedListener(this);
 
-		mGallery.setOnItemSelectedListener(this);
+        mFrame = (ImageView) v.findViewById(R.id.frame);
 
-		mFrame = (ImageView) v.findViewById(R.id.frame);
+        return v;
+    }
 
-		return v;
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        mGallery.pause();
 
+        mImageCache.unregisterOnImageLoadListener(this);
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		mGallery.pause();
+    @Override
+    public void onResume() {
+        super.onResume();
+        mImageCache.registerOnImageLoadListener(this);
 
-		mImageCache.unregisterOnImageLoadListener(this);
-	}
+        mGallery.resume();
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		mImageCache.registerOnImageLoadListener(this);
+    @Override
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 
-		mGallery.resume();
-	}
+        return new CursorLoader(getActivity(), mUri, new String[] { CardMedia._ID,
+                CardMedia.MEDIA_LOCAL_URL }, null, null, null);
+    }
 
-	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
+        mAdapter.swapCursor(c);
+    }
 
-		return new CursorLoader(getActivity(), mUri, new String[] { CardMedia._ID,
-				CardMedia.MEDIA_LOCAL_URL }, null, null, null);
-	}
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
 
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
-		mAdapter.swapCursor(c);
-	}
+    }
 
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		mAdapter.swapCursor(null);
+    @Override
+    public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
+        final Cursor item = (Cursor) mAdapter.getItem(position);
+        if (item != null) {
+            mImageCache.scheduleLoadImage(mImageCache.getNewID(),
+                    Uri.parse(item.getString(item.getColumnIndex(CardMedia.MEDIA_LOCAL_URL))), 640,
+                    480);
+        }
+    }
 
-	}
+    @Override
+    public void onNothingSelected(AdapterView<?> adapter) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
-		final Cursor item = (Cursor) mAdapter.getItem(position);
-		if (item != null) {
-			mImageCache.scheduleLoadImage(mImageCache.getNewID(),
-					Uri.parse(item.getString(item.getColumnIndex(CardMedia.MEDIA_LOCAL_URL))), 640,
-					480);
-		}
-	}
+    }
 
-	@Override
-	public void onNothingSelected(AdapterView<?> adapter) {
-		// TODO Auto-generated method stub
+    @Override
+    public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+        mFrame.setImageDrawable(image);
+    }
 
-	}
-
-	@Override
-	public void onImageLoaded(long id, Uri imageUri, Drawable image) {
-		mFrame.setImageDrawable(image);
-	}
-
-	// public void setCardMediaUri(Uri cardMedia){
-	// mUri = cardMedia;
-	// getLoaderManager().initLoader(0, null, this);
-	// }
+    // public void setCardMediaUri(Uri cardMedia){
+    // mUri = cardMedia;
+    // getLoaderManager().initLoader(0, null, this);
+    // }
 
 }

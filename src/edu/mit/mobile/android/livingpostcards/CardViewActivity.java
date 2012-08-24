@@ -13,40 +13,40 @@ import edu.mit.mobile.android.livingpostcards.data.Card;
 
 public class CardViewActivity extends FragmentActivity implements OnClickListener {
 
-	private Uri mCard;
+    private Uri mCard;
 
-	@Override
-	protected void onCreate(Bundle arg0) {
+    @Override
+    protected void onCreate(Bundle arg0) {
 
-		super.onCreate(arg0);
-		setContentView(R.layout.activity_card_view);
+        super.onCreate(arg0);
+        setContentView(R.layout.activity_card_view);
 
-		mCard = getIntent().getData();
+        mCard = getIntent().getData();
 
-		findViewById(R.id.add_frame).setOnClickListener(this);
+        findViewById(R.id.add_frame).setOnClickListener(this);
 
-		final FragmentManager fm = getSupportFragmentManager();
+        final FragmentManager fm = getSupportFragmentManager();
 
-		final FragmentTransaction ft = fm.beginTransaction();
+        final FragmentTransaction ft = fm.beginTransaction();
 
-		final Fragment f = fm.findFragmentById(R.id.card_media_viewer);
-		if (f != null) {
+        final Fragment f = fm.findFragmentById(R.id.card_media_viewer);
+        if (f != null) {
 
-		} else {
-			ft.replace(R.id.card_media_viewer,
-					CardMediaViewFragment.newInstance(Card.MEDIA.getUri(mCard)));
-		}
-		ft.commit();
-	}
+        } else {
+            ft.replace(R.id.card_media_viewer,
+                    CardMediaViewFragment.newInstance(Card.MEDIA.getUri(mCard)));
+        }
+        ft.commit();
+    }
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.add_frame:
-				startActivity(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard));
-				break;
-		}
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add_frame:
+                startActivity(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard));
+                break;
+        }
 
-	}
+    }
 
 }

@@ -20,7 +20,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-		findViewById(R.id.new_card).setOnClickListener(this);
+        findViewById(R.id.new_card).setOnClickListener(this);
 
     }
 
@@ -30,31 +30,31 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
         return true;
     }
 
-	private void createNewCard() {
+    private void createNewCard() {
 
-		final ContentResolver cr = getContentResolver();
+        final ContentResolver cr = getContentResolver();
 
-		final ContentValues cv = new ContentValues();
+        final ContentValues cv = new ContentValues();
 
-		cv.put(Card.UUID, UUID.randomUUID().toString());
+        cv.put(Card.UUID, UUID.randomUUID().toString());
 
-		cv.put(Card.NAME, DateUtils.formatDateTime(this, System.currentTimeMillis(),
-				DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
+        cv.put(Card.NAME, DateUtils.formatDateTime(this, System.currentTimeMillis(),
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
 
-		final Uri card = cr.insert(Card.CONTENT_URI, cv);
+        final Uri card = cr.insert(Card.CONTENT_URI, cv);
 
-		final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
+        final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
 
-		startActivity(intent);
-	}
+        startActivity(intent);
+    }
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.new_card:
-				createNewCard();
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.new_card:
+                createNewCard();
 
-				break;
-		}
-	}
+                break;
+        }
+    }
 }
