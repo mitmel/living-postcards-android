@@ -5,9 +5,10 @@
 
     <fragment
         android:id="@+id/card_list"
-        class="edu.mit.mobile.android.livingpostcards.CardListFragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@+id/new_card"
+        class="edu.mit.mobile.android.livingpostcards.CardListFragment"
         tools:layout="@layout/card_list_fragment" />
     
     <Button
