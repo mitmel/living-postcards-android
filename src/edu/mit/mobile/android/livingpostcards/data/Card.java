@@ -8,6 +8,7 @@ import edu.mit.mobile.android.content.ForeignKeyManager;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.UriPath;
 import edu.mit.mobile.android.content.column.DBColumn;
+import edu.mit.mobile.android.content.column.IntegerColumn;
 import edu.mit.mobile.android.content.column.TextColumn;
 
 @UriPath(Card.PATH)
@@ -19,8 +20,14 @@ public class Card implements BaseContentItem, Authorable.Columns {
     @DBColumn(type = TextColumn.class)
     public static final String NAME = "name";
 
+    @DBColumn(type = TextColumn.class)
+    public static final String DESCRIPTION = "description";
+
     @DBColumn(type = TextColumn.class, unique = true, notnull = true)
     public static final String UUID = "uuid";
+
+    @DBColumn(type = IntegerColumn.class, notnull = true)
+    public static final String TIMING = "timing";
 
     public static final ForeignKeyManager MEDIA = new ForeignKeyManager(CardMedia.class);
 
