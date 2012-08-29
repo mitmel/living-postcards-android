@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
@@ -59,7 +60,14 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     private ImageView mOnionSkin;
 
+    private Button mCaptureButton;
+
+    private CompoundButton mOnionskinToggle;
+
     private static final int LOADER_CARD = 100, LOADER_CARDMEDIA = 101;
+
+    private static final String[] CARD_MEDIA_PROJECTION = new String[] { CardMedia._ID,
+            CardMedia.MEDIA_LOCAL_URL };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,8 +83,11 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         mOnionSkin = (ImageView) findViewById(R.id.onion_skin_image);
 
-        findViewById(R.id.capture).setOnClickListener(this);
-        ((CompoundButton) findViewById(R.id.onion_skin_toggle)).setOnCheckedChangeListener(this);
+        mCaptureButton = (Button) findViewById(R.id.capture);
+        mCaptureButton.setOnClickListener(this);
+
+        mOnionskinToggle = (CompoundButton) findViewById(R.id.onion_skin_toggle);
+        mOnionskinToggle.setOnCheckedChangeListener(this);
         ((CompoundButton) findViewById(R.id.grid_toggle)).setOnCheckedChangeListener(this);
 
         setFullscreen(true);
@@ -124,6 +135,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             setResult(RESULT_CANCELED);
             finish();
         }
+
+        setOnionSkinVisible(mOnionskinToggle.isChecked());
     }
 
     public void setFullscreen(boolean fullscreen) {
@@ -180,8 +193,25 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
      * @param image
      */
     private void showOnionskinImage(Uri image) {
+        try {
+            final Drawable d = mImageCache.loadImage(R.id.camera_preview, image, 640, 480);
+            if (d != null) {
+                loadOnionskinImage(d);
+            }
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        mImageCache.scheduleLoadImage(R.id.camera_preview, image, 640, 480);
+    private void invalidateOnionskinImage() {
+        mOnionSkin.setImageDrawable(null);
+        mOnionskinToggle.setEnabled(false);
+    }
+
+    private void loadOnionskinImage(Drawable image) {
+        mOnionSkin.setImageDrawable(image);
+        mOnionSkin.setAlpha(80);
+        mOnionskinToggle.setEnabled(true);
     }
 
     @SuppressWarnings("deprecation")
@@ -189,9 +219,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     public void onImageLoaded(final long id, Uri imageUri, Drawable image) {
         if (R.id.camera_preview == id) {
 
-            mOnionSkin.setImageDrawable(image);
-            setOnionSkinVisible(true);
-            mOnionSkin.setAlpha(80);
+            loadOnionskinImage(image);
         }
     }
 
@@ -218,6 +246,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     }
 
     private void capture() {
+        invalidateOnionskinImage();
+        mCaptureButton.setEnabled(false);
         mCamera.takePicture(null, null, mPictureCallback);
     }
 
@@ -225,8 +255,9 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            setFullscreen(false);
+            setFullscreen(true);
             savePicture(data);
+            mCamera.startPreview();
         }
     };
 
@@ -279,7 +310,9 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                 return new CursorLoader(this, mCard, null, null, null, null);
 
             case LOADER_CARDMEDIA:
-                return new CursorLoader(this, Card.MEDIA.getUri(mCard), null, null, null, null);
+                return new CursorLoader(this, Card.MEDIA.getUri(mCard), CARD_MEDIA_PROJECTION,
+                        null, null,
+                        CardMedia._ID + " DESC LIMIT 1");
 
             default:
                 return null;
@@ -319,7 +352,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
-
+        invalidateOnionskinImage();
     }
 
     /**
@@ -338,6 +371,10 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         @Override
         protected Uri doInBackground(byte[]... data) {
+            if (data == null || data.length == 0 || data[0].length == 0) {
+                mErr = new IllegalArgumentException("data was null or empty");
+                return null;
+            }
             final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             final File outFile = new File(StorageUtils.EXTERNAL_PICTURES_DIR, "IMG_" + timeStamp
                     + ".jpg");
@@ -361,6 +398,9 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             } catch (final IOException e) {
                 mErr = e;
                 return null;
+            } catch (final RuntimeException re) {
+                mErr = re;
+                return null;
             }
         }
 
@@ -368,8 +408,12 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         protected void onPostExecute(Uri result) {
             if (mErr != null) {
                 Log.e(TAG, "error writing file", mErr);
+                Toast.makeText(CameraActivity.this,
+                        "Sorry, there was an error while saving the photo. Please try again.",
+                        Toast.LENGTH_LONG).show();
             }
             CameraActivity.this.setProgressBarIndeterminateVisibility(false);
+            mCaptureButton.setEnabled(true);
         }
     }
 }
