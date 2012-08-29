@@ -14,9 +14,11 @@ import edu.mit.mobile.android.livingpostcards.data.Card;
 public class CardViewActivity extends FragmentActivity implements OnClickListener {
 
     private Uri mCard;
+    private CardMediaViewFragment mCardMediaFragment;
 
     @Override
     protected void onCreate(Bundle arg0) {
+
 
         super.onCreate(arg0);
         setContentView(R.layout.activity_card_view);
@@ -31,11 +33,12 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
 
         final Fragment f = fm.findFragmentById(R.id.card_media_viewer);
         if (f != null) {
-
+            mCardMediaFragment = (CardMediaViewFragment) f;
         } else {
-            ft.replace(R.id.card_media_viewer,
-                    CardMediaViewFragment.newInstance(Card.MEDIA.getUri(mCard)));
+            mCardMediaFragment = CardMediaViewFragment.newInstance(Card.MEDIA.getUri(mCard));
+            ft.replace(R.id.card_media_viewer, mCardMediaFragment);
         }
+
         ft.commit();
     }
 
