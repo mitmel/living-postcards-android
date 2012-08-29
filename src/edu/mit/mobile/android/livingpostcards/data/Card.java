@@ -1,5 +1,7 @@
 package edu.mit.mobile.android.livingpostcards.data;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.net.Uri;
 import edu.mit.mobile.android.content.DBSortOrder;
 import edu.mit.mobile.android.content.ForeignKeyManager;
@@ -21,6 +23,19 @@ public class Card implements BaseContentItem, Authorable.Columns {
     public static final String UUID = "uuid";
 
     public static final ForeignKeyManager MEDIA = new ForeignKeyManager(CardMedia.class);
+
+    public static Uri createNewCard(ContentResolver cr, String name) {
+
+        final ContentValues cv = new ContentValues();
+
+        cv.put(Card.UUID, java.util.UUID.randomUUID().toString());
+
+        cv.put(Card.NAME, name);
+
+        final Uri card = cr.insert(Card.CONTENT_URI, cv);
+
+        return card;
+    }
 
     public static final String SORT_DEFAULT = CREATION_DATE + " ASC";
 
