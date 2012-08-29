@@ -30,7 +30,7 @@ public class CardProvider extends SimpleContentProvider {
                 if (oldVersion < 2) {
 
                     db.execSQL("ALTER TABLE '" + table
-                            + "' ADD COLUMN timing INTEGER NOT NULL DEFAULT 300");
+                            + "' ADD COLUMN timing INTEGER NOT NULL DEFAULT " + Card.DEFAULT_TIMING);
                 }
 
                 if (oldVersion < 3) {

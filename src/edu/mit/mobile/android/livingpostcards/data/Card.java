@@ -26,7 +26,8 @@ public class Card implements BaseContentItem, Authorable.Columns {
     @DBColumn(type = TextColumn.class, unique = true, notnull = true)
     public static final String UUID = "uuid";
 
-    @DBColumn(type = IntegerColumn.class, notnull = true)
+    public static final int DEFAULT_TIMING = 300;
+    @DBColumn(type = IntegerColumn.class, notnull = true, defaultValueInt = DEFAULT_TIMING)
     public static final String TIMING = "timing";
 
     public static final ForeignKeyManager MEDIA = new ForeignKeyManager(CardMedia.class);
