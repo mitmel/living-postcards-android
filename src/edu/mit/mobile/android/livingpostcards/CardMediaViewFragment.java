@@ -146,12 +146,7 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
 
     @Override
     public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+        image.setAlpha(255);
         mFrame.setImageDrawable(image);
     }
-
-    // public void setCardMediaUri(Uri cardMedia){
-    // mUri = cardMedia;
-    // getLoaderManager().initLoader(0, null, this);
-    // }
-
 }
