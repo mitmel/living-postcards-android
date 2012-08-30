@@ -1,12 +1,16 @@
 package edu.mit.mobile.android.livingpostcards;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -19,8 +23,9 @@ import com.actionbarsherlock.view.MenuItem;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 
 public class CardViewActivity extends FragmentActivity implements OnClickListener,
-        OnCreateOptionsMenuListener, OnOptionsItemSelectedListener {
+        OnCreateOptionsMenuListener, OnOptionsItemSelectedListener, LoaderCallbacks<Cursor> {
 
+    private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.NAME, Card.TIMING };
     private Uri mCard;
     private CardMediaViewFragment mCardMediaFragment;
 
@@ -49,6 +54,8 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
             mCardMediaFragment = CardMediaViewFragment.newInstance(Card.MEDIA.getUri(mCard));
             ft.replace(R.id.card_media_viewer, mCardMediaFragment);
         }
+
+        getSupportLoaderManager().initLoader(0, null, this);
 
         ft.commit();
     }
@@ -87,4 +94,24 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
         return mSherlock.dispatchCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        return mSherlock.dispatchOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        return new CursorLoader(this, mCard, CARD_PROJECTION, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
+        if (c.moveToFirst()) {
+            mSherlock.setTitle(c.getString(c.getColumnIndex(Card.NAME)));
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> arg0) {
+    }
 }
