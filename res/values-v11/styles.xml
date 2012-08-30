@@ -1,6 +1,0 @@
-<resources>
-
-    <style name="AppTheme" parent="android:Theme.Holo.Light" />
-    <style name="CameraTheme" parent="android:Theme.Holo" />
-
-</resources>

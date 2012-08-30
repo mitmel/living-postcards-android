@@ -6,25 +6,65 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateUtils;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import com.actionbarsherlock.ActionBarSherlock;
+import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
+import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
 import edu.mit.mobile.android.livingpostcards.data.Card;
 
-public class MainActivity extends FragmentActivity implements OnClickListener {
+public class MainActivity extends FragmentActivity implements OnClickListener,
+        OnCreateOptionsMenuListener, OnOptionsItemSelectedListener {
+
+    private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        mSherlock.setContentView(R.layout.activity_main);
         findViewById(R.id.new_card).setOnClickListener(this);
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+        mSherlock.getMenuInflater().inflate(R.menu.activity_main, menu);
+
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        return mSherlock.dispatchCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        return mSherlock.dispatchOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.new_card:
+                createNewCard();
+
+                break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_gallery:
+
+                return true;
+        }
+        return false;
     }
 
     private void createNewCard() {
@@ -40,13 +80,4 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
         startActivity(intent);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.new_card:
-                createNewCard();
-
-                break;
-        }
-    }
 }

@@ -7,3 +7,6 @@
 [submodule "libs-src/android-left-locked-gallery"]
 	path = libs-src/android-left-locked-gallery
 	url = http://mel-tools.mit.edu/git-ro/InfiniteGallery.git
+[submodule "libs-src/actionbar-sherlock"]
+	path = libs-src/actionbar-sherlock
+	url = https://github.com/JakeWharton/ActionBarSherlock.git

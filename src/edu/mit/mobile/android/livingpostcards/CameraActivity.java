@@ -25,8 +25,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -37,17 +35,27 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.ActionBarSherlock;
+import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
+import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
 import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
 
 public class CameraActivity extends FragmentActivity implements OnClickListener,
-        OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor> {
+        OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor>,
+        OnOptionsItemSelectedListener, OnCreateOptionsMenuListener {
 
     private static final String TAG = CameraActivity.class.getSimpleName();
 
     public static final String ACTION_ADD_PHOTO = "edu.mit.mobile.android.ACTION_ADD_PHOTO";
+
+    private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
 
     private Camera mCamera;
     private CameraPreview mPreview;
@@ -75,7 +83,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
-        setContentView(R.layout.activity_camera);
+        mSherlock.setContentView(R.layout.activity_camera);
 
         // getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -167,8 +175,13 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_camera, menu);
+        mSherlock.getMenuInflater().inflate(R.menu.activity_camera, menu);
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        return mSherlock.dispatchCreateOptionsMenu(menu);
     }
 
     @Override
@@ -182,8 +195,13 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                 finish();
                 return true;
             default:
-                return super.onOptionsItemSelected(item);
+                return false;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        return mSherlock.dispatchOptionsItemSelected(item);
     }
 
     /**
@@ -324,7 +342,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         switch (loader.getId()) {
             case LOADER_CARD:
                 if (c.moveToFirst()) {
-                    setTitle(c.getString(c.getColumnIndex(Card.NAME)));
+                    mSherlock.setTitle(c.getString(c.getColumnIndex(Card.NAME)));
                 }
                 break;
 
