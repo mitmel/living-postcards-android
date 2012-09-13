@@ -75,7 +75,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     private static final int LOADER_CARD = 100, LOADER_CARDMEDIA = 101;
 
     private static final String[] CARD_MEDIA_PROJECTION = new String[] { CardMedia._ID,
-            CardMedia.MEDIA_LOCAL_URL };
+            CardMedia.COL_LOCAL_URL };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -342,7 +342,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         switch (loader.getId()) {
             case LOADER_CARD:
                 if (c.moveToFirst()) {
-                    mSherlock.setTitle(c.getString(c.getColumnIndex(Card.NAME)));
+                    mSherlock.setTitle(c.getString(c.getColumnIndex(Card.COL_TITLE)));
                 }
                 break;
 
@@ -361,7 +361,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     private void showLastPhoto(Cursor cardMedia) {
         if (cardMedia.moveToLast()) {
             final String localUrl = cardMedia.getString(cardMedia
-                    .getColumnIndex(CardMedia.MEDIA_LOCAL_URL));
+                    .getColumnIndex(CardMedia.COL_LOCAL_URL));
             if (localUrl != null) {
                 showOnionskinImage(Uri.parse(localUrl));
             }
@@ -408,8 +408,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
                 final ContentValues cv = new ContentValues();
 
-                cv.put(CardMedia.MEDIA_LOCAL_URL, Uri.fromFile(outFile).toString());
-                cv.put(CardMedia.UUID, UUID.randomUUID().toString());
+                cv.put(CardMedia.COL_LOCAL_URL, Uri.fromFile(outFile).toString());
+                cv.put(CardMedia.COL_UUID, UUID.randomUUID().toString());
 
                 return Card.MEDIA.insert(getContentResolver(), mCard, cv);
 

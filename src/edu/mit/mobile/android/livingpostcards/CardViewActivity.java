@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -25,7 +26,9 @@ import edu.mit.mobile.android.livingpostcards.data.Card;
 public class CardViewActivity extends FragmentActivity implements OnClickListener,
         OnCreateOptionsMenuListener, OnOptionsItemSelectedListener, LoaderCallbacks<Cursor> {
 
-    private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.NAME, Card.TIMING };
+    private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
+            Card.COL_TIMING };
+    private static final String TAG = CardViewActivity.class.getSimpleName();
     private Uri mCard;
     private CardMediaViewFragment mCardMediaFragment;
 
@@ -107,7 +110,11 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
         if (c.moveToFirst()) {
-            mSherlock.setTitle(c.getString(c.getColumnIndex(Card.NAME)));
+            mSherlock.setTitle(c.getString(c.getColumnIndex(Card.COL_TITLE)));
+            final int timing = c.getInt(c.getColumnIndex(Card.COL_TIMING));
+            Log.d(TAG, "timing: " + timing);
+
+            mCardMediaFragment.setAnimationTiming(timing);
         }
     }
 

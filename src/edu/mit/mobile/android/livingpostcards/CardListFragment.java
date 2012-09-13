@@ -20,10 +20,10 @@ import edu.mit.mobile.android.livingpostcards.data.Card;
 public class CardListFragment extends ListFragment implements LoaderCallbacks<Cursor>,
         OnItemClickListener {
 
-    private static final String[] FROM = { Card.NAME };
+    private static final String[] FROM = { Card.COL_TITLE };
     private static final int[] TO = { android.R.id.text1 };
 
-    private static final String[] PROJECTION = { Card._ID, Card.NAME };
+    private static final String[] PROJECTION = { Card._ID, Card.COL_TITLE };
 
     private SimpleCursorAdapter mAdapter;
 

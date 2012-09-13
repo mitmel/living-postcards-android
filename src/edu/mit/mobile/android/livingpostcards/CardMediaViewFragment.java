@@ -76,8 +76,9 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
         final View v = inflater.inflate(R.layout.card_media_view_fragment, container, false);
 
         mAdapter = new SimpleThumbnailCursorAdapter(getActivity(),
-                R.layout.card_media_thumb_square, null, new String[] { CardMedia.MEDIA_LOCAL_URL },
-                new int[] { R.id.card_media_thumbnail }, new int[] { R.id.card_media_thumbnail }, 0);
+                R.layout.card_media_thumb_square, null, new String[] { CardMedia.COL_LOCAL_URL,
+                        CardMedia.COL_MEDIA_URL }, new int[] { R.id.card_media_thumbnail,
+                        R.id.card_media_thumbnail }, new int[] { R.id.card_media_thumbnail }, 0);
 
         mGallery = (Gallery) v.findViewById(R.id.gallery);
 
@@ -114,7 +115,7 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 
         return new CursorLoader(getActivity(), mUri, new String[] { CardMedia._ID,
-                CardMedia.MEDIA_LOCAL_URL }, null, null, null);
+                CardMedia.COL_LOCAL_URL, CardMedia.COL_MEDIA_URL }, null, null, null);
     }
 
     @Override
@@ -125,16 +126,20 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
-
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
         final Cursor item = (Cursor) mAdapter.getItem(position);
         if (item != null) {
-            mImageCache.scheduleLoadImage(mImageCache.getNewID(),
-                    Uri.parse(item.getString(item.getColumnIndex(CardMedia.MEDIA_LOCAL_URL))), 640,
-                    480);
+            String uri = item.getString(item.getColumnIndex(CardMedia.COL_LOCAL_URL));
+            if (uri == null) {
+                uri = item.getString(item.getColumnIndex(CardMedia.COL_MEDIA_URL));
+            }
+            if (uri == null) {
+                return;
+            }
+            mImageCache.scheduleLoadImage(mImageCache.getNewID(), Uri.parse(uri), 640, 480);
         }
     }
 
@@ -148,5 +153,9 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
     public void onImageLoaded(long id, Uri imageUri, Drawable image) {
         image.setAlpha(255);
         mFrame.setImageDrawable(image);
+    }
+
+    public void setAnimationTiming(int timing) {
+        mGallery.setInterframeDelay(timing);
     }
 }
