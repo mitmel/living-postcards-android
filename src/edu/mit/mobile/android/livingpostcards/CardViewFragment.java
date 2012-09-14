@@ -17,6 +17,7 @@ import android.widget.TextView;
 import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.maps.GoogleStaticMaps;
 
 /**
  * Views a single card.

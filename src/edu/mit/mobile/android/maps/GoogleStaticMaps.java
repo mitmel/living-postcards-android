@@ -1,4 +1,4 @@
-package edu.mit.mobile.android.livingpostcards;
+package edu.mit.mobile.android.maps;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
