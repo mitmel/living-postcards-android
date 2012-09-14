@@ -2,9 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:showAsAction="ifRoom"
+        android:visible="false"
+        android:title="@string/edit"/>
+    <item
         android:id="@+id/share"
         android:icon="@android:drawable/ic_menu_share"
-        android:showAsAction="ifRoom|withText"
+        android:showAsAction="ifRoom"
         android:title="@string/share"/>
+    
+    <item android:id="@+id/delete"
+        android:title="@string/delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:visible="false"
+        android:showAsAction="never"
+        />
 
 </menu>

@@ -17,20 +17,27 @@ import android.view.View.OnClickListener;
 import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
 import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
+import com.actionbarsherlock.ActionBarSherlock.OnPrepareOptionsMenuListener;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 
 public class CardViewActivity extends FragmentActivity implements OnClickListener,
-        OnCreateOptionsMenuListener, OnOptionsItemSelectedListener, LoaderCallbacks<Cursor> {
+        OnCreateOptionsMenuListener, OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>,
+        OnPrepareOptionsMenuListener {
 
-    private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE };
+    private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
+            Card.COL_AUTHOR_URI, Card.COL_PRIVACY };
     private static final String TAG = CardViewActivity.class.getSimpleName();
     private Uri mCard;
     private CardViewFragment mCardViewFragment;
 
     private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
+    private String mUserUri;
+    private boolean mIsEditable;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -55,6 +62,8 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
             mCardViewFragment = CardViewFragment.newInstance(mCard);
             ft.replace(R.id.card_view_fragment, mCardViewFragment);
         }
+
+        mUserUri = Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE);
 
         getSupportLoaderManager().initLoader(0, null, this);
 
@@ -91,6 +100,18 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(android.view.Menu menu) {
+        return mSherlock.dispatchPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.edit).setVisible(mIsEditable);
+        menu.findItem(R.id.delete).setVisible(mIsEditable);
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         return mSherlock.dispatchCreateOptionsMenu(menu);
     }
@@ -109,10 +130,13 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
     public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
         if (c.moveToFirst()) {
             mSherlock.setTitle(c.getString(c.getColumnIndex(Card.COL_TITLE)));
+            mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
+            mSherlock.dispatchInvalidateOptionsMenu();
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
     }
+
 }

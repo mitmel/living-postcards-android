@@ -122,7 +122,7 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
 
     public static final ItemSyncMap SYNC_MAP = new ItemSyncMap();
 
-    public static final String SORT_DEFAULT = COL_CREATED_DATE + " ASC";
+    public static final String SORT_DEFAULT = COL_CREATED_DATE + " DESC";
 
     public static final String PATH = "card";
 

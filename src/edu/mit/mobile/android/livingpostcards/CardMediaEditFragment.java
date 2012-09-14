@@ -24,11 +24,11 @@ import edu.mit.mobile.android.imagecache.ImageLoaderAdapter;
 import edu.mit.mobile.android.imagecache.SimpleThumbnailCursorAdapter;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
 
-public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<Cursor>,
+public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<Cursor>,
         OnItemSelectedListener, OnImageLoadListener {
     public static final String ARGUMENT_URI = "uri";
 
-    private static final String TAG = CardMediaViewFragment.class.getSimpleName();
+    private static final String TAG = CardMediaEditFragment.class.getSimpleName();
 
     private Uri mUri;
 
@@ -38,8 +38,8 @@ public class CardMediaViewFragment extends Fragment implements LoaderCallbacks<C
 
     private ImageCache mImageCache;
 
-    public static CardMediaViewFragment newInstance(Uri cardMedia) {
-        final CardMediaViewFragment cmf = new CardMediaViewFragment();
+    public static CardMediaEditFragment newInstance(Uri cardMedia) {
+        final CardMediaEditFragment cmf = new CardMediaEditFragment();
 
         final Bundle args = new Bundle();
         args.putParcelable(ARGUMENT_URI, cardMedia);

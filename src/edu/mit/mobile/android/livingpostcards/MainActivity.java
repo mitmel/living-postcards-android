@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateUtils;
-import android.view.View;
-import android.view.View.OnClickListener;
 
 import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
@@ -17,8 +15,8 @@ import com.actionbarsherlock.view.MenuItem;
 
 import edu.mit.mobile.android.livingpostcards.data.Card;
 
-public class MainActivity extends FragmentActivity implements OnClickListener,
-        OnCreateOptionsMenuListener, OnOptionsItemSelectedListener {
+public class MainActivity extends FragmentActivity implements OnCreateOptionsMenuListener,
+        OnOptionsItemSelectedListener {
 
     private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
 
@@ -26,8 +24,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSherlock.setContentView(R.layout.activity_main);
-        findViewById(R.id.new_card).setOnClickListener(this);
-
     }
 
     @Override
@@ -48,19 +44,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.new_card:
-                createNewCard();
-
-                break;
-        }
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_gallery:
+            case R.id.new_card:
+                createNewCard();
 
                 return true;
         }
@@ -79,7 +66,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
         final Uri card = Card.createNewCard(cr,
                 DateUtils.formatDateTime(this, System.currentTimeMillis(),
-                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
+                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
 
         final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
 

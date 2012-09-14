@@ -8,5 +8,9 @@
     <string name="help">Help</string>
     <string name="done">Done</string>
     <string name="share">Share</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="new_postcard">New Postcard</string>
+    <string name="add_images">Add photo</string>
 
 </resources>
