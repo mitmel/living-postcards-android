@@ -67,6 +67,12 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
         return false;
     }
 
+    @Override
+    protected void onTitleChanged(CharSequence title, int color) {
+        mSherlock.dispatchTitleChanged(title, color);
+        super.onTitleChanged(title, color);
+    }
+
     private void createNewCard() {
 
         final ContentResolver cr = getContentResolver();

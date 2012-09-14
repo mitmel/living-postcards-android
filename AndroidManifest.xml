@@ -39,6 +39,9 @@
         <meta-data
             android:name="edu.mit.mobile.android.locast.base_url"
             android:value="http://mel-pydev.mit.edu/avea/api/" />
+        <meta-data
+            android:name="edu.mit.mobile.android.maps.GOOGLE_STATIC_MAPS_API_KEY"
+            android:value="AIzaSyDBjmUDwMkjHFpIdGTIHcfM4fCESx3hwm0" />
 
         <activity
             android:name=".MainActivity"

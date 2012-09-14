@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -26,11 +25,10 @@ import edu.mit.mobile.android.livingpostcards.data.Card;
 public class CardViewActivity extends FragmentActivity implements OnClickListener,
         OnCreateOptionsMenuListener, OnOptionsItemSelectedListener, LoaderCallbacks<Cursor> {
 
-    private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
-            Card.COL_TIMING };
+    private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE };
     private static final String TAG = CardViewActivity.class.getSimpleName();
     private Uri mCard;
-    private CardMediaViewFragment mCardMediaFragment;
+    private CardViewFragment mCardViewFragment;
 
     private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
 
@@ -50,12 +48,12 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
 
         final FragmentTransaction ft = fm.beginTransaction();
 
-        final Fragment f = fm.findFragmentById(R.id.card_media_viewer);
+        final Fragment f = fm.findFragmentById(R.id.card_view_fragment);
         if (f != null) {
-            mCardMediaFragment = (CardMediaViewFragment) f;
+            mCardViewFragment = (CardViewFragment) f;
         } else {
-            mCardMediaFragment = CardMediaViewFragment.newInstance(Card.MEDIA.getUri(mCard));
-            ft.replace(R.id.card_media_viewer, mCardMediaFragment);
+            mCardViewFragment = CardViewFragment.newInstance(mCard);
+            ft.replace(R.id.card_view_fragment, mCardViewFragment);
         }
 
         getSupportLoaderManager().initLoader(0, null, this);
@@ -111,10 +109,6 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
     public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
         if (c.moveToFirst()) {
             mSherlock.setTitle(c.getString(c.getColumnIndex(Card.COL_TITLE)));
-            final int timing = c.getInt(c.getColumnIndex(Card.COL_TIMING));
-            Log.d(TAG, "timing: " + timing);
-
-            mCardMediaFragment.setAnimationTiming(timing);
         }
     }
 
