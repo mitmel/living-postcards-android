@@ -1,3 +1,35 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Widget.Styled.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid">
+        <item name="background">@color/actionbar_background</item>
+        <item name="android:background">@color/actionbar_background</item>
+    </style>
+
+    <style name="Widget.Styled.ActionBar.Title">
+        <item name="textColorPrimary">@color/actionbar_foreground</item>
+        <item name="android:textColorPrimary">@color/actionbar_foreground</item>
+    </style>
+
+    <style name="Image">
+        <item name="android:background">@android:drawable/picture_frame</item>
+        <item name="android:drawablePadding">@dimen/padding_small</item>
+        <item name="android:layout_margin">@dimen/padding_medium</item>
+    </style>
+
+    <style name="Image.CardImage"></style>
+
+    <style name="Image.StaticMap"></style>
+
+    <style name="Card"></style>
+
+    <style name="Card.Description">
+        <item name="android:textColor">@color/text_title_fg_primary</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="Card.Author">
+        <item name="android:textColor">@color/text_title_fg_secondary</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
 
 </resources>

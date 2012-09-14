@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="Theme.Sherlock.Light" />
+    <style name="AppTheme" parent="Theme.Sherlock.Light">
+        <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+        <item name="android:actionBarStyle">@style/Widget.Styled.ActionBar</item>
+        <item name="android:windowBackground">@drawable/bg_arches</item>
+        <item name="android:colorBackground">@color/bg_arches_solid</item>
+        <item name="titleTextStyle">@style/Widget.Styled.ActionBar.Title</item>
+        <item name="android:titleTextStyle">@style/Widget.Styled.ActionBar.Title</item>
+    </style>
 
     <style name="CameraTheme" parent="Theme.Sherlock" />
 
