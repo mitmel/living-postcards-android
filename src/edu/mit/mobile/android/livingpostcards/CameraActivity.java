@@ -122,6 +122,9 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         mCamera.stopPreview();
 
+        mPreviewHolder.removeAllViews();
+        mPreview = null;
+
         releaseCamera();
     }
 
