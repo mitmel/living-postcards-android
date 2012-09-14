@@ -28,4 +28,14 @@ public class AuthenticatorActivity extends AbsLocastAuthenticatorActivity {
     protected Intent getSignupIntent() {
         return new Intent(Intent.ACTION_VIEW, Uri.parse("http://locast.mit.edu/avea/signup/"));
     }
+
+    @Override
+    protected String getAccountType() {
+        return Authenticator.ACCOUNT_TYPE;
+    }
+
+    @Override
+    protected String getAuthtokenType() {
+        return Authenticator.ACCOUNT_TYPE;
+    }
 }

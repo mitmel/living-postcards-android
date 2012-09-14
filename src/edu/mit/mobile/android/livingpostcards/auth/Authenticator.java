@@ -21,7 +21,18 @@ public class Authenticator extends AbsLocastAuthenticator {
     @Override
     public String getAuthTokenLabel(String authTokenType) {
         // TODO Auto-generated method stub
-        return "kittens";
+        return ACCOUNT_TYPE;
+    }
+
+    @Override
+    public String getAccountType() {
+        return ACCOUNT_TYPE;
+    }
+
+    @Override
+    public String getAuthTokenType() {
+        // TODO Auto-generated method stub
+        return ACCOUNT_TYPE;
     }
 
 }
