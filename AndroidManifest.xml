@@ -45,7 +45,6 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@null"
             android:logo="@drawable/ic_actionbar_title" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

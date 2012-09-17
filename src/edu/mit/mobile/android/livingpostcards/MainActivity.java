@@ -22,6 +22,7 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTitle("");
         super.onCreate(savedInstanceState);
         mSherlock.setContentView(R.layout.activity_main);
     }
