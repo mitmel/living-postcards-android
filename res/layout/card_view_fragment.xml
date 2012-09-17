@@ -3,20 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.stackoverflow.android.widget.AspectRatioImageView
+    <android.extracted.widget.AdapterViewFlipper
         android:id="@+id/card_image"
         style="@style/Image.CardImage"
         android:layout_width="fill_parent"
-        android:layout_height="0dip"
+        android:layout_height="250dip"
         android:layout_alignParentTop="true"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_actionbar_title" />
+        android:contentDescription="@null" />
 
     <ImageView
         android:id="@+id/static_map"
         style="@style/Image.StaticMap"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_below="@+id/card_image"
         android:adjustViewBounds="true"
         android:contentDescription="@null"

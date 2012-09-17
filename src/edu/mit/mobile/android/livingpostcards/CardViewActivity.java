@@ -11,8 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.View;
-import android.view.View.OnClickListener;
+import android.util.Log;
 
 import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
@@ -21,11 +20,12 @@ import com.actionbarsherlock.ActionBarSherlock.OnPrepareOptionsMenuListener;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 
-public class CardViewActivity extends FragmentActivity implements OnClickListener,
+public class CardViewActivity extends FragmentActivity implements
         OnCreateOptionsMenuListener, OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>,
         OnPrepareOptionsMenuListener {
 
@@ -49,8 +49,6 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
 
         mCard = getIntent().getData();
 
-        findViewById(R.id.add_frame).setOnClickListener(this);
-
         final FragmentManager fm = getSupportFragmentManager();
 
         final FragmentTransaction ft = fm.beginTransaction();
@@ -71,12 +69,9 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.add_frame:
-                startActivity(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard));
-                break;
-        }
+    protected void onStart() {
+        super.onStart();
+        startService(new Intent(Intent.ACTION_SYNC, mCard));
     }
 
     @Override
@@ -88,6 +83,11 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
             case android.R.id.home:
                 startActivity(new Intent(Intent.ACTION_VIEW, Card.CONTENT_URI));
                 return true;
+
+            case R.id.edit:
+                startActivity(new Intent(Intent.ACTION_EDIT, mCard));
+                return true;
+
             default:
                 return false;
         }
@@ -138,5 +138,4 @@ public class CardViewActivity extends FragmentActivity implements OnClickListene
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
     }
-
 }

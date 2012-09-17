@@ -4,26 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/card_view_fragment"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <FrameLayout
-            android:id="@+id/card_view_fragment"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            tools:layout="@layout/card_view_fragment" />
-
-        <Button
-            android:id="@+id/add_frame"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/card_view_fragment"
-            android:layout_marginTop="23dp"
-            android:text="Add Frame" />
-    </RelativeLayout>
+        android:layout_height="wrap_content"
+        tools:layout="@layout/card_view_fragment" />
 
 </ScrollView>
