@@ -61,6 +61,7 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.replace(R.id.main_fragment, new CardListFragment());
             ft.commit();
+            mIsLoggedIn = false;
         }
     }
 
