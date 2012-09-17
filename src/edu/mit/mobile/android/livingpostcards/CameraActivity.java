@@ -447,7 +447,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         @Override
         protected Uri doInBackground(byte[]... data) {
-            if (data == null || data.length == 0 || data[0].length == 0) {
+            if (data == null || data.length == 0 || data[0] == null || data[0].length == 0) {
                 mErr = new IllegalArgumentException("data was null or empty");
                 return null;
             }
