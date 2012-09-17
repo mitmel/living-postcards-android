@@ -138,6 +138,7 @@
         <service
             android:name=".sync.AccountSyncService"
             android:exported="true"
+            android:process="edu.mit.mobile.android.livingpostcards.Sync"
             tools:ignore="ExportedService" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
@@ -162,20 +163,32 @@
                     android:pathPrefix="/avea/api/"
                     android:scheme="https" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SYNC" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.card" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card.#.media" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.card.#.media" />
+            </intent-filter>
 
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
         <service
-            android:name="edu.mit.mobile.android.livingpostcards.sync.MediaSync"
+            android:name=".sync.MediaSyncService"
             android:exported="false"
-            android:process="edu.mit.mobile.android.livingpostcards.SyncMedia" >
+            android:process="edu.mit.mobile.android.livingpostcards.Sync" >
             <intent-filter>
                 <action android:name="edu.mit.mobile.android.locast.ACTION_SYNC_RESOURCES" />
 
-                <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.media" />
-                <data android:mimeType="vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.media" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card.#.media" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.card.#.media" />
             </intent-filter>
         </service>
 
@@ -184,7 +197,8 @@
         <provider
             android:name=".data.CardProvider"
             android:authorities="edu.mit.mobile.android.livingpostcards"
-            android:exported="false" />
+            android:exported="false"
+            android:process="edu.mit.mobile.android.livingpostcards.Sync" />
     </application>
 
 </manifest>

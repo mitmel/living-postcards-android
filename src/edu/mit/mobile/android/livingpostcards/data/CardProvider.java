@@ -7,6 +7,7 @@ import android.util.Log;
 import edu.mit.mobile.android.content.ForeignKeyDBHelper;
 import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
+import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.NoPublicPath;
 import edu.mit.mobile.android.locast.net.NetworkClient;
 import edu.mit.mobile.android.locast.sync.SyncableSimpleContentProvider;
@@ -95,8 +96,16 @@ public class CardProvider extends SyncableSimpleContentProvider {
     @Override
     public String getPublicPath(Context context, Uri uri) throws NoPublicPath {
         Log.d(TAG, "getPublicPath " + uri);
+        final String type = getType(uri);
+
+
         if (Card.CONTENT_URI.equals(uri)) {
             return NetworkClient.getBaseUrlFromManifest(context) + "postcard/";
+
+            // TODO find a way to make this generic. Inspect the SYNC_MAP somehow?
+        } else if (CardMedia.TYPE_DIR.equals(type)) {
+            return JsonSyncableItem.SyncChildRelation.getPathFromField(context,
+                    CardMedia.getCard(uri), Card.COL_MEDIA_URL);
         } else {
             return super.getPublicPath(context, uri);
         }
