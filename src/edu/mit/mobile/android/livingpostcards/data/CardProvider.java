@@ -1,7 +1,6 @@
 package edu.mit.mobile.android.livingpostcards.data;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 import edu.mit.mobile.android.content.ForeignKeyDBHelper;
@@ -16,49 +15,14 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
     public static final String AUTHORITY = "edu.mit.mobile.android.livingpostcards";
 
-    public static final int VERSION = 4;
+    public static final int VERSION = 6;
 
     protected static final String TAG = CardProvider.class.getSimpleName();
 
     public CardProvider() {
         super(AUTHORITY, VERSION);
 
-        final GenericDBHelper cards = new GenericDBHelper(Card.class) {
-            @Override
-            public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
-                if (newVersion != VERSION) {
-                    Log.e(TAG, "Don't know how to upgrade to version " + newVersion
-                            + ". App DB version is " + VERSION);
-                    throw new IllegalStateException("Error upgrading database");
-                }
-                final String table = getTable();
-
-                if (oldVersion < 2) {
-
-                    db.execSQL("ALTER TABLE '" + table
-                            + "' ADD COLUMN timing INTEGER NOT NULL DEFAULT " + Card.DEFAULT_TIMING);
-                }
-
-                if (oldVersion < 3) {
-                    // db.beginTransaction();
-                    // String tmp_table = "tmp_" + table;
-                    // db.execSQL("ALTER TABLE '" + table + "' RENAME TO '" + tmp_table + "'");
-                    //
-                    // createTables(db);
-                    //
-                    // db.execSQL("INSERT INTO '" + table + "' (name, description, uuid, timing" )
-                    //
-                    // db.setTransactionSuccessful();
-                    // db.endTransaction();
-
-                    // the column names changed, which is challenging to fix and not really worth
-                    // the effort for dev data.
-                    super.upgradeTables(db, oldVersion, newVersion);
-                }
-
-                Log.d(TAG, "upgraded DB from version " + oldVersion + " to " + newVersion);
-            };
-        };
+        final GenericDBHelper cards = new GenericDBHelper(Card.class);
 
         final GenericDBHelper users = new GenericDBHelper(User.class);
 
