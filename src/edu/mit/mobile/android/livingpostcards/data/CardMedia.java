@@ -84,6 +84,7 @@ public class CardMedia extends ImageContent implements Authorable.Columns {
 
             putAll(Authorable.SYNC_MAP);
             put(COL_UUID, new SyncFieldMap("uuid", SyncFieldMap.STRING));
+            put("_title", new SyncLiteral("title", "untitled"));
         }
     };
 
