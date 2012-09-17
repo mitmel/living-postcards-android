@@ -12,5 +12,7 @@
     <string name="delete">Delete</string>
     <string name="new_postcard">New Postcard</string>
     <string name="add_images">Add photo</string>
+    <string name="welcome_message_no_account">Welcome to Living Postcards. To continue, please sign in or create an account.</string>
+    <string name="login_or_create_account">Login or Create Account</string>
 
 </resources>

@@ -18,6 +18,10 @@ public class Authenticator extends AbsLocastAuthenticator {
         return getFirstAccount(context, ACCOUNT_TYPE);
     }
 
+    public static boolean hasRealAccount(Context context) {
+        return hasRealAccount(context, ACCOUNT_TYPE);
+    }
+
     @Override
     public Intent getAuthenticator(Context context) {
         return new Intent(context, AuthenticatorActivity.class);

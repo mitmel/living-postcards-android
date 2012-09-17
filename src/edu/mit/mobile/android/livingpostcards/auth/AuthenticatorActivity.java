@@ -26,7 +26,7 @@ public class AuthenticatorActivity extends AbsLocastAuthenticatorActivity {
 
     @Override
     protected Intent getSignupIntent() {
-        return new Intent(Intent.ACTION_VIEW, Uri.parse("http://locast.mit.edu/avea/signup/"));
+        return new Intent(Intent.ACTION_VIEW, Uri.parse("http://mel-pydev.mit.edu/avea/signup/"));
     }
 
     @Override

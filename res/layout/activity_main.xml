@@ -1,13 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-    <fragment
-        android:id="@+id/card_list"
+    <FrameLayout
+        android:id="@+id/main_fragment"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        class="edu.mit.mobile.android.livingpostcards.CardListFragment"
-        tools:layout="@layout/card_list_fragment" />
-    
+        android:layout_height="fill_parent" />
+
 </RelativeLayout>
