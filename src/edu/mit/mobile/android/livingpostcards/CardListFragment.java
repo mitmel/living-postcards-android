@@ -9,7 +9,6 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -19,36 +18,48 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+
+import com.stackoverflow.ArrayUtils;
+
+import edu.mit.mobile.android.imagecache.ImageCache;
+import edu.mit.mobile.android.imagecache.ImageLoaderAdapter;
+import edu.mit.mobile.android.imagecache.SimpleThumbnailCursorAdapter;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
 public class CardListFragment extends ListFragment implements LoaderCallbacks<Cursor>,
         OnItemClickListener {
 
-    private static final String[] FROM = { Card.COL_TITLE };
-    private static final int[] TO = { android.R.id.text1 };
+    private static final String[] FROM = { Card.COL_TITLE, Card.COL_AUTHOR, Card.COL_COVER_PHOTO };
+    private static final int[] TO = { R.id.title, R.id.author, R.id.card_media_thumbnail };
 
-    private static final String[] PROJECTION = { Card._ID, Card.COL_TITLE };
+    private static final String[] PROJECTION = ArrayUtils.concat(new String[] { Card._ID }, FROM);
 
-    private SimpleCursorAdapter mAdapter;
+    private SimpleThumbnailCursorAdapter mAdapter;
+
+    ImageCache mImageCache;
 
     private final Uri mCards = Card.CONTENT_URI;
     private static final String TAG = CardListFragment.class.getSimpleName();
+    private static final int[] IMAGE_IDS = new int[] { R.id.card_media_thumbnail };
 
     public CardListFragment() {
-
+        super();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
 
-        mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_2,
-                null, FROM, TO);
+        mImageCache = ImageCache.getInstance(getActivity());
 
-        setListAdapter(mAdapter);
+        mAdapter = new SimpleThumbnailCursorAdapter(getActivity(), R.layout.card_list_item, null,
+                FROM, TO, IMAGE_IDS, 0);
+
+        setListAdapter(new ImageLoaderAdapter(getActivity(), mAdapter, mImageCache, IMAGE_IDS, 320,
+                240, ImageLoaderAdapter.UNIT_DIP));
+
         getListView().setOnItemClickListener(this);
 
         getLoaderManager().initLoader(0, null, this);

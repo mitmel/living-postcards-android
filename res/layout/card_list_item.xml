@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    >
+
+    <ImageView
+        android:id="@+id/card_media_thumbnail"
+        style="@style/Image.CardImage"
+        android:layout_width="133dip"
+        android:layout_height="100dip"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@null"
+        android:src="@drawable/image_placeholder" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/Card.Title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/card_media_thumbnail"
+        android:layout_toRightOf="@+id/card_media_thumbnail"
+        android:ellipsize="end"
+        android:maxLines="2" />
+
+    <TextView
+        android:id="@+id/author"
+        style="@style/Card.Author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/title"
+        android:layout_below="@+id/title" />
+
+</RelativeLayout>

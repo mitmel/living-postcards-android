@@ -22,6 +22,11 @@
 
     <style name="Card"></style>
 
+   <style name="Card.Title">
+        <item name="android:textColor">@color/text_title_fg_primary</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    
     <style name="Card.Description">
         <item name="android:textColor">@color/text_title_fg_primary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
