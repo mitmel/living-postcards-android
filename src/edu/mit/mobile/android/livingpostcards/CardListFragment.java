@@ -10,12 +10,17 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
 public class CardListFragment extends ListFragment implements LoaderCallbacks<Cursor>,
         OnItemClickListener {
@@ -27,7 +32,8 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
 
     private SimpleCursorAdapter mAdapter;
 
-    private static final Uri LIST_URI = Card.CONTENT_URI;
+    private final Uri mCards = Card.CONTENT_URI;
+    private static final String TAG = CardListFragment.class.getSimpleName();
 
     public CardListFragment() {
 
@@ -46,7 +52,8 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         getListView().setOnItemClickListener(this);
 
         getLoaderManager().initLoader(0, null, this);
-
+        LocastSyncService.startExpeditedAutomaticSync(getActivity(), mCards);
+        registerForContextMenu(getListView());
     }
 
     @Override
@@ -57,7 +64,7 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new CursorLoader(getActivity(), LIST_URI, PROJECTION, null, null, null);
+        return new CursorLoader(getActivity(), mCards, PROJECTION, null, null, null);
     }
 
     @Override
@@ -74,8 +81,42 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final Uri item = ContentUris.withAppendedId(LIST_URI, id);
+        final Uri item = ContentUris.withAppendedId(mCards, id);
         startActivity(new Intent(Intent.ACTION_VIEW, item));
+
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getActivity().getMenuInflater().inflate(R.menu.activity_card_view, menu);
+
+        menu.findItem(R.id.delete).setVisible(true);
+        menu.findItem(R.id.edit).setVisible(true);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info;
+        try {
+            info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        } catch (final ClassCastException e) {
+            Log.e(TAG, "bad menuInfo", e);
+            return false;
+        }
+        final Uri card = ContentUris.withAppendedId(mCards, info.id);
+
+        switch (item.getItemId()) {
+            case R.id.edit:
+                startActivity(new Intent(Intent.ACTION_EDIT, card));
+                return true;
+
+            case R.id.delete:
+                startActivity(new Intent(Intent.ACTION_DELETE, card));
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
 
     }
 }
