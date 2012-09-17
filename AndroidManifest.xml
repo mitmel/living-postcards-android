@@ -61,6 +61,7 @@
         </activity>
         <activity
             android:name=".CameraActivity"
+            android:exported="false"
             android:label="@string/title_activity_camera"
             android:screenOrientation="landscape"
             android:theme="@style/CameraTheme" >
@@ -75,10 +76,39 @@
 
                 <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.card" />
+            </intent-filter>
         </activity>
-        <activity android:name=".CardViewActivity" >
+        <activity
+            android:name=".CardViewActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.mit.mobile.android.livingpostcards.MainActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
+                <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CardEditActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.mit.mobile.android.livingpostcards.CardViewActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.DELETE" />
 
                 <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card" />
 

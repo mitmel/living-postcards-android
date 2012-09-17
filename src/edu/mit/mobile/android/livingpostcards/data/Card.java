@@ -3,7 +3,7 @@ package edu.mit.mobile.android.livingpostcards.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ContentResolver;
+import android.accounts.Account;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -70,7 +70,7 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
      * @param title
      * @return
      */
-    public static Uri createNewCard(ContentResolver cr, String title) {
+    public static Uri createNewCard(Context context, Account account, String title) {
 
         final ContentValues cv = new ContentValues();
 
@@ -78,7 +78,9 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
 
         cv.put(Card.COL_TITLE, title);
 
-        final Uri card = cr.insert(Card.CONTENT_URI, cv);
+        Authorable.putAuthorInformation(context, account, cv);
+
+        final Uri card = context.getContentResolver().insert(Card.CONTENT_URI, cv);
 
         return card;
     }
@@ -105,7 +107,7 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
             super();
 
             putAll(Titled.SYNC_MAP);
-            putAll(Authorable.SYNC_MAP);
+            putAll(PrivatelyAuthorable.SYNC_MAP);
             putAll(Locatable.SYNC_MAP);
 
             put(COL_TIMING, new SyncFieldMap("frame_delay", SyncFieldMap.INTEGER));
@@ -114,9 +116,9 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
 
             put("_resources", new CardResources());
 
-            put(COL_MEDIA_URL, new SyncChildRelation("photos",
-                    new SyncChildRelation.SimpleRelationship(CardMedia.PATH), true,
-                    SyncMapItem.SYNC_FROM));
+            put(COL_MEDIA_URL,
+                    new SyncChildRelation("photos", new SyncChildRelation.SimpleRelationship(
+                            CardMedia.PATH), SyncMapItem.SYNC_FROM));
         }
     };
 

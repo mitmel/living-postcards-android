@@ -7,9 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -19,11 +17,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,8 +46,11 @@ import com.actionbarsherlock.view.MenuItem;
 
 import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
+import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
+import edu.mit.mobile.android.locast.data.CastMedia.CastMediaInfo;
+import edu.mit.mobile.android.locast.data.MediaProcessingException;
 
 public class CameraActivity extends FragmentActivity implements OnClickListener,
         OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor>,
@@ -66,6 +71,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     private Uri mCard;
 
+    private Uri mCardDir;
+
     private ImageView mOnionSkin;
 
     private Button mCaptureButton;
@@ -76,6 +83,29 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     private static final String[] CARD_MEDIA_PROJECTION = new String[] { CardMedia._ID,
             CardMedia.COL_LOCAL_URL };
+
+    private static final int MSG_RELOAD_CARD_AND_MEDIA = 100;
+
+    private static class MyHandler extends Handler {
+        private final CameraActivity mActivity;
+
+        public MyHandler(CameraActivity activity) {
+            mActivity = activity;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_RELOAD_CARD_AND_MEDIA:
+                    final LoaderManager lm = mActivity.getSupportLoaderManager();
+                    lm.restartLoader(LOADER_CARD, null, mActivity);
+                    lm.restartLoader(LOADER_CARDMEDIA, null, mActivity);
+                    break;
+            }
+        }
+    }
+
+    private final Handler mHandler = new MyHandler(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,15 +132,26 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         mImageCache = ImageCache.getInstance(this);
 
-        final Intent intent = getIntent();
+        processIntent(getIntent());
+    }
+
+    private void processIntent(Intent intent) {
         final String action = intent.getAction();
 
         if (ACTION_ADD_PHOTO.equals(action)) {
+            mCardDir = null;
             mCard = intent.getData();
 
-            getSupportLoaderManager().initLoader(LOADER_CARD, null, this);
+            mHandler.sendEmptyMessage(MSG_RELOAD_CARD_AND_MEDIA);
 
-            getSupportLoaderManager().initLoader(LOADER_CARDMEDIA, null, this);
+        } else if (Intent.ACTION_INSERT.equals(action)) {
+            mCard = null;
+            mCardDir = intent.getData();
+
+        } else {
+            Toast.makeText(this, "Unable to handle requested action", Toast.LENGTH_LONG).show();
+            setResult(RESULT_CANCELED);
+            finish();
         }
     }
 
@@ -119,8 +160,9 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         super.onPause();
 
         mImageCache.unregisterOnImageLoadListener(this);
-
-        mCamera.stopPreview();
+        if (mCamera != null) {
+            mCamera.stopPreview();
+        }
 
         mPreviewHolder.removeAllViews();
         mPreview = null;
@@ -376,6 +418,19 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         invalidateOnionskinImage();
     }
 
+    private void createNewCard() {
+
+        final Uri card = Card.createNewCard(this, Authenticator.getFirstAccount(this,
+                Authenticator.ACCOUNT_TYPE),
+                DateUtils.formatDateTime(this, System.currentTimeMillis(),
+                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
+
+        final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
+
+        setIntent(intent);
+        processIntent(intent);
+    }
+
     /**
      * Saves the given jpeg bytes to disk and adds an entry to the CardMedia list. Pictures are
      * stored to external storage under {@link StorageUtils#EXTERNAL_PICTURE_SUBDIR}.
@@ -403,24 +458,30 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             StorageUtils.EXTERNAL_PICTURES_DIR.mkdirs();
 
             try {
+                if (mCard == null && mCardDir != null) {
+                    createNewCard();
+                }
+
                 final FileOutputStream fos = new FileOutputStream(outFile);
                 fos.write(data[0]);
                 fos.close();
 
                 mImageCache.scheduleLoadImage(0, Uri.fromFile(outFile), 640, 480);
 
-                final ContentValues cv = new ContentValues();
+                final CastMediaInfo cmi = CardMedia.addMediaToCard(CameraActivity.this,
+                        Authenticator.getFirstAccount(CameraActivity.this),
+                        Card.MEDIA.getUri(mCard), Uri.fromFile(outFile));
 
-                cv.put(CardMedia.COL_LOCAL_URL, Uri.fromFile(outFile).toString());
-                cv.put(CardMedia.COL_UUID, UUID.randomUUID().toString());
-
-                return Card.MEDIA.insert(getContentResolver(), mCard, cv);
+                return cmi.castMediaItem;
 
             } catch (final IOException e) {
                 mErr = e;
                 return null;
             } catch (final RuntimeException re) {
                 mErr = re;
+                return null;
+            } catch (final MediaProcessingException e) {
+                mErr = e;
                 return null;
             }
         }

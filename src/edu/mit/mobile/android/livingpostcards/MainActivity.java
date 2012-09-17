@@ -1,11 +1,8 @@
 package edu.mit.mobile.android.livingpostcards;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.format.DateUtils;
 
 import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
@@ -63,15 +60,7 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
 
     private void createNewCard() {
 
-        final ContentResolver cr = getContentResolver();
-
-        final Uri card = Card.createNewCard(cr,
-                DateUtils.formatDateTime(this, System.currentTimeMillis(),
-                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
-
-        final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
-
+        final Intent intent = new Intent(Intent.ACTION_INSERT, Card.CONTENT_URI);
         startActivity(intent);
     }
-
 }

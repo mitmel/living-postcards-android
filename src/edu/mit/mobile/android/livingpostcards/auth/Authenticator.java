@@ -1,5 +1,6 @@
 package edu.mit.mobile.android.livingpostcards.auth;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import edu.mit.mobile.android.livingpostcards.data.CardProvider;
@@ -12,6 +13,10 @@ public class Authenticator extends AbsLocastAuthenticator {
     }
 
     public static final String ACCOUNT_TYPE = CardProvider.AUTHORITY;
+
+    public static Account getFirstAccount(Context context) {
+        return getFirstAccount(context, ACCOUNT_TYPE);
+    }
 
     @Override
     public Intent getAuthenticator(Context context) {

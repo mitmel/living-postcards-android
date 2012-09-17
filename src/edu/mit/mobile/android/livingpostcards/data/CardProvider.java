@@ -68,7 +68,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
         addDirAndItemUri(users, User.PATH);
 
         final ForeignKeyDBHelper cardmedia = new ForeignKeyDBHelper(Card.class, CardMedia.class,
-                CardMedia.CARD);
+                CardMedia.COL_CARD);
 
         // content://authority/card/1/media
         // content://authority/card/1/media/1
