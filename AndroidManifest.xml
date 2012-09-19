@@ -119,6 +119,7 @@
         <!-- auth -->
 
         <activity android:name=".auth.AuthenticatorActivity" />
+        <activity android:name=".auth.RegisterActivity"/>
 
         <service
             android:name=".auth.AuthenticationService"

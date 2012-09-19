@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
 import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
+import com.actionbarsherlock.ActionBarSherlock.OnPrepareOptionsMenuListener;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -17,13 +18,16 @@ import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 
 public class MainActivity extends FragmentActivity implements OnCreateOptionsMenuListener,
-        OnOptionsItemSelectedListener, NoAccountFragment.OnLoggedInListener {
+        OnOptionsItemSelectedListener, NoAccountFragment.OnLoggedInListener,
+        OnPrepareOptionsMenuListener {
 
     private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
 
     NoAccountFragment mNoAccountFragment;
 
-    private boolean mIsLoggedIn;
+    private boolean mJustLoggedIn;
+
+    private boolean mIsLoggedIn = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTitle("");
@@ -41,6 +45,7 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
                 final CardListFragment f2 = new CardListFragment();
                 ft.replace(R.id.main_fragment, f2);
             }
+            mIsLoggedIn = true;
         } else {
             if (f == null || !(f instanceof NoAccountFragment)) {
                 final NoAccountFragment f2 = new NoAccountFragment();
@@ -56,25 +61,32 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
     protected void onResume() {
         super.onResume();
 
-        if (mIsLoggedIn) {
+        if (mJustLoggedIn) {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.replace(R.id.main_fragment, new CardListFragment());
             ft.commit();
-            mIsLoggedIn = false;
+            mJustLoggedIn = false;
+            mIsLoggedIn = true;
+
+            mSherlock.dispatchInvalidateOptionsMenu();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         mSherlock.getMenuInflater().inflate(R.menu.activity_main, menu);
-
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         return mSherlock.dispatchCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(android.view.Menu menu) {
+        return mSherlock.dispatchPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -107,6 +119,13 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
 
     @Override
     public void onLoggedIn() {
-        mIsLoggedIn = true;
+        mJustLoggedIn = true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.new_card).setVisible(mIsLoggedIn);
+
+        return true;
     }
 }

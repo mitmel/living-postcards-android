@@ -2,7 +2,6 @@ package edu.mit.mobile.android.livingpostcards.auth;
 
 import android.accounts.Account;
 import android.content.Intent;
-import android.net.Uri;
 import edu.mit.mobile.android.livingpostcards.R;
 import edu.mit.mobile.android.livingpostcards.data.CardProvider;
 import edu.mit.mobile.android.locast.accounts.AbsLocastAuthenticatorActivity;
@@ -26,7 +25,7 @@ public class AuthenticatorActivity extends AbsLocastAuthenticatorActivity {
 
     @Override
     protected Intent getSignupIntent() {
-        return new Intent(Intent.ACTION_VIEW, Uri.parse("http://mel-pydev.mit.edu/avea/signup/"));
+        return new Intent(this, RegisterActivity.class);
     }
 
     @Override
