@@ -3,58 +3,67 @@ package edu.mit.mobile.android.livingpostcards;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
 import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
 import com.actionbarsherlock.ActionBarSherlock.OnPrepareOptionsMenuListener;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.ActionBar.TabListener;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.data.Authorable;
 
-public class MainActivity extends FragmentActivity implements OnCreateOptionsMenuListener,
+public class MainActivity extends SherlockFragmentActivity implements OnCreateOptionsMenuListener,
         OnOptionsItemSelectedListener, NoAccountFragment.OnLoggedInListener,
-        OnPrepareOptionsMenuListener {
-
-    private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
+        OnPrepareOptionsMenuListener, TabListener {
 
     NoAccountFragment mNoAccountFragment;
 
+    private static final String TAG_SPLASH = "splash";
+    private static final String TAG_NEW = "new";
+    private static final String TAG_NEARBY = "nearby";
+    private static final String TAG_MY = "my";
+
+    private static final boolean DEBUG = BuildConfig.DEBUG;
+
+    private static final String TAG = MainActivity.class.getSimpleName();
     private boolean mJustLoggedIn;
 
     private boolean mIsLoggedIn = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTitle("");
         super.onCreate(savedInstanceState);
-        mSherlock.setContentView(R.layout.activity_main);
+
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         final FragmentManager fm = getSupportFragmentManager();
 
-        final FragmentTransaction ft = fm.beginTransaction();
-
-        final Fragment f = fm.findFragmentById(R.id.main_fragment);
-
         if (Authenticator.hasRealAccount(this)) {
-            if (f == null || !(f instanceof CardListFragment)) {
-                final CardListFragment f2 = new CardListFragment();
-                ft.replace(R.id.main_fragment, f2);
-            }
-            mIsLoggedIn = true;
+            showMainScreen();
+
+            // when there is no account, show a splash page
         } else {
+            final Fragment f = fm.findFragmentById(android.R.id.content);
+
             if (f == null || !(f instanceof NoAccountFragment)) {
+                final FragmentTransaction ft = fm.beginTransaction();
                 final NoAccountFragment f2 = new NoAccountFragment();
-                ft.replace(R.id.main_fragment, f2);
+                ft.replace(android.R.id.content, f2, TAG_SPLASH);
                 mNoAccountFragment = f2;
                 f2.registerOnLoggedInListener(this);
+                ft.commit();
             }
         }
-        ft.commit();
     }
 
     @Override
@@ -62,36 +71,31 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
         super.onResume();
 
         if (mJustLoggedIn) {
-            final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            ft.replace(R.id.main_fragment, new CardListFragment());
-            ft.commit();
+            showMainScreen();
             mJustLoggedIn = false;
-            mIsLoggedIn = true;
-
-            mSherlock.dispatchInvalidateOptionsMenu();
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        mSherlock.getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
+    private void showMainScreen() {
+        mIsLoggedIn = Authenticator.hasRealAccount(this);
+        invalidateOptionsMenu();
 
-    @Override
-    public boolean onCreateOptionsMenu(android.view.Menu menu) {
-        return mSherlock.dispatchCreateOptionsMenu(menu);
-    }
+        final FragmentManager fm = getSupportFragmentManager();
+        final Fragment f = fm.findFragmentById(android.R.id.content);
 
-    @Override
-    public boolean onPrepareOptionsMenu(android.view.Menu menu) {
-        return mSherlock.dispatchPrepareOptionsMenu(menu);
-    }
+        if (f != null && f instanceof NoAccountFragment) {
+            final FragmentTransaction ft = fm.beginTransaction();
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+            ft.remove(f);
+            ft.commit();
+        }
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.addTab(actionBar.newTab().setText("What's new").setTabListener(this)
+                .setTag(TAG_NEW));
+        actionBar.addTab(actionBar.newTab().setText("My Postcards").setTabListener(this)
+                .setTag(TAG_MY));
 
-    @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-        return mSherlock.dispatchOptionsItemSelected(item);
     }
 
     @Override
@@ -103,12 +107,6 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
                 return true;
         }
         return false;
-    }
-
-    @Override
-    protected void onTitleChanged(CharSequence title, int color) {
-        mSherlock.dispatchTitleChanged(title, color);
-        super.onTitleChanged(title, color);
     }
 
     private void createNewCard() {
@@ -123,9 +121,59 @@ public class MainActivity extends FragmentActivity implements OnCreateOptionsMen
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+
         menu.findItem(R.id.new_card).setVisible(mIsLoggedIn);
 
         return true;
+    }
+
+    @Override
+    public void onTabSelected(Tab tab, FragmentTransaction ft) {
+        final FragmentManager fm = getSupportFragmentManager();
+
+        final String tag = (String) tab.getTag();
+
+        final Fragment f = fm.findFragmentByTag(tag);
+        if (f != null) {
+            ft.attach(f);
+        } else {
+            ft.add(android.R.id.content, instantiateFragment(tag), tag);
+        }
+    }
+
+    private Fragment instantiateFragment(String tag) {
+        Fragment f;
+        if (TAG_MY.equals(tag)) {
+            f = CardListFragment.instantiate(Authorable.getAuthoredBy(Card.CONTENT_URI,
+                    Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE)));
+        } else if (TAG_NEW.equals(tag)) {
+            f = CardListFragment.instantiate(Card.CONTENT_URI);
+        } else {
+            throw new IllegalArgumentException("cannot instantiate fragment for tag " + tag);
+        }
+        return f;
+    }
+
+    @Override
+    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+        final FragmentManager fm = getSupportFragmentManager();
+        final String tag = (String) tab.getTag();
+        final Fragment f = fm.findFragmentByTag(tag);
+        if (f != null) {
+            ft.detach(f);
+        }
+
+    }
+
+    @Override
+    public void onTabReselected(Tab tab, FragmentTransaction ft) {
+
     }
 }

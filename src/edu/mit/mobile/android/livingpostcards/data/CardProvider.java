@@ -6,6 +6,7 @@ import android.util.Log;
 import edu.mit.mobile.android.content.ForeignKeyDBHelper;
 import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
+import edu.mit.mobile.android.content.QuerystringWrapper;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.NoPublicPath;
 import edu.mit.mobile.android.locast.net.NetworkClient;
@@ -22,7 +23,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
     public CardProvider() {
         super(AUTHORITY, VERSION);
 
-        final GenericDBHelper cards = new GenericDBHelper(Card.class);
+        final QuerystringWrapper cards = new QuerystringWrapper(new GenericDBHelper(Card.class));
 
         final GenericDBHelper users = new GenericDBHelper(User.class);
 

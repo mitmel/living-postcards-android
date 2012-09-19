@@ -39,12 +39,32 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
 
     ImageCache mImageCache;
 
-    private final Uri mCards = Card.CONTENT_URI;
+    public static final String ARG_CARD_DIR_URI = "uri";
+
+    private Uri mCards = Card.CONTENT_URI;
     private static final String TAG = CardListFragment.class.getSimpleName();
     private static final int[] IMAGE_IDS = new int[] { R.id.card_media_thumbnail };
 
     public CardListFragment() {
         super();
+    }
+
+    public static CardListFragment instantiate(Uri cardDir) {
+        final Bundle b = new Bundle();
+        b.putParcelable(ARG_CARD_DIR_URI, cardDir);
+        final CardListFragment f = new CardListFragment();
+        f.setArguments(b);
+        return f;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        final Bundle args = getArguments();
+        if (args != null) {
+            final Uri newUri = args.getParcelable(ARG_CARD_DIR_URI);
+            mCards = newUri != null ? newUri : mCards;
+        }
     }
 
     @Override
