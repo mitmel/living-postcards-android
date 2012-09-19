@@ -235,10 +235,15 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+
             case R.id.done:
                 setResult(RESULT_OK);
                 finish();
+                if (getCallingActivity() == null) {
+                    startActivity(new Intent(Intent.ACTION_EDIT, mCard));
+                }
                 return true;
+
             default:
                 return false;
         }
