@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/publish"
+        android:icon="@android:drawable/ic_menu_send"
+        android:showAsAction="always|withText"
+        android:title="Publish Postcard"
+        android:titleCondensed="Publish"/>
+    <item
         android:id="@+id/add_frame"
         android:icon="@android:drawable/ic_menu_camera"
         android:showAsAction="ifRoom"

@@ -64,7 +64,7 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
     // ////////////////////////////////////////////////////////
 
     /**
-     * Creates a new card with a random UUID
+     * Creates a new card with a random UUID. Cards are marked DRAFT by default.
      *
      * @param cr
      * @param title
@@ -77,6 +77,8 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
         cv.put(Card.COL_UUID, java.util.UUID.randomUUID().toString());
 
         cv.put(Card.COL_TITLE, title);
+
+        cv.put(Card.COL_DRAFT, true);
 
         Authorable.putAuthorInformation(context, account, cv);
 

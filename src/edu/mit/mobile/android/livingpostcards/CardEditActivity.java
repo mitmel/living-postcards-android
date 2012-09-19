@@ -1,5 +1,6 @@
 package edu.mit.mobile.android.livingpostcards;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import edu.mit.mobile.android.livingpostcards.DeleteDialogFragment.OnDeleteListe
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
+import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
 public class CardEditActivity extends FragmentActivity implements
         OnCreateOptionsMenuListener, OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>,
@@ -89,6 +91,11 @@ public class CardEditActivity extends FragmentActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.publish:
+                publish();
+
+                return true;
+
             case R.id.share:
                 return true;
 
@@ -97,12 +104,23 @@ public class CardEditActivity extends FragmentActivity implements
                 return true;
 
             case R.id.add_frame:
-                startActivity(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard));
+                // this is conceptually starting it for a result, but the result isn't actually
+                // used.
+                startActivityForResult(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard), 0);
                 return true;
 
             default:
                 return false;
         }
+    }
+
+    protected void publish() {
+        final ContentValues cv = new ContentValues();
+        cv.put(Card.COL_DRAFT, false);
+        getContentResolver().update(mCard, cv, null, null);
+        LocastSyncService.startSync(this, mCard, true);
+
+        finish();
     }
 
     @Override
