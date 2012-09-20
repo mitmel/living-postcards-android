@@ -154,6 +154,8 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
             mWebUrl = mWebUrl != null ? NetworkClient.getInstance(this,
                     Authenticator.getFirstAccount(this)).getFullUrlAsString(mWebUrl) : null;
             mSherlock.dispatchInvalidateOptionsMenu();
+        } else {
+            finish();
         }
     }
 

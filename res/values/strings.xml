@@ -18,5 +18,7 @@
     <string name="send_intent_subject">Living Postcard: %1$s</string>
     <string name="err_share_intent_no_web_url_editable">Postcard must be published before it can be shared. Publishing is done from the edit screen.</string>
     <string name="send_intent_chooser_title">Send Postcard</string>
+    <string name="notice_publish_success">Your postcard will begin uploading immediately. Check your notification area.</string>
+    <string name="err_publish_fail">There was an error marking your card for publishing.</string>
 
 </resources>

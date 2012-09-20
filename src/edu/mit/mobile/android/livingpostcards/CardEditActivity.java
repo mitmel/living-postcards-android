@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.widget.Toast;
 
 import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
@@ -23,17 +24,16 @@ import com.actionbarsherlock.view.MenuItem;
 import edu.mit.mobile.android.livingpostcards.DeleteDialogFragment.OnDeleteListener;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
-public class CardEditActivity extends FragmentActivity implements
-        OnCreateOptionsMenuListener, OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>,
- OnPrepareOptionsMenuListener,
+public class CardEditActivity extends FragmentActivity implements OnCreateOptionsMenuListener,
+        OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>, OnPrepareOptionsMenuListener,
         OnDeleteListener {
 
     private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
-            Card.COL_TIMING,
-            Card.COL_AUTHOR_URI, Card.COL_PRIVACY };
+            Card.COL_DRAFT, Card.COL_TIMING, Card.COL_AUTHOR_URI, Card.COL_PRIVACY };
     private static final String TAG = CardEditActivity.class.getSimpleName();
     private Uri mCard;
     private CardMediaEditFragment mCardViewFragment;
@@ -41,6 +41,7 @@ public class CardEditActivity extends FragmentActivity implements
     private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
     private String mUserUri;
     private boolean mIsEditable;
+    private boolean mIsDraft;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -117,10 +118,14 @@ public class CardEditActivity extends FragmentActivity implements
     protected void publish() {
         final ContentValues cv = new ContentValues();
         cv.put(Card.COL_DRAFT, false);
-        getContentResolver().update(mCard, cv, null, null);
-        LocastSyncService.startSync(this, mCard, true);
-
-        finish();
+        final int updated = getContentResolver().update(mCard, cv, null, null);
+        if (updated == 1) {
+            LocastSyncService.startSync(this, mCard, true);
+            finish();
+            Toast.makeText(this, R.string.notice_publish_success, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, R.string.err_publish_fail, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -138,6 +143,7 @@ public class CardEditActivity extends FragmentActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.add_frame).setVisible(mIsEditable);
         menu.findItem(R.id.delete).setVisible(mIsEditable);
+        menu.findItem(R.id.publish).setVisible(mIsDraft);
         return true;
     }
 
@@ -161,9 +167,12 @@ public class CardEditActivity extends FragmentActivity implements
         if (c.moveToFirst()) {
             mSherlock.setTitle(c.getString(c.getColumnIndex(Card.COL_TITLE)));
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
+            mIsDraft = JsonSyncableItem.isDraft(c);
             mSherlock.dispatchInvalidateOptionsMenu();
             final int timing = c.getInt(c.getColumnIndexOrThrow(Card.COL_TIMING));
             mCardViewFragment.setAnimationTiming(timing);
+        } else {
+            finish();
         }
     }
 
