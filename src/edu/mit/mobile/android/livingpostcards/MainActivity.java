@@ -44,7 +44,6 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
         super.onCreate(savedInstanceState);
 
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         final FragmentManager fm = getSupportFragmentManager();
 
