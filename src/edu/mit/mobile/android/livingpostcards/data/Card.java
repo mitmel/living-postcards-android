@@ -60,6 +60,9 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
     @DBColumn(type = TextColumn.class)
     public static final String COL_MEDIA_URL = "media_url";
 
+    @DBColumn(type = TextColumn.class)
+    public static final String COL_WEB_URL = "web_url";
+
     public static final ForeignKeyManager MEDIA = new ForeignKeyManager(CardMedia.class);
 
     // ////////////////////////////////////////////////////////
@@ -121,6 +124,8 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
             put(COL_TIMING, new SyncFieldMap("frame_delay", SyncFieldMap.INTEGER));
 
             put(COL_UUID, new SyncFieldMap("uuid", SyncFieldMap.STRING));
+
+            put(COL_WEB_URL, new SyncFieldMap("url", SyncFieldMap.STRING, SyncFieldMap.SYNC_FROM));
 
             put("_resources", new CardResources());
 

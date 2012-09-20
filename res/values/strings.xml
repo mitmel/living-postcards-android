@@ -14,5 +14,9 @@
     <string name="add_images">Add photo</string>
     <string name="welcome_message_no_account">Welcome to Living Postcards. To continue, please sign in or create an account.</string>
     <string name="login_or_create_account">Login or Create Account</string>
+    <string name="send_intent_message">Check out this Living Postcard %1$s</string>
+    <string name="send_intent_subject">Living Postcard: %1$s</string>
+    <string name="err_share_intent_no_web_url_editable">Postcard must be published before it can be shared. Publishing is done from the edit screen.</string>
+    <string name="send_intent_chooser_title">Send Postcard</string>
 
 </resources>

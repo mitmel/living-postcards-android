@@ -1,6 +1,8 @@
 package edu.mit.mobile.android.livingpostcards.data;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 import edu.mit.mobile.android.content.ForeignKeyDBHelper;
@@ -16,25 +18,58 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
     public static final String AUTHORITY = "edu.mit.mobile.android.livingpostcards";
 
-    public static final int VERSION = 6;
+    public static final int VERSION = 7;
 
     protected static final String TAG = CardProvider.class.getSimpleName();
 
     public CardProvider() {
         super(AUTHORITY, VERSION);
 
-        final QuerystringWrapper cards = new QuerystringWrapper(new GenericDBHelper(Card.class));
+        final QuerystringWrapper cards = new QuerystringWrapper(new GenericDBHelper(Card.class) {
+            @Override
+            public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
+                db.beginTransaction();
+                try {
+                    if (oldVersion == 6 && newVersion == 7) {
 
-        final GenericDBHelper users = new GenericDBHelper(User.class);
+                        // adding the web url
+                        db.execSQL("ALTER TABLE '" + getTable() + "' ADD COLUMN web_url TEXT");
+
+                        final ContentValues cv = new ContentValues();
+                        // invalidate all cards so they'll get updated.
+                        cv.put("modified", 0);
+                        cv.put("server_modified", 0);
+                        db.update(getTable(), cv, null, null);
+                    } else {
+                        super.upgradeTables(db, oldVersion, newVersion);
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+            }
+        });
+
+        // unused ATM
+        // final GenericDBHelper users = new GenericDBHelper(User.class);
 
         // content://authority/card
         // content://authority/card/1
         addDirAndItemUri(cards, Card.PATH);
 
-        addDirAndItemUri(users, User.PATH);
+        // addDirAndItemUri(users, User.PATH);
 
         final ForeignKeyDBHelper cardmedia = new ForeignKeyDBHelper(Card.class, CardMedia.class,
-                CardMedia.COL_CARD);
+                CardMedia.COL_CARD) {
+            @Override
+            public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
+                if (oldVersion == 6 && newVersion == 7) {
+                    // do nothing for this type
+                } else {
+                    super.upgradeTables(db, oldVersion, newVersion);
+                }
+            }
+        };
 
         // content://authority/card/1/media
         // content://authority/card/1/media/1
@@ -62,7 +97,6 @@ public class CardProvider extends SyncableSimpleContentProvider {
     public String getPublicPath(Context context, Uri uri) throws NoPublicPath {
         Log.d(TAG, "getPublicPath " + uri);
         final String type = getType(uri);
-
 
         if (Card.CONTENT_URI.equals(uri)) {
             return NetworkClient.getBaseUrlFromManifest(context) + "postcard/";
