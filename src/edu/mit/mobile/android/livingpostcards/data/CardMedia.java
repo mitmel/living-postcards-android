@@ -15,6 +15,7 @@ import edu.mit.mobile.android.content.column.TextColumn;
 import edu.mit.mobile.android.locast.data.Authorable;
 import edu.mit.mobile.android.locast.data.ImageContent;
 import edu.mit.mobile.android.locast.data.MediaProcessingException;
+import edu.mit.mobile.android.locast.data.SyncMap;
 
 @UriPath(CardMedia.PATH)
 @DBSortOrder(CardMedia.SORT_DEFAULT)
@@ -87,6 +88,11 @@ public class CardMedia extends ImageContent implements Authorable.Columns {
             put("_title", new SyncLiteral("title", "untitled"));
         }
     };
+
+    @Override
+    public SyncMap getSyncMap() {
+        return SYNC_MAP;
+    }
 
     public static final ItemSyncMap SYNC_MAP = new ItemSyncMap();
 
