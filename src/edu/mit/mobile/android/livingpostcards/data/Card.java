@@ -21,6 +21,7 @@ import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.Locatable;
 import edu.mit.mobile.android.locast.data.OrderedList.SyncMapItem;
 import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
+import edu.mit.mobile.android.locast.data.SyncMap;
 import edu.mit.mobile.android.locast.data.Titled;
 import edu.mit.mobile.android.locast.net.NetworkProtocolException;
 
@@ -97,6 +98,11 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
             addToContentValues(cv, "thumbnail", item, COL_THUMBNAIL, null, false);
 
         }
+    }
+
+    @Override
+    public SyncMap getSyncMap() {
+        return SYNC_MAP;
     }
 
     public static class ItemSyncMap extends JsonSyncableItem.ItemSyncMap {
