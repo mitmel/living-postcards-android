@@ -20,6 +20,7 @@
     <TextView
         android:id="@+id/title"
         style="@style/Card.Title"
+        android:paddingRight="5sp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/card_media_thumbnail"
