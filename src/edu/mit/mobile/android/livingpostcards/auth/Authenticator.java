@@ -18,6 +18,10 @@ public class Authenticator extends AbsLocastAuthenticator {
         return getFirstAccount(context, ACCOUNT_TYPE);
     }
 
+    public static String getUserUri(Context context) {
+        return getUserUri(context, ACCOUNT_TYPE);
+    }
+
     public static boolean hasRealAccount(Context context) {
         return hasRealAccount(context, ACCOUNT_TYPE);
     }

@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import android.accounts.Account;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import edu.mit.mobile.android.content.DBSortOrder;
@@ -15,6 +16,7 @@ import edu.mit.mobile.android.content.UriPath;
 import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.column.IntegerColumn;
 import edu.mit.mobile.android.content.column.TextColumn;
+import edu.mit.mobile.android.livingpostcards.R;
 import edu.mit.mobile.android.locast.data.AbsResourcesSync;
 import edu.mit.mobile.android.locast.data.Authorable;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
@@ -23,6 +25,7 @@ import edu.mit.mobile.android.locast.data.OrderedList.SyncMapItem;
 import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 import edu.mit.mobile.android.locast.data.SyncMap;
 import edu.mit.mobile.android.locast.data.Titled;
+import edu.mit.mobile.android.locast.net.NetworkClient;
 import edu.mit.mobile.android.locast.net.NetworkProtocolException;
 
 @UriPath(Card.PATH)
@@ -89,6 +92,31 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
         final Uri card = context.getContentResolver().insert(Card.CONTENT_URI, cv);
 
         return card;
+    }
+
+    /**
+     * Creates an {@link Intent#ACTION_SEND} intent to share the given card.
+     * 
+     * @param context
+     * @param webUrl
+     *            the content of the card's {@link Card#COL_WEB_URL} field. Can be a relative URL.
+     * @param title
+     *            the title of the card
+     * @return an intent, within a chooser, that can be used with
+     *         {@link Context#startActivity(Intent)}
+     */
+    public static Intent createShareIntent(Context context, String webUrl, CharSequence title) {
+
+        final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.setType("text/plain");
+        sendIntent.putExtra(Intent.EXTRA_TEXT,
+                context.getString(R.string.send_intent_message,
+                        NetworkClient.getFullUrlAsString(context, webUrl)));
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT,
+                context.getString(R.string.send_intent_subject, title));
+        return Intent.createChooser(sendIntent,
+                context.getString(R.string.send_intent_chooser_title));
+
     }
 
     public static class CardResources extends AbsResourcesSync {

@@ -1,8 +1,12 @@
 package edu.mit.mobile.android.livingpostcards;
 
+import java.io.IOException;
+
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -18,13 +22,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 
 import com.stackoverflow.ArrayUtils;
 
 import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageLoaderAdapter;
 import edu.mit.mobile.android.imagecache.SimpleThumbnailCursorAdapter;
+import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
 public class CardListFragment extends ListFragment implements LoaderCallbacks<Cursor>,
@@ -33,7 +40,8 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
     private static final String[] FROM = { Card.COL_TITLE, Card.COL_AUTHOR, Card.COL_COVER_PHOTO };
     private static final int[] TO = { R.id.title, R.id.author, R.id.card_media_thumbnail };
 
-    private static final String[] PROJECTION = ArrayUtils.concat(new String[] { Card._ID }, FROM);
+    private static final String[] PROJECTION = ArrayUtils.concat(new String[] { Card._ID,
+            Card.COL_PRIVACY, Card.COL_AUTHOR_URI, Card.COL_WEB_URL }, FROM);
 
     private SimpleThumbnailCursorAdapter mAdapter;
 
@@ -42,6 +50,7 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
     public static final String ARG_CARD_DIR_URI = "uri";
 
     private Uri mCards = Card.ALL_BUT_DELETED;
+    private float mDensity;
     private static final String TAG = CardListFragment.class.getSimpleName();
     private static final int[] IMAGE_IDS = new int[] { R.id.card_media_thumbnail };
 
@@ -77,14 +86,16 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         mAdapter = new SimpleThumbnailCursorAdapter(getActivity(), R.layout.card_list_item, null,
                 FROM, TO, IMAGE_IDS, 0);
 
-        setListAdapter(new ImageLoaderAdapter(getActivity(), mAdapter, mImageCache, IMAGE_IDS, 320,
-                240, ImageLoaderAdapter.UNIT_DIP));
+        setListAdapter(new ImageLoaderAdapter(getActivity(), mAdapter, mImageCache, IMAGE_IDS, 133,
+                100, ImageLoaderAdapter.UNIT_DIP));
 
         getListView().setOnItemClickListener(this);
 
         getLoaderManager().initLoader(0, null, this);
         LocastSyncService.startExpeditedAutomaticSync(getActivity(), mCards);
         registerForContextMenu(getListView());
+
+        mDensity = getActivity().getResources().getDisplayMetrics().density;
     }
 
     @Override
@@ -119,11 +130,49 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
         getActivity().getMenuInflater().inflate(R.menu.activity_card_view, menu);
 
-        menu.findItem(R.id.delete).setVisible(true);
-        menu.findItem(R.id.edit).setVisible(true);
+        final Cursor c = mAdapter.getCursor();
+        if (c == null) {
+            return;
+        }
+
+        final String myUserUri = Authenticator.getUserUri(getActivity());
+
+        final boolean isEditable = PrivatelyAuthorable.canEdit(myUserUri, c);
+
+        menu.findItem(R.id.delete).setVisible(isEditable);
+        menu.findItem(R.id.edit).setVisible(isEditable);
+
+        menu.setHeaderTitle(c.getString(c.getColumnIndexOrThrow(Card.COL_TITLE)));
+        Drawable icon;
+        try {
+            icon = mImageCache.loadImage(0,
+                    Uri.parse(c.getString(c.getColumnIndexOrThrow(Card.COL_COVER_PHOTO))),
+                    (int) (133 * mDensity), (int) (100 * mDensity));
+
+            if (icon != null) {
+                menu.setHeaderIcon(new InsetDrawable(icon, (int) (5 * mDensity)));
+            }
+        } catch (final IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    private void send(Cursor c) {
+        final String mWebUrl = c.getString(c.getColumnIndexOrThrow(Card.COL_WEB_URL));
+        if (mWebUrl == null) {
+            Toast.makeText(getActivity(), R.string.err_share_intent_no_web_url_editable,
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        startActivity(Card.createShareIntent(getActivity(), mWebUrl,
+                c.getString(c.getColumnIndexOrThrow(Card.COL_TITLE))));
     }
 
     @Override
@@ -138,6 +187,10 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         final Uri card = ContentUris.withAppendedId(mCards, info.id);
 
         switch (item.getItemId()) {
+            case R.id.share:
+                send(mAdapter.getCursor());
+                return true;
+
             case R.id.edit:
                 startActivity(new Intent(Intent.ACTION_EDIT, card));
                 return true;

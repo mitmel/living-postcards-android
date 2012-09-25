@@ -104,13 +104,7 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
                     .show();
             return;
         }
-        final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.setType("text/plain");
-        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.send_intent_message, mWebUrl));
-        sendIntent.putExtra(Intent.EXTRA_SUBJECT,
-                getString(R.string.send_intent_subject, getTitle()));
-        startActivity(Intent.createChooser(sendIntent,
-                getString(R.string.send_intent_chooser_title)));
+        startActivity(Card.createShareIntent(this, mWebUrl, getTitle()));
     }
 
     @Override
