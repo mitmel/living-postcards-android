@@ -80,24 +80,15 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         }
     }
 
-
-    @Override
-    protected void onDestroy() {
-
-        super.onDestroy();
-
-    }
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.publish:
                 publish();
-
                 return true;
 
-            case R.id.share:
+            case R.id.delete:
+                startActivity(new Intent(Intent.ACTION_DELETE, mCard));
                 return true;
 
             case android.R.id.home:

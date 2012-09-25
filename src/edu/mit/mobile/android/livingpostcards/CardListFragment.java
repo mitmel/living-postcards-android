@@ -41,7 +41,7 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
 
     public static final String ARG_CARD_DIR_URI = "uri";
 
-    private Uri mCards = Card.CONTENT_URI;
+    private Uri mCards = Card.ALL_BUT_DELETED;
     private static final String TAG = CardListFragment.class.getSimpleName();
     private static final int[] IMAGE_IDS = new int[] { R.id.card_media_thumbnail };
 

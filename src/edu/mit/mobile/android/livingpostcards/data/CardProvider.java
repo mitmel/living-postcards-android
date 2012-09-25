@@ -9,6 +9,7 @@ import edu.mit.mobile.android.content.ForeignKeyDBHelper;
 import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.QuerystringWrapper;
+import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.NoPublicPath;
 import edu.mit.mobile.android.locast.net.NetworkClient;
@@ -18,7 +19,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
     public static final String AUTHORITY = "edu.mit.mobile.android.livingpostcards";
 
-    public static final int VERSION = 7;
+    public static final int VERSION = 8;
 
     protected static final String TAG = CardProvider.class.getSimpleName();
 
@@ -29,24 +30,45 @@ public class CardProvider extends SyncableSimpleContentProvider {
             @Override
             public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
                 db.beginTransaction();
+                if (Constants.DEBUG) {
+                    Log.d(TAG, "upgrading " + getTable() + " from " + oldVersion + " to "
+                            + newVersion);
+                }
+
                 try {
-                    if (oldVersion == 6 && newVersion == 7) {
+                    // we started managing upgrades with version 6
+                    if (oldVersion >= 6) {
 
-                        // adding the web url
-                        db.execSQL("ALTER TABLE '" + getTable() + "' ADD COLUMN web_url TEXT");
+                        // NOTE always use string literals here and not constants
+                        if (oldVersion == 6) {
+                            // adding the web url
+                            db.execSQL("ALTER TABLE card ADD COLUMN web_url TEXT");
+                            invalidateLocalCards(db);
+                        }
 
-                        final ContentValues cv = new ContentValues();
-                        // invalidate all cards so they'll get updated.
-                        cv.put("modified", 0);
-                        cv.put("server_modified", 0);
-                        db.update(getTable(), cv, null, null);
+                        if (oldVersion <= 7) {
+                            db.execSQL("ALTER TABLE card ADD COLUMN deleted BOOLEAN");
+                        }
+
                     } else {
+                        if (Constants.DEBUG) {
+                            Log.d(TAG, "upgrading tables by dropping / recreating them");
+                        }
+                        // this deletes everything
                         super.upgradeTables(db, oldVersion, newVersion);
                     }
                     db.setTransactionSuccessful();
                 } finally {
                     db.endTransaction();
                 }
+            }
+
+            private void invalidateLocalCards(SQLiteDatabase db) {
+                final ContentValues cv = new ContentValues();
+                // invalidate all cards so they'll get updated.
+                cv.put("modified", 0);
+                cv.put("server_modified", 0);
+                db.update(getTable(), cv, null, null);
             }
         });
 
@@ -63,9 +85,19 @@ public class CardProvider extends SyncableSimpleContentProvider {
                 CardMedia.COL_CARD) {
             @Override
             public void upgradeTables(SQLiteDatabase db, int oldVersion, int newVersion) {
-                if (oldVersion == 6 && newVersion == 7) {
-                    // do nothing for this type
+                if (Constants.DEBUG) {
+                    Log.d(TAG, "upgrading " + getTable() + " from " + oldVersion + " to "
+                            + newVersion);
+                }
+                // started managing upgrades at version 6
+                if (oldVersion >= 6) {
+                    // no changes between v6-7
+                    // no changes between v7-8
                 } else {
+                    if (Constants.DEBUG) {
+                        Log.d(TAG, "upgrading tables by dropping / recreating them");
+                    }
+                    // this deletes everything
                     super.upgradeTables(db, oldVersion, newVersion);
                 }
             }
@@ -98,7 +130,8 @@ public class CardProvider extends SyncableSimpleContentProvider {
         Log.d(TAG, "getPublicPath " + uri);
         final String type = getType(uri);
 
-        if (Card.CONTENT_URI.equals(uri)) {
+        // TODO this is the only hard-coded URL. This should be removed eventually.
+        if (Card.TYPE_DIR.equals(type)) {
             return NetworkClient.getBaseUrlFromManifest(context) + "postcard/";
 
             // TODO find a way to make this generic. Inspect the SYNC_MAP somehow?

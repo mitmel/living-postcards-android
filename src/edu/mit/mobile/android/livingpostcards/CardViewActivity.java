@@ -89,6 +89,10 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
                 startActivity(new Intent(Intent.ACTION_EDIT, mCard));
                 return true;
 
+            case R.id.delete:
+                startActivity(new Intent(Intent.ACTION_DELETE, mCard));
+                return true;
+
             default:
                 return false;
         }

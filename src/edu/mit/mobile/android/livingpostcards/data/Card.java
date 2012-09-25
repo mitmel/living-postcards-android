@@ -143,6 +143,15 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
 
     public static final Uri CONTENT_URI = ProviderUtils.toContentUri(CardProvider.AUTHORITY, PATH);
 
+    /**
+     * All the cards, minus the deleted ones.
+     */
+    public static final Uri ALL_BUT_DELETED = CONTENT_URI.buildUpon()
+            .appendQueryParameter(Card.COL_DELETED + "!", "1").build();
+
+    public static final String TYPE_DIR = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.card";
+    public static final String TYPE_ITEM = "vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card";
+
     @Override
     public Uri getContentUri() {
         return CONTENT_URI;

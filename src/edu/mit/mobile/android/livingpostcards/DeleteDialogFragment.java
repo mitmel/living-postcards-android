@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 import edu.mit.mobile.android.content.ProviderUtils;
+import edu.mit.mobile.android.locast.data.JsonSyncableItem;
+import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
 public class DeleteDialogFragment extends DialogFragment implements OnClickListener {
 
@@ -70,8 +72,14 @@ public class DeleteDialogFragment extends DialogFragment implements OnClickListe
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case AlertDialog.BUTTON_POSITIVE:
-                final int count = getActivity().getContentResolver().delete(mItem, null, null);
+                final int count = JsonSyncableItem.markDeleted(getActivity().getContentResolver(),
+                        mItem, true, null, null);
                 dialog.dismiss();
+                if (count >= 1) {
+                    // TODO this url introspection isn't ideal
+                    LocastSyncService.startSync(getActivity(),
+                            ProviderUtils.removeLastPathSegment(mItem));
+                }
                 mOnDeleteListener.onDelete(mItem, count >= 1); // it should only ever be 1, but...
 
                 break;
