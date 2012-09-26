@@ -81,9 +81,22 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
 
         final ContentValues cv = new ContentValues();
 
-        cv.put(Card.COL_UUID, java.util.UUID.randomUUID().toString());
-
         cv.put(Card.COL_TITLE, title);
+
+        return createNewCard(context, account, cv);
+    }
+
+    /**
+     * Creates a new card with a random UUID. Cards are marked DRAFT by default.
+     *
+     * @param cr
+     * @param cv
+     *            initial card contents
+     * @return
+     */
+    public static Uri createNewCard(Context context, Account account, ContentValues cv) {
+
+        cv.put(Card.COL_UUID, java.util.UUID.randomUUID().toString());
 
         cv.put(Card.COL_DRAFT, true);
 
@@ -96,7 +109,7 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
 
     /**
      * Creates an {@link Intent#ACTION_SEND} intent to share the given card.
-     * 
+     *
      * @param context
      * @param webUrl
      *            the content of the card's {@link Card#COL_WEB_URL} field. Can be a relative URL.

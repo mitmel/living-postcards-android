@@ -158,4 +158,8 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
     public void setAnimationTiming(int timing) {
         mGallery.setInterframeDelay(timing);
     }
+
+    public int getAnimationTiming() {
+        return (int) mGallery.getInterframeDelay();
+    }
 }

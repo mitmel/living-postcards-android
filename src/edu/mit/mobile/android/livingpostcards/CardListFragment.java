@@ -37,8 +37,10 @@ import edu.mit.mobile.android.locast.sync.LocastSyncService;
 public class CardListFragment extends ListFragment implements LoaderCallbacks<Cursor>,
         OnItemClickListener {
 
-    private static final String[] FROM = { Card.COL_TITLE, Card.COL_AUTHOR, Card.COL_COVER_PHOTO };
-    private static final int[] TO = { R.id.title, R.id.author, R.id.card_media_thumbnail };
+    private static final String[] FROM = { Card.COL_TITLE, Card.COL_AUTHOR, Card.COL_COVER_PHOTO,
+            Card.COL_THUMBNAIL };
+    private static final int[] TO = { R.id.title, R.id.author, R.id.card_media_thumbnail,
+            R.id.card_media_thumbnail };
 
     private static final String[] PROJECTION = ArrayUtils.concat(new String[] { Card._ID,
             Card.COL_PRIVACY, Card.COL_AUTHOR_URI, Card.COL_WEB_URL }, FROM);

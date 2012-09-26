@@ -20,5 +20,7 @@
     <string name="send_intent_chooser_title">Send Postcard</string>
     <string name="notice_publish_success">Your postcard will begin uploading immediately. Check your notification area.</string>
     <string name="err_publish_fail">There was an error marking your card for publishing.</string>
+    <string name="edit_postcard">Edit Postcard</string>
+    <string name="postcard_edit_title_hint">Postcard Title</string>
 
 </resources>

@@ -8,11 +8,14 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.location.Location;
+import android.location.LocationListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -51,6 +54,7 @@ import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
 import edu.mit.mobile.android.locast.data.CastMedia.CastMediaInfo;
 import edu.mit.mobile.android.locast.data.MediaProcessingException;
+import edu.mit.mobile.android.location.IncrementalLocator;
 
 public class CameraActivity extends FragmentActivity implements OnClickListener,
         OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor>,
@@ -78,6 +82,12 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     private Button mCaptureButton;
 
     private CompoundButton mOnionskinToggle;
+
+    private IncrementalLocator mLocator;
+
+    protected Location mLocation;
+
+    private Uri mRecentImage;
 
     private static final int LOADER_CARD = 100, LOADER_CARDMEDIA = 101;
 
@@ -130,6 +140,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         setFullscreen(true);
 
+        mLocator = new IncrementalLocator(this);
         mImageCache = ImageCache.getInstance(this);
 
         processIntent(getIntent());
@@ -159,6 +170,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     protected void onPause() {
         super.onPause();
 
+        mLocator.removeLocationUpdates(mLocationListener);
+
         mImageCache.unregisterOnImageLoadListener(this);
         if (mCamera != null) {
             mCamera.stopPreview();
@@ -174,6 +187,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     protected void onResume() {
         super.onResume();
 
+        mLocator.requestLocationUpdates(mLocationListener);
         mImageCache.registerOnImageLoadListener(this);
 
         mCamera = getCameraInstance();
@@ -282,7 +296,6 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         mOnionskinToggle.setEnabled(true);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onImageLoaded(final long id, Uri imageUri, Drawable image) {
         if (R.id.camera_preview == id) {
@@ -425,16 +438,57 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     private void createNewCard() {
 
+        final String title = DateUtils.formatDateTime(this, System.currentTimeMillis(),
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
+
+        final ContentValues cv = new ContentValues();
+
+        cv.put(Card.COL_TITLE, title);
+
+        if (mRecentImage != null) {
+            cv.put(Card.COL_THUMBNAIL, mRecentImage.toString());
+        }
+
+        if (mLocation != null) {
+            cv.put(Card.COL_LATITUDE, mLocation.getLatitude());
+            cv.put(Card.COL_LONGITUDE, mLocation.getLongitude());
+        }
         final Uri card = Card.createNewCard(this, Authenticator.getFirstAccount(this,
                 Authenticator.ACCOUNT_TYPE),
-                DateUtils.formatDateTime(this, System.currentTimeMillis(),
-                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
+               cv);
 
         final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
 
         setIntent(intent);
         processIntent(intent);
     }
+
+    private final LocationListener mLocationListener = new LocationListener() {
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            mLocation = location;
+            setTitle("Location found. Accuracy ±" + location.getAccuracy() + "m");
+
+        }
+    };
 
     /**
      * Saves the given jpeg bytes to disk and adds an entry to the CardMedia list. Pictures are
@@ -463,19 +517,21 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             StorageUtils.EXTERNAL_PICTURES_DIR.mkdirs();
 
             try {
-                if (mCard == null && mCardDir != null) {
-                    createNewCard();
-                }
-
                 final FileOutputStream fos = new FileOutputStream(outFile);
                 fos.write(data[0]);
                 fos.close();
 
-                mImageCache.scheduleLoadImage(0, Uri.fromFile(outFile), 640, 480);
+                final Uri mediaUri = Uri.fromFile(outFile);
+                mRecentImage = mediaUri;
+                if (mCard == null && mCardDir != null) {
+                    createNewCard();
+                }
+
+                mImageCache.scheduleLoadImage(0, mediaUri, 640, 480);
 
                 final CastMediaInfo cmi = CardMedia.addMediaToCard(CameraActivity.this,
                         Authenticator.getFirstAccount(CameraActivity.this),
-                        Card.MEDIA.getUri(mCard), Uri.fromFile(outFile));
+                        Card.MEDIA.getUri(mCard), mediaUri);
 
                 return cmi.castMediaItem;
 

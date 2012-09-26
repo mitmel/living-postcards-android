@@ -101,7 +101,10 @@
         </activity>
         <activity
             android:name=".CardEditActivity"
-            android:exported="false" >
+            android:exported="false"
+            android:label="@string/edit_postcard"
+            android:windowSoftInputMode="stateHidden" >
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.mit.mobile.android.livingpostcards.CardViewActivity" />

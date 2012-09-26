@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.actionbarsherlock.ActionBarSherlock;
@@ -33,7 +34,8 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         OnDeleteListener {
 
     private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
-            Card.COL_DRAFT, Card.COL_TIMING, Card.COL_AUTHOR_URI, Card.COL_PRIVACY };
+            Card.COL_DESCRIPTION, Card.COL_DRAFT, Card.COL_TIMING, Card.COL_AUTHOR_URI,
+            Card.COL_PRIVACY };
     private static final String TAG = CardEditActivity.class.getSimpleName();
     private Uri mCard;
     private CardMediaEditFragment mCardViewFragment;
@@ -42,6 +44,8 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
     private String mUserUri;
     private boolean mIsEditable;
     private boolean mIsDraft;
+    private EditText mTitle;
+    private EditText mDescription;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -49,6 +53,8 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         super.onCreate(arg0);
         mSherlock.setContentView(R.layout.activity_card_edit);
 
+        mTitle = (EditText) findViewById(R.id.title);
+        mDescription = (EditText) findViewById(R.id.description);
         mSherlock.getActionBar().setHomeButtonEnabled(true);
 
         mCard = getIntent().getData();
@@ -91,6 +97,10 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
                 publish();
                 return true;
 
+            case R.id.save:
+                saveButton();
+                return true;
+
             case R.id.delete:
                 showDeleteDialog();
                 return true;
@@ -110,11 +120,54 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         }
     }
 
-    protected void publish() {
+    private boolean validate() {
+        if (mTitle.length() == 0) {
+            mTitle.setError("Please enter a title");
+            mTitle.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean save() {
+
         final ContentValues cv = new ContentValues();
-        cv.put(Card.COL_DRAFT, false);
+        cv.put(Card.COL_DRAFT, mIsDraft);
+        cv.put(Card.COL_TITLE, mTitle.getText().toString());
+        cv.put(Card.COL_DESCRIPTION, mDescription.getText().toString());
+        cv.put(Card.COL_TIMING, mCardViewFragment.getAnimationTiming());
+
         final int updated = getContentResolver().update(mCard, cv, null, null);
-        if (updated == 1) {
+
+        final boolean success = updated == 1;
+
+        if (success) {
+            LocastSyncService.startSync(this, mCard, true);
+        }
+        return success;
+    }
+
+    private void saveButton() {
+        if (!validate()) {
+            return;
+        }
+
+        if (save()) {
+            finish();
+        } else {
+            Toast.makeText(this, R.string.err_publish_fail, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    protected void publish() {
+        if (!validate()) {
+            return;
+        }
+
+        mIsDraft = false;
+
+        if (save()) {
             LocastSyncService.startSync(this, mCard, true);
             finish();
             Toast.makeText(this, R.string.notice_publish_success, Toast.LENGTH_LONG).show();
@@ -138,7 +191,8 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.add_frame).setVisible(mIsEditable);
         menu.findItem(R.id.delete).setVisible(mIsEditable);
-        menu.findItem(R.id.publish).setVisible(mIsDraft);
+        menu.findItem(R.id.publish).setVisible(mIsDraft && mIsEditable);
+        menu.findItem(R.id.save).setVisible(!mIsDraft && mIsEditable);
         return true;
     }
 
@@ -160,8 +214,14 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
         if (c.moveToFirst()) {
-            mSherlock.setTitle(c.getString(c.getColumnIndex(Card.COL_TITLE)));
+            mTitle.setText(c.getString(c.getColumnIndex(Card.COL_TITLE)));
+            mDescription.setText(c.getString(c.getColumnIndex(Card.COL_DESCRIPTION)));
+
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
+
+            mTitle.setEnabled(mIsEditable);
+            mDescription.setEnabled(mIsEditable);
+
             mIsDraft = JsonSyncableItem.isDraft(c);
             mSherlock.dispatchInvalidateOptionsMenu();
             final int timing = c.getInt(c.getColumnIndexOrThrow(Card.COL_TIMING));
