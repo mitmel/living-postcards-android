@@ -19,7 +19,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
     public static final String AUTHORITY = "edu.mit.mobile.android.livingpostcards";
 
-    public static final int VERSION = 8;
+    public static final int VERSION = 9;
 
     protected static final String TAG = CardProvider.class.getSimpleName();
 
@@ -89,17 +89,28 @@ public class CardProvider extends SyncableSimpleContentProvider {
                     Log.d(TAG, "upgrading " + getTable() + " from " + oldVersion + " to "
                             + newVersion);
                 }
-                // started managing upgrades at version 6
-                if (oldVersion >= 6) {
-                    // no changes between v6-7
-                    // no changes between v7-8
-                } else {
-                    if (Constants.DEBUG) {
-                        Log.d(TAG, "upgrading tables by dropping / recreating them");
+                db.beginTransaction();
+                try {
+                    // started managing upgrades at version 6
+                    if (oldVersion >= 6) {
+                        // no changes between v6-7
+                        // no changes between v7-8
+                        if (oldVersion <= 8) { // forgot to add the deleted column in rev 8
+                            db.execSQL("ALTER TABLE cardmedia ADD COLUMN deleted BOOLEAN");
+                        }
+
+                    } else {
+                        if (Constants.DEBUG) {
+                            Log.d(TAG, "upgrading tables by dropping / recreating them");
+                        }
+                        // this deletes everything
+                        super.upgradeTables(db, oldVersion, newVersion);
                     }
-                    // this deletes everything
-                    super.upgradeTables(db, oldVersion, newVersion);
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
                 }
+
             }
         };
 

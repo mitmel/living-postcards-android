@@ -73,11 +73,15 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         }
 
         if (Intent.ACTION_DELETE.equals(action)) {
-            final DeleteDialogFragment del = DeleteDialogFragment.newInstance(mCard,
-                    "are you sure you want to delete this card?");
-            del.registerOnDeleteListener(this);
-            del.show(fm, "dialog");
+            showDeleteDialog();
         }
+    }
+
+    private void showDeleteDialog() {
+        final DeleteDialogFragment del = DeleteDialogFragment.newInstance(mCard,
+                "are you sure you want to delete this card?");
+        del.registerOnDeleteListener(this);
+        del.show(getSupportFragmentManager(), "dialog");
     }
 
     @Override
@@ -88,7 +92,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
                 return true;
 
             case R.id.delete:
-                startActivity(new Intent(Intent.ACTION_DELETE, mCard));
+                showDeleteDialog();
                 return true;
 
             case android.R.id.home:
@@ -174,6 +178,11 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
     @Override
     public void onDelete(Uri item, boolean deleted) {
         if (mCard.equals(item) && deleted) {
+            setResult(RESULT_OK);
+            finish();
+
+        } else if (Intent.ACTION_DELETE.equals(getIntent().getAction()) && !deleted) {
+            setResult(RESULT_CANCELED);
             finish();
         }
     }

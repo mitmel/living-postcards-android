@@ -76,9 +76,7 @@ public class DeleteDialogFragment extends DialogFragment implements OnClickListe
                         mItem, true, null, null);
                 dialog.dismiss();
                 if (count >= 1) {
-                    // TODO this url introspection isn't ideal
-                    LocastSyncService.startSync(getActivity(),
-                            ProviderUtils.removeLastPathSegment(mItem));
+                    LocastSyncService.startSync(getActivity(), mItem);
                 }
                 mOnDeleteListener.onDelete(mItem, count >= 1); // it should only ever be 1, but...
 

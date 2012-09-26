@@ -31,6 +31,7 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
     private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
             Card.COL_WEB_URL, Card.COL_AUTHOR_URI, Card.COL_PRIVACY };
     private static final String TAG = CardViewActivity.class.getSimpleName();
+    private static final int REQUEST_DELETE = 100;
     private Uri mCard;
     private CardViewFragment mCardViewFragment;
 
@@ -90,12 +91,24 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
                 return true;
 
             case R.id.delete:
-                startActivity(new Intent(Intent.ACTION_DELETE, mCard));
+                startActivityForResult(new Intent(Intent.ACTION_DELETE, mCard), REQUEST_DELETE);
                 return true;
 
             default:
                 return false;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_DELETE:
+                if (resultCode == RESULT_OK) {
+                    finish();
+                }
+                break;
+        }
+
     }
 
     private void send() {
