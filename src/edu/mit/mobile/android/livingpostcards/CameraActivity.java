@@ -13,7 +13,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.Size;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -52,6 +54,7 @@ import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
+import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.locast.data.CastMedia.CastMediaInfo;
 import edu.mit.mobile.android.locast.data.MediaProcessingException;
 import edu.mit.mobile.android.location.IncrementalLocator;
@@ -320,6 +323,13 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         Camera c = null;
         try {
             c = Camera.open(); // attempt to get a Camera instance
+            final Parameters params = c.getParameters();
+            final Size s = getBestPictureSize(640, 480, params);
+            params.setPictureSize(s.width, s.height);
+            if (Constants.DEBUG){
+                Log.d(TAG, "best picture size is " + s.width + "x" + s.height );
+            }
+            c.setParameters(params);
         } catch (final Exception e) {
             Log.e(TAG, "Error acquiring camera", e);
         }
@@ -558,5 +568,45 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             CameraActivity.this.setProgressBarIndeterminateVisibility(false);
             mCaptureButton.setEnabled(true);
         }
+    }
+
+    /***
+     * Copyright (c) 2008-2012 CommonsWare, LLC Licensed under the Apache License, Version 2.0 (the
+     * "License"); you may not use this file except in compliance with the License. You may obtain a
+     * copy of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required by
+     * applicable law or agreed to in writing, software distributed under the License is distributed
+     * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and limitations under the
+     * License. From _The Busy Coder's Guide to Advanced Android Development_
+     * http://commonsware.com/AdvAndroid
+     */
+
+    /**
+     * Finds the highest resolution picture size that fits within the given width and height.
+     *
+     * @param width
+     * @param height
+     * @param parameters
+     * @return
+     */
+    public static Camera.Size getBestPictureSize(int width, int height, Camera.Parameters parameters) {
+        Camera.Size result = null;
+
+        for (final Camera.Size size : parameters.getSupportedPictureSizes()) {
+            if (size.width <= width && size.height <= height) {
+                if (result == null) {
+                    result = size;
+                } else {
+                    final int resultArea = result.width * result.height;
+                    final int newArea = size.width * size.height;
+
+                    if (newArea > resultArea) {
+                        result = size;
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 }
