@@ -20,6 +20,20 @@ public class NoAccountFragment extends Fragment implements OnClickListener {
     private OnLoggedInListener mOnLoggedInListener;
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof OnLoggedInListener) {
+            registerOnLoggedInListener(mOnLoggedInListener);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        unregisterOnLoggedInListener();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_no_account, container, false);
     }
@@ -59,6 +73,13 @@ public class NoAccountFragment extends Fragment implements OnClickListener {
         }
     }
 
+
+    /**
+     * Register a callback for when the login succeeded. If your activity implements this interface,
+     * you don't need to register it here - it'll be automatically registered when it attaches.
+     * 
+     * @param listener
+     */
     public void registerOnLoggedInListener(OnLoggedInListener listener) {
         // mOnLoggedInListener = new WeakReference<NoAccountFragment.OnLoggedInListener>(listener);
         mOnLoggedInListener = listener;

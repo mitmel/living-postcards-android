@@ -17,14 +17,15 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
+import edu.mit.mobile.android.livingpostcards.auth.AuthenticatorActivity;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.accounts.AbsLocastAuthenticatorActivity.LogoutHandler;
 import edu.mit.mobile.android.locast.data.Authorable;
 
 public class MainActivity extends SherlockFragmentActivity implements OnCreateOptionsMenuListener,
         OnOptionsItemSelectedListener, NoAccountFragment.OnLoggedInListener,
         OnPrepareOptionsMenuListener, TabListener {
-
-    NoAccountFragment mNoAccountFragment;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String TAG_SPLASH = "splash";
     private static final String TAG_NEW = "new";
@@ -33,40 +34,21 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String INSTANCE_CURRENT_TAB = "edu.mit.mobile.android.INSTANCE_CURRENT_TAB";
-    private boolean mJustLoggedIn;
 
     private boolean mIsLoggedIn = false;
 
+    private static final int NO_SAVED_TAB = -1;
+    private int mSavedCurrentTab = NO_SAVED_TAB;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setTitle("");
+        setTitle(""); // as we use the logo
         super.onCreate(savedInstanceState);
 
-        final ActionBar actionBar = getSupportActionBar();
-
-        final FragmentManager fm = getSupportFragmentManager();
-
-        if (Authenticator.hasRealAccount(this)) {
-            showMainScreen();
-            if (savedInstanceState != null) {
-                actionBar.setSelectedNavigationItem(savedInstanceState.getInt(INSTANCE_CURRENT_TAB,
-                        0));
-            }
-            // when there is no account, show a splash page
-        } else {
-            final Fragment f = fm.findFragmentById(android.R.id.content);
-
-            if (f == null || !(f instanceof NoAccountFragment)) {
-                final FragmentTransaction ft = fm.beginTransaction();
-                final NoAccountFragment f2 = new NoAccountFragment();
-                ft.replace(android.R.id.content, f2, TAG_SPLASH);
-                mNoAccountFragment = f2;
-                f2.registerOnLoggedInListener(this);
-                ft.commit();
-            }
+        if (savedInstanceState != null) {
+            mSavedCurrentTab = savedInstanceState.getInt(INSTANCE_CURRENT_TAB, 0);
         }
     }
 
@@ -74,10 +56,8 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
     protected void onResume() {
         super.onResume();
 
-        if (mJustLoggedIn) {
-            showMainScreen();
-            mJustLoggedIn = false;
-        }
+        showSplashOrMain();
+
     }
 
     @Override
@@ -87,9 +67,48 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
         super.onSaveInstanceState(outState);
     }
 
-    private void showMainScreen() {
+    /**
+     * Check to see if there's an account and shows either the splash screen or the main screen.
+     * It's safe to call this even if the appropriate fragment is already showing - it'll just leave
+     * it alone.
+     */
+    private void showSplashOrMain() {
         mIsLoggedIn = Authenticator.hasRealAccount(this);
+
+        if (mIsLoggedIn) {
+            showMainScreen();
+        } else {
+            showSplash();
+        }
         invalidateOptionsMenu();
+    }
+
+    /**
+     * Replaces the current fragment with the splash screen. Removes any tabs.
+     */
+    private void showSplash() {
+        final FragmentManager fm = getSupportFragmentManager();
+        final FragmentTransaction ft = fm.beginTransaction();
+        final Fragment f = fm.findFragmentById(android.R.id.content);
+
+        if (f == null || !(f instanceof NoAccountFragment)) {
+            final NoAccountFragment f2 = new NoAccountFragment();
+
+            ft.replace(android.R.id.content, f2, TAG_SPLASH);
+            ft.commit();
+        }
+
+        final ActionBar actionBar = getSupportActionBar();
+        if (ActionBar.NAVIGATION_MODE_STANDARD != actionBar.getNavigationMode()) {
+            actionBar.removeAllTabs();
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        }
+    }
+
+    /**
+     * Replaces the current fragment with the main interface.
+     */
+    private void showMainScreen() {
 
         final FragmentManager fm = getSupportFragmentManager();
         final Fragment f = fm.findFragmentById(android.R.id.content);
@@ -101,12 +120,17 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
             ft.commit();
         }
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.addTab(actionBar.newTab().setText("What's new").setTabListener(this)
-                .setTag(TAG_NEW));
-        actionBar.addTab(actionBar.newTab().setText("My Postcards").setTabListener(this)
-                .setTag(TAG_MY));
+        if (ActionBar.NAVIGATION_MODE_TABS != actionBar.getNavigationMode()) {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            actionBar.addTab(actionBar.newTab().setText(R.string.main_tab_whats_new)
+                    .setTabListener(this).setTag(TAG_NEW));
+            actionBar.addTab(actionBar.newTab().setText(R.string.main_tab_my_postcards)
+                    .setTabListener(this).setTag(TAG_MY));
+        }
 
+        if (mSavedCurrentTab != NO_SAVED_TAB) {
+            actionBar.setSelectedNavigationItem(mSavedCurrentTab);
+        }
     }
 
     @Override
@@ -116,9 +140,24 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
                 createNewCard();
 
                 return true;
+
+            case R.id.log_out:
+                AuthenticatorActivity.createLogoutDialog(this, getText(R.string.app_name),
+                        mOnLogoutHandler).show();
         }
         return false;
     }
+
+    private final LogoutHandler mOnLogoutHandler = new LogoutHandler(this,
+            Authenticator.ACCOUNT_TYPE) {
+
+        @Override
+        public void onAccountRemoved(boolean success) {
+            if (success) {
+                showSplashOrMain();
+            }
+        }
+    };
 
     private void createNewCard() {
 
@@ -128,7 +167,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
 
     @Override
     public void onLoggedIn() {
-        mJustLoggedIn = true;
+        showSplashOrMain();
     }
 
     @Override
@@ -141,6 +180,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
     public boolean onPrepareOptionsMenu(Menu menu) {
 
         menu.findItem(R.id.new_card).setVisible(mIsLoggedIn);
+        menu.findItem(R.id.log_out).setVisible(mIsLoggedIn);
 
         return true;
     }
@@ -159,13 +199,21 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
         }
     }
 
+    /**
+     * Given a tag, creates a new fragment with the default arguments.
+     *
+     * @param tag
+     * @return
+     */
     private Fragment instantiateFragment(String tag) {
         Fragment f;
         if (TAG_MY.equals(tag)) {
             f = CardListFragment.instantiate(Authorable.getAuthoredBy(Card.ALL_BUT_DELETED,
                     Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE)));
+
         } else if (TAG_NEW.equals(tag)) {
             f = CardListFragment.instantiate(Card.ALL_BUT_DELETED);
+
         } else {
             throw new IllegalArgumentException("cannot instantiate fragment for tag " + tag);
         }
@@ -180,7 +228,6 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
         if (f != null) {
             ft.detach(f);
         }
-
     }
 
     @Override

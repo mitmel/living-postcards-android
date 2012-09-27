@@ -1,22 +1,37 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item android:id="@+id/new_card"
-        android:title="@string/new_postcard"
+    <item
+        android:id="@+id/new_card"
         android:icon="@android:drawable/ic_menu_camera"
         android:showAsAction="ifRoom"
-        />
-    <!-- <item
+        android:title="@string/new_postcard"/>
+    <!--
+    <item
         android:id="@+id/menu_gallery"
         android:icon="@android:drawable/ic_menu_gallery"
         android:showAsAction="ifRoom|withText"
         android:title="@string/gallery">
-    </item> -->
+    </item>
+    -->
+
+    <item
+        android:id="@+id/settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:showAsAction="never|withText"
+        android:visible="false"
+        android:title="@string/settings"/>
+            <item
+        android:id="@+id/log_out"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:showAsAction="never|withText"
+        android:visible="false"
+        android:title="@string/log_out"/>
     <item
         android:id="@+id/menu_help"
         android:icon="@android:drawable/ic_menu_help"
         android:showAsAction="ifRoom|withText"
-        android:visible="false"
-        android:title="@string/help">
+        android:title="@string/help"
+        android:visible="false">
     </item>
 
 </menu>
