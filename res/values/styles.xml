@@ -12,7 +12,6 @@
 
     <style name="Image">
         <item name="android:background">@android:drawable/picture_frame</item>
-        <item name="android:drawablePadding">@dimen/padding_small</item>
         <item name="android:layout_margin">@dimen/padding_medium</item>
     </style>
 
