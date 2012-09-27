@@ -34,6 +34,8 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private static final String INSTANCE_CURRENT_TAB = "edu.mit.mobile.android.INSTANCE_CURRENT_TAB";
     private boolean mJustLoggedIn;
 
     private boolean mIsLoggedIn = false;
@@ -49,7 +51,10 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
 
         if (Authenticator.hasRealAccount(this)) {
             showMainScreen();
-
+            if (savedInstanceState != null) {
+                actionBar.setSelectedNavigationItem(savedInstanceState.getInt(INSTANCE_CURRENT_TAB,
+                        0));
+            }
             // when there is no account, show a splash page
         } else {
             final Fragment f = fm.findFragmentById(android.R.id.content);
@@ -73,6 +78,13 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
             showMainScreen();
             mJustLoggedIn = false;
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(INSTANCE_CURRENT_TAB, getSupportActionBar().getSelectedNavigationIndex());
+
+        super.onSaveInstanceState(outState);
     }
 
     private void showMainScreen() {
