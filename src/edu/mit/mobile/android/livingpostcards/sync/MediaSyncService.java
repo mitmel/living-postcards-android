@@ -3,9 +3,13 @@ package edu.mit.mobile.android.livingpostcards.sync;
 import android.accounts.Account;
 import android.net.Uri;
 import android.util.Log;
+
+import com.stackoverflow.ArrayUtils;
+
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
+import edu.mit.mobile.android.locast.data.Authorable;
 import edu.mit.mobile.android.locast.data.CastMedia;
 import edu.mit.mobile.android.locast.data.SyncException;
 import edu.mit.mobile.android.locast.sync.AbsMediaSync;
@@ -39,8 +43,14 @@ public class MediaSyncService extends AbsMediaSync {
     }
 
     @Override
+    public String[] getCastMediaProjection() {
+        return ArrayUtils.concat(super.getCastMediaProjection(),
+                new String[] { CardMedia.COL_AUTHOR_URI });
+    }
+
+    @Override
     public boolean getKeepOffline(Uri castMediaUri, CastMedia castMedia) {
-        return true;
+        return Authorable.canEdit(Authenticator.getUserUri(this, getAccount()), castMedia);
     }
 
     @Override
