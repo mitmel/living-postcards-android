@@ -2,6 +2,7 @@ package edu.mit.mobile.android.livingpostcards.data;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
@@ -95,7 +96,10 @@ public class CardProvider extends SyncableSimpleContentProvider {
                     if (oldVersion >= 6) {
                         // no changes between v6-7
                         // no changes between v7-8
-                        if (oldVersion <= 8) { // forgot to add the deleted column in rev 8
+
+                        // forgot to add the deleted column in rev 8
+                        if (oldVersion <= 7
+                                || (oldVersion <= 8 && !columnExists(db, "cardmedia", "deleted"))) {
                             db.execSQL("ALTER TABLE cardmedia ADD COLUMN deleted BOOLEAN");
                         }
 
@@ -118,6 +122,28 @@ public class CardProvider extends SyncableSimpleContentProvider {
         // content://authority/card/1/media/1
         addChildDirAndItemUri(cardmedia, Card.PATH, CardMedia.PATH);
 
+    }
+
+    private boolean tableExists(SQLiteDatabase db, String table) {
+        final Cursor c = db.rawQuery("SELECT COUNT() FROM sqlite_master WHERE name=?",
+                new String[] { table });
+        boolean tableExists = false;
+        try {
+            final int count = c.getInt(0);
+            tableExists = count == 1;
+        } finally {
+            c.close();
+        }
+        return tableExists;
+    }
+
+    private boolean columnExists(SQLiteDatabase db, String table, String column) {
+        final Cursor c = db.query(table, null, null, null, null, null, "_id LIMIT 1");
+        try {
+            return c.getColumnIndex(column) != -1;
+        } finally {
+            c.close();
+        }
     }
 
     @Override
