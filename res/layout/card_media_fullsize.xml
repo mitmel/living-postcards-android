@@ -3,6 +3,8 @@
     android:id="@+id/card_media_thumbnail"
     android:layout_width="fill_parent"
     android:layout_height="0dip"
+    android:maxWidth="320dip"
+    android:maxHeight="240dip"
     android:contentDescription="@null"
     android:adjustViewBounds="true"
     android:background="@drawable/image_placeholder"

@@ -16,11 +16,12 @@
 
 package android.extracted.widget;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -29,6 +30,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Adapter;
 import android.widget.RemoteViews.RemoteView;
+import android.widget.ViewAnimator;
 
 /**
  * Simple {@link ViewAnimator} that will animate between two or more views
@@ -177,7 +179,7 @@ public class AdapterViewFlipper extends AdapterViewAnimator {
        // we should we should make sure to reset the timer
        if (mRunning) {
            mHandler.removeMessages(FLIP_MSG);
-           Message msg = mHandler.obtainMessage(FLIP_MSG);
+           final Message msg = mHandler.obtainMessage(FLIP_MSG);
            mHandler.sendMessageDelayed(msg, mFlipInterval);
        }
        super.showNext();
@@ -192,7 +194,7 @@ public class AdapterViewFlipper extends AdapterViewAnimator {
        // we should we should make sure to reset the timer
        if (mRunning) {
            mHandler.removeMessages(FLIP_MSG);
-           Message msg = mHandler.obtainMessage(FLIP_MSG);
+           final Message msg = mHandler.obtainMessage(FLIP_MSG);
            mHandler.sendMessageDelayed(msg, mFlipInterval);
        }
        super.showPrevious();
@@ -217,12 +219,12 @@ public class AdapterViewFlipper extends AdapterViewAnimator {
      *            true.
      */
     private void updateRunning(boolean flipNow) {
-        boolean running = !mAdvancedByHost && mVisible && mStarted && mUserPresent
+        final boolean running = !mAdvancedByHost && mVisible && mStarted && mUserPresent
                 && mAdapter != null;
         if (running != mRunning) {
             if (running) {
                 showOnly(mWhichChild, flipNow);
-                Message msg = mHandler.obtainMessage(FLIP_MSG);
+                final Message msg = mHandler.obtainMessage(FLIP_MSG);
                 mHandler.sendMessageDelayed(msg, mFlipInterval);
             } else {
                 mHandler.removeMessages(FLIP_MSG);
@@ -290,6 +292,7 @@ public class AdapterViewFlipper extends AdapterViewAnimator {
     }
 
     @Override
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
         super.onInitializeAccessibilityNodeInfo(info);
         info.setClassName(AdapterViewFlipper.class.getName());

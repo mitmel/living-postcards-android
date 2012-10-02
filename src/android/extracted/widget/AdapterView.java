@@ -16,8 +16,10 @@
 
 package android.extracted.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.os.Build;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -200,7 +202,7 @@ public abstract class AdapterView<T extends Adapter> extends ViewGroup {
      * The last selected position we used when notifying
      */
     int mOldSelectedPosition = INVALID_POSITION;
-    
+
     /**
      * The id of the last selected position we used when notifying
      */
@@ -734,8 +736,8 @@ public abstract class AdapterView<T extends Adapter> extends ViewGroup {
             // We are now GONE, so pending layouts will not be dispatched.
             // Force one here to make sure that the state of the list matches
             // the state of the adapter.
-            if (mDataChanged) {           
-                this.onLayout(false, getLeft(), getTop(), getRight(), getBottom()); 
+            if (mDataChanged) {
+                this.onLayout(false, getLeft(), getTop(), getRight(), getBottom());
             }
         } else {
             if (mEmptyView != null) {
@@ -901,10 +903,12 @@ public abstract class AdapterView<T extends Adapter> extends ViewGroup {
     }
 
     @Override
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public boolean onRequestSendAccessibilityEvent(View child, AccessibilityEvent event) {
         if (super.onRequestSendAccessibilityEvent(child, event)) {
             // Add a record for ourselves as well.
             final AccessibilityEvent record = AccessibilityEvent.obtain();
+
             onInitializeAccessibilityEvent(record);
             // Populate with the text of the requesting child.
             child.dispatchPopulateAccessibilityEvent(record);
@@ -915,6 +919,7 @@ public abstract class AdapterView<T extends Adapter> extends ViewGroup {
     }
 
     @Override
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
         super.onInitializeAccessibilityNodeInfo(info);
         info.setClassName(AdapterView.class.getName());
@@ -926,6 +931,7 @@ public abstract class AdapterView<T extends Adapter> extends ViewGroup {
     }
 
     @Override
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
         super.onInitializeAccessibilityEvent(event);
         event.setClassName(AdapterView.class.getName());

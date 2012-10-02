@@ -33,12 +33,13 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
     private static final String TAG = CardViewActivity.class.getSimpleName();
     private static final int REQUEST_DELETE = 100;
     private Uri mCard;
-    private CardViewFragment mCardViewFragment;
+    private Fragment mCardViewFragment;
 
     private final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
     private String mUserUri;
     private boolean mIsEditable;
     private String mWebUrl = null;
+    private CardDetailsFragment mCardDetailsFragment;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -54,12 +55,33 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
 
         final FragmentTransaction ft = fm.beginTransaction();
 
-        final Fragment f = fm.findFragmentById(R.id.card_view_fragment);
-        if (f != null) {
-            mCardViewFragment = (CardViewFragment) f;
+        final boolean useViewFlipper = false;
+
+        final Fragment cardView = fm.findFragmentById(R.id.card_view_fragment);
+
+        if (useViewFlipper) {
+            if (cardView != null && cardView instanceof CardViewFragment) {
+                mCardViewFragment = cardView;
+            } else {
+                mCardViewFragment = CardViewFragment.newInstance(mCard);
+                ft.replace(R.id.card_view_fragment, mCardViewFragment);
+            }
         } else {
-            mCardViewFragment = CardViewFragment.newInstance(mCard);
-            ft.replace(R.id.card_view_fragment, mCardViewFragment);
+            if (cardView != null && cardView instanceof CardViewVideoFragment) {
+                mCardViewFragment = cardView;
+            } else {
+                mCardViewFragment = new CardViewVideoFragment();
+                ft.replace(R.id.card_view_fragment, mCardViewFragment);
+            }
+        }
+
+        final Fragment details = fm.findFragmentById(R.id.card_details_fragment);
+        if (details != null) {
+            mCardDetailsFragment = (CardDetailsFragment) details;
+        } else {
+            mCardDetailsFragment = CardDetailsFragment.newInstance(mCard);
+
+            ft.replace(R.id.card_details_fragment, mCardDetailsFragment);
         }
 
         mUserUri = Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE);
