@@ -70,7 +70,7 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
             if (cardView != null && cardView instanceof CardViewVideoFragment) {
                 mCardViewFragment = cardView;
             } else {
-                mCardViewFragment = new CardViewVideoFragment();
+                mCardViewFragment = CardViewVideoFragment.newInstance(mCard);
                 ft.replace(R.id.card_view_fragment, mCardViewFragment);
             }
         }
