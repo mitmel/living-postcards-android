@@ -20,7 +20,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
     public static final String AUTHORITY = "edu.mit.mobile.android.livingpostcards";
 
-    public static final int VERSION = 9;
+    public static final int VERSION = 10;
 
     protected static final String TAG = CardProvider.class.getSimpleName();
 
@@ -47,8 +47,16 @@ public class CardProvider extends SyncableSimpleContentProvider {
                             invalidateLocalCards(db);
                         }
 
-                        if (oldVersion <= 7) {
+                        if (oldVersion < 8) {
                             db.execSQL("ALTER TABLE card ADD COLUMN deleted BOOLEAN");
+                        }
+
+                        // no changes between 8-9
+
+                        if (oldVersion < 10) {
+                            db.execSQL("ALTER TABLE card ADD COLUMN video_render TEXT");
+                            db.execSQL("ALTER TABLE card ADD COLUMN video_type TEXT");
+                            invalidateLocalCards(db);
                         }
 
                     } else {
@@ -64,6 +72,11 @@ public class CardProvider extends SyncableSimpleContentProvider {
                 }
             }
 
+            /**
+             * Cause all the cards to be re-sync'd from the server.
+             * 
+             * @param db
+             */
             private void invalidateLocalCards(SQLiteDatabase db) {
                 final ContentValues cv = new ContentValues();
                 // invalidate all cards so they'll get updated.
@@ -98,10 +111,12 @@ public class CardProvider extends SyncableSimpleContentProvider {
                         // no changes between v7-8
 
                         // forgot to add the deleted column in rev 8
-                        if (oldVersion <= 7
-                                || (oldVersion <= 8 && !columnExists(db, "cardmedia", "deleted"))) {
+                        if (oldVersion < 8
+                                || (oldVersion < 9 && !columnExists(db, "cardmedia", "deleted"))) {
                             db.execSQL("ALTER TABLE cardmedia ADD COLUMN deleted BOOLEAN");
                         }
+
+                        // no changes between 9-10
 
                     } else {
                         if (Constants.DEBUG) {

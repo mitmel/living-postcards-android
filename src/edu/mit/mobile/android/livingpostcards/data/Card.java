@@ -55,6 +55,12 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
     public static final String COL_ANIMATED_RENDER = "anim_render";
 
     @DBColumn(type = TextColumn.class)
+    public static final String COL_VIDEO_RENDER = "video_render";
+
+    @DBColumn(type = TextColumn.class)
+    public static final String COL_VIDEO_RENDER_TYPE = "video_type";
+
+    @DBColumn(type = TextColumn.class)
     public static final String COL_COVER_PHOTO = "cover_photo";
 
     @DBColumn(type = TextColumn.class)
@@ -138,6 +144,8 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
         protected void fromResourcesJSON(Context context, Uri localUri, ContentValues cv,
                 JSONObject item) throws NetworkProtocolException, JSONException {
             addToContentValues(cv, "animated_render", item, COL_ANIMATED_RENDER, null, false);
+            addToContentValues(cv, "video_render", item, COL_VIDEO_RENDER, COL_VIDEO_RENDER_TYPE,
+                    false);
             addToContentValues(cv, "cover_photo", item, COL_COVER_PHOTO, null, false);
             addToContentValues(cv, "thumbnail", item, COL_THUMBNAIL, null, false);
 
