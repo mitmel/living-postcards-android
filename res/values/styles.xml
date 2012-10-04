@@ -33,11 +33,13 @@
     <style name="Card.Description">
         <item name="android:textColor">@color/text_title_fg_primary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:layout_margin">@dimen/padding_medium</item>
     </style>
 
     <style name="Card.Author">
         <item name="android:textColor">@color/text_title_fg_secondary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:layout_margin">@dimen/padding_medium</item>
     </style>
 
 </resources>

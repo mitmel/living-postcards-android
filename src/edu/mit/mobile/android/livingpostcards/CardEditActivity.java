@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import com.actionbarsherlock.view.MenuItem;
 import edu.mit.mobile.android.livingpostcards.DeleteDialogFragment.OnDeleteListener;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
@@ -143,6 +145,9 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         final boolean success = updated == 1;
 
         if (success) {
+            if (Constants.DEBUG) {
+                Log.d(TAG, mCard + " saved successfully.");
+            }
             LocastSyncService.startSync(this, mCard, true);
         }
         return success;
