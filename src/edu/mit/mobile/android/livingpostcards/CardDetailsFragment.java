@@ -13,16 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.TextView;
 import edu.mit.mobile.android.content.ProviderUtils;
-import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.locast.net.NetworkClient;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
-import edu.mit.mobile.android.maps.GoogleStaticMaps;
+import edu.mit.mobile.android.maps.GoogleStaticMapView;
 
 public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cursor>,
         OnImageLoadListener {
@@ -32,17 +30,17 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
      */
     public static final String ARGUMENT_URI = "uri";
 
-    private ImageCache mImageCache;
-
     private Uri mCard;
 
-    private ImageView mStaticMap;
-
-    private GoogleStaticMaps mStaticMapUtil;
+    private GoogleStaticMapView mStaticMap;
 
     private int mTiming;
 
     private Uri mCardMedia;
+
+    private int mMapWidth;
+
+    private int mMapHeight;
 
     private final static int LOADER_CARD = 100;
 
@@ -50,6 +48,8 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
             Card.COL_ANIMATED_RENDER, Card.COL_TITLE, Card.COL_DESCRIPTION, Card.COL_COVER_PHOTO,
             Card.COL_AUTHOR, Card.COL_TIMING, Card.COL_LATITUDE, Card.COL_LONGITUDE,
             Card.COL_MEDIA_URL };
+
+    private static final String TAG = CardDetailsFragment.class.getSimpleName();
 
     public static CardDetailsFragment newInstance(Uri card) {
         final CardDetailsFragment cmf = new CardDetailsFragment();
@@ -64,10 +64,6 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
     public void onAttach(Activity activity) {
 
         super.onAttach(activity);
-
-        mImageCache = ImageCache.getInstance(activity);
-
-        mStaticMapUtil = new GoogleStaticMaps(activity);
     }
 
     @Override
@@ -90,22 +86,15 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
 
         final View v = inflater.inflate(R.layout.card_details_fragment, container, false);
 
-        mStaticMap = (ImageView) v.findViewById(R.id.static_map);
+        mStaticMap = (GoogleStaticMapView) v.findViewById(R.id.static_map);
 
+        mStaticMap.setOnImageLoadListener(this);
         return v;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        mImageCache.unregisterOnImageLoadListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mImageCache.registerOnImageLoadListener(this);
 
         LocastSyncService.startExpeditedAutomaticSync(getActivity(), mCard);
     }
@@ -136,11 +125,9 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
                     ((TextView) v.findViewById(R.id.author)).setText(c.getString(c
                             .getColumnIndexOrThrow(Card.COL_AUTHOR)));
 
-                    final Uri staticMap = mStaticMapUtil.getMap(
-                            c.getFloat(c.getColumnIndexOrThrow(Card.COL_LATITUDE)),
-                            c.getFloat(c.getColumnIndexOrThrow(Card.COL_LONGITUDE)), 640, 200,
-                            false);
-                    mImageCache.scheduleLoadImage(R.id.static_map, staticMap, 640, 200);
+                    mStaticMap.setMap(c.getFloat(c.getColumnIndexOrThrow(Card.COL_LATITUDE)),
+                            c.getFloat(c.getColumnIndexOrThrow(Card.COL_LONGITUDE)), false);
+
                     mTiming = c.getInt(c.getColumnIndexOrThrow(Card.COL_TIMING));
                     final String pubMediaUri = c.getString(c
                             .getColumnIndexOrThrow(Card.COL_MEDIA_URL));
@@ -166,7 +153,6 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
     @Override
     public void onImageLoaded(long id, Uri imageUri, Drawable image) {
         if (id == R.id.static_map) {
-            mStaticMap.setImageDrawable(image);
             mStaticMap.startAnimation(AnimationUtils.makeInAnimation(getActivity(), true));
             mStaticMap.setVisibility(View.VISIBLE);
         }

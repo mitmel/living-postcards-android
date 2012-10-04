@@ -17,7 +17,11 @@
 
     <style name="Image.CardImage"></style>
 
-    <style name="Image.StaticMap"></style>
+    <style name="Image.StaticMap">
+        <item name="android:adjustViewBounds">false</item>
+        <item name="android:cropToPadding">true</item>
+        <item name="android:scaleType">center</item>
+    </style>
 
     <style name="Card"></style>
 
