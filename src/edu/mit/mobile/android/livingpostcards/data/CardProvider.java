@@ -20,7 +20,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
     public static final String AUTHORITY = "edu.mit.mobile.android.livingpostcards";
 
-    public static final int VERSION = 10;
+    public static final int VERSION = 11;
 
     protected static final String TAG = CardProvider.class.getSimpleName();
 
@@ -59,6 +59,10 @@ public class CardProvider extends SyncableSimpleContentProvider {
                             invalidateLocalCards(db);
                         }
 
+                        if (oldVersion < 11) {
+                            db.execSQL("DROP TRIGGER IF EXISTS trigger_card_modified_update");
+                            invalidateLocalCards(db);
+                        }
                     } else {
                         if (Constants.DEBUG) {
                             Log.d(TAG, "upgrading tables by dropping / recreating them");
@@ -74,7 +78,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
             /**
              * Cause all the cards to be re-sync'd from the server.
-             * 
+             *
              * @param db
              */
             private void invalidateLocalCards(SQLiteDatabase db) {
@@ -117,6 +121,10 @@ public class CardProvider extends SyncableSimpleContentProvider {
                         }
 
                         // no changes between 9-10
+
+                        if (oldVersion < 11) {
+                            db.execSQL("DROP TRIGGER IF EXISTS trigger_cardmedia_modified_update");
+                        }
 
                     } else {
                         if (Constants.DEBUG) {
