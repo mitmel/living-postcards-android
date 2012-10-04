@@ -13,7 +13,7 @@
   <string name="welcome_message_no_account">Living Postcards\'a hoşgeldiniz. Devam etmek için giriş yapın veya bir hesap oluşturun.</string>
   <string name="login_or_create_account">Giriş Yapın veya Hesap oluşturun</string>
   <string name="send_intent_message">Bu Living Postcard\'ı Keşfet %1$s</string>
-  <string name="send_intent_subject">Living Postcard %1$s</string>
+  <string name="send_intent_subject">Living Postcard: %1$s</string>
   <string name="err_share_intent_no_web_url_editable">Kartpostalı paylaşmak icin öncelikle yayımlanmış olması gerekir. Yayımlama seçeneği düzenleme ekranındadır.</string>
   <string name="send_intent_chooser_title">Kartpostal Gönder</string>
   <string name="notice_publish_success">Kartpostalınız hemen yüklenmeye başlıyor. Bildirim alanını kontrol edin.</string>
@@ -27,4 +27,6 @@
   <string name="postcard_edit_description_hint">Tanim</string>
   <string name="publish_postcard">Kartpostalı Yayımla</string>
   <string name="save_postcard">Kartpostalı Kaydet</string>
+  <string name="publish_postcard_condensed">Yayımla</string>
+  <string name="save_postcard_condensed">Kaydet</string>
 </resources>

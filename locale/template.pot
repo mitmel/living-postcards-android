@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-10-04 17:38-0400\n"
+"POT-Creation-Date: 2012-10-04 18:08-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,5 +131,13 @@ msgstr ""
 
 msgctxt "save_postcard"
 msgid "Save Postcard"
+msgstr ""
+
+msgctxt "publish_postcard_condensed"
+msgid "Publish"
+msgstr ""
+
+msgctxt "save_postcard_condensed"
+msgid "Save"
 msgstr ""
 

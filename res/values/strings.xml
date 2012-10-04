@@ -27,5 +27,7 @@
     <string name="postcard_edit_description_hint">Description</string>
     <string name="publish_postcard">Publish Postcard</string>
     <string name="save_postcard">Save Postcard</string>
+    <string name="publish_postcard_condensed">Publish</string>
+    <string name="save_postcard_condensed">Save</string>
 
 </resources>

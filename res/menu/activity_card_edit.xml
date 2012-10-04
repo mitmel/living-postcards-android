@@ -4,7 +4,7 @@
     <item android:id="@+id/save"
         android:icon="@android:drawable/ic_menu_save"
         android:title="@string/save_postcard"
-        android:titleCondensed="Save"
+        android:titleCondensed="@string/save_postcard_condensed"
         android:showAsAction="always|withText"
         android:visible="false"
         />
@@ -13,7 +13,7 @@
         android:icon="@android:drawable/ic_menu_send"
         android:showAsAction="always|withText"
         android:title="@string/publish_postcard"
-        android:titleCondensed="Publish"/>
+        android:titleCondensed="@string/publish_postcard_condensed"/>
     <item
         android:id="@+id/add_frame"
         android:icon="@android:drawable/ic_menu_camera"
