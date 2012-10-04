@@ -4,16 +4,16 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" >
 
-    
     <View
         android:layout_width="352dip"
         android:layout_height="288dip"
         android:background="@drawable/image_placeholder" />
-    
+
     <VideoView
         android:id="@+id/video"
-        android:layout_width="352dip"
-        android:layout_height="288dip" android:visibility="gone" />
-
+        android:layout_width="fill_parent"
+        android:layout_height="288dip"
+        android:background="#0000"
+        android:visibility="gone" />
 
 </FrameLayout>
