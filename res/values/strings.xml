@@ -24,5 +24,8 @@
     <string name="log_out">Log Out</string>
     <string name="main_tab_whats_new">What\'s new</string>
     <string name="main_tab_my_postcards">My Postcards</string>
+    <string name="postcard_edit_description_hint">Description</string>
+    <string name="publish_postcard">Publish Postcard</string>
+    <string name="save_postcard">Save Postcard</string>
 
 </resources>

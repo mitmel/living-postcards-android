@@ -3,7 +3,7 @@
 
     <item android:id="@+id/save"
         android:icon="@android:drawable/ic_menu_save"
-        android:title="Save Postcard"
+        android:title="@string/save_postcard"
         android:titleCondensed="Save"
         android:showAsAction="always|withText"
         android:visible="false"
@@ -12,7 +12,7 @@
         android:id="@+id/publish"
         android:icon="@android:drawable/ic_menu_send"
         android:showAsAction="always|withText"
-        android:title="Publish Postcard"
+        android:title="@string/publish_postcard"
         android:titleCondensed="Publish"/>
     <item
         android:id="@+id/add_frame"

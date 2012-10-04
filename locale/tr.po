@@ -1,0 +1,141 @@
+# Turkish translations for PROJECT.
+# Copyright (C) 2012 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2012-10-04 17:38-0400\n"
+"PO-Revision-Date: 2012-10-05 00:00+0200\n"
+"Last-Translator: Administrator <>\n"
+"Language-Team: tr <LL@li.org>\n"
+"Language: tk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.0.5\n"
+"Generated-By: Babel 1.0dev\n"
+
+msgctxt "app_name"
+msgid "Living Postcards"
+msgstr "Living Postcards"
+
+msgctxt "title_activity_camera"
+msgid "New Postcard"
+msgstr "Yeni Kartpostal"
+
+msgctxt "gallery"
+msgid "Gallery"
+msgstr "Galeri"
+
+msgctxt "help"
+msgid "Help"
+msgstr "Yardım"
+
+msgctxt "done"
+msgid "Done"
+msgstr "Bitti"
+
+msgctxt "share"
+msgid "Share"
+msgstr "Paylaş"
+
+msgctxt "edit"
+msgid "Edit"
+msgstr "Düzenle"
+
+msgctxt "delete"
+msgid "Delete"
+msgstr "Sil"
+
+msgctxt "new_postcard"
+msgid "New Postcard"
+msgstr "Yeni Kartpostal"
+
+msgctxt "add_images"
+msgid "Add photo"
+msgstr "Fotoğraf ekle"
+
+msgctxt "welcome_message_no_account"
+msgid ""
+"Welcome to Living Postcards. To continue, please sign in or create an "
+"account."
+msgstr ""
+"Living Postcards'a hoşgeldiniz. Devam etmek için giriş yapın veya bir "
+"hesap oluşturun."
+
+msgctxt "login_or_create_account"
+msgid "Login or Create Account"
+msgstr "Giriş Yapın veya Hesap oluşturun"
+
+#, c-format
+msgctxt "send_intent_message"
+msgid "Check out this Living Postcard %1$s"
+msgstr "Bu Living Postcard'ı Keşfet %1$s"
+
+#, c-format
+msgctxt "send_intent_subject"
+msgid "Living Postcard: %1$s"
+msgstr "Living Postcard %1$s"
+
+msgctxt "err_share_intent_no_web_url_editable"
+msgid ""
+"Postcard must be published before it can be shared. Publishing is done "
+"from the edit screen."
+msgstr ""
+"Kartpostalı paylaşmak icin öncelikle yayımlanmış olması gerekir. Yayımlama "
+"seçeneği düzenleme ekranındadır."
+
+msgctxt "send_intent_chooser_title"
+msgid "Send Postcard"
+msgstr "Kartpostal Gönder"
+
+msgctxt "notice_publish_success"
+msgid ""
+"Your postcard will begin uploading immediately. Check your notification "
+"area."
+msgstr ""
+"Kartpostalınız hemen yüklenmeye başlıyor. Bildirim alanını kontrol edin."
+
+msgctxt "err_publish_fail"
+msgid "There was an error marking your card for publishing."
+msgstr "Kartpostalınızın yayımlanmasında bir hata oluştu."
+
+msgctxt "edit_postcard"
+msgid "Edit Postcard"
+msgstr "Kartpostal Düzenle"
+
+msgctxt "postcard_edit_title_hint"
+msgid "Postcard Title"
+msgstr "Kartpostal Başlığı"
+
+msgctxt "settings"
+msgid "Settings"
+msgstr "Ayarlar"
+
+msgctxt "log_out"
+msgid "Log Out"
+msgstr "Çıkış"
+
+msgctxt "main_tab_whats_new"
+msgid "What's new"
+msgstr "Yeni Neler Var"
+
+msgctxt "main_tab_my_postcards"
+msgid "My Postcards"
+msgstr "Kartpostallarım"
+
+msgctxt "postcard_edit_description_hint"
+msgid "Description"
+msgstr "Tanim"
+
+msgctxt "publish_postcard"
+msgid "Publish Postcard"
+msgstr "Kartpostalı Yayımla"
+
+msgctxt "save_postcard"
+msgid "Save Postcard"
+msgstr "Kartpostalı Kaydet"

@@ -25,7 +25,7 @@
             tools:layout="@layout/card_edit_fragment" />
         
         <EditText android:id="@+id/description"
-            android:hint="Description"
+            android:hint="@string/postcard_edit_description_hint"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"

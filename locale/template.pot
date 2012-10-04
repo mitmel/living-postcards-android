@@ -1,0 +1,135 @@
+# Translations template for PROJECT.
+# Copyright (C) 2012 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2012-10-04 17:38-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.0dev\n"
+
+msgctxt "app_name"
+msgid "Living Postcards"
+msgstr ""
+
+msgctxt "title_activity_camera"
+msgid "New Postcard"
+msgstr ""
+
+msgctxt "gallery"
+msgid "Gallery"
+msgstr ""
+
+msgctxt "help"
+msgid "Help"
+msgstr ""
+
+msgctxt "done"
+msgid "Done"
+msgstr ""
+
+msgctxt "share"
+msgid "Share"
+msgstr ""
+
+msgctxt "edit"
+msgid "Edit"
+msgstr ""
+
+msgctxt "delete"
+msgid "Delete"
+msgstr ""
+
+msgctxt "new_postcard"
+msgid "New Postcard"
+msgstr ""
+
+msgctxt "add_images"
+msgid "Add photo"
+msgstr ""
+
+msgctxt "welcome_message_no_account"
+msgid ""
+"Welcome to Living Postcards. To continue, please sign in or create an "
+"account."
+msgstr ""
+
+msgctxt "login_or_create_account"
+msgid "Login or Create Account"
+msgstr ""
+
+#, c-format
+msgctxt "send_intent_message"
+msgid "Check out this Living Postcard %1$s"
+msgstr ""
+
+#, c-format
+msgctxt "send_intent_subject"
+msgid "Living Postcard: %1$s"
+msgstr ""
+
+msgctxt "err_share_intent_no_web_url_editable"
+msgid ""
+"Postcard must be published before it can be shared. Publishing is done "
+"from the edit screen."
+msgstr ""
+
+msgctxt "send_intent_chooser_title"
+msgid "Send Postcard"
+msgstr ""
+
+msgctxt "notice_publish_success"
+msgid ""
+"Your postcard will begin uploading immediately. Check your notification "
+"area."
+msgstr ""
+
+msgctxt "err_publish_fail"
+msgid "There was an error marking your card for publishing."
+msgstr ""
+
+msgctxt "edit_postcard"
+msgid "Edit Postcard"
+msgstr ""
+
+msgctxt "postcard_edit_title_hint"
+msgid "Postcard Title"
+msgstr ""
+
+msgctxt "settings"
+msgid "Settings"
+msgstr ""
+
+msgctxt "log_out"
+msgid "Log Out"
+msgstr ""
+
+msgctxt "main_tab_whats_new"
+msgid "What's new"
+msgstr ""
+
+msgctxt "main_tab_my_postcards"
+msgid "My Postcards"
+msgstr ""
+
+msgctxt "postcard_edit_description_hint"
+msgid "Description"
+msgstr ""
+
+msgctxt "publish_postcard"
+msgid "Publish Postcard"
+msgstr ""
+
+msgctxt "save_postcard"
+msgid "Save Postcard"
+msgstr ""
+

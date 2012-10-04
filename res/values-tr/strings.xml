@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="app_name">Living Postcards</string>
+  <string name="title_activity_camera">Yeni Kartpostal</string>
+  <string name="gallery">Galeri</string>
+  <string name="help">Yardım</string>
+  <string name="done">Bitti</string>
+  <string name="share">Paylaş</string>
+  <string name="edit">Düzenle</string>
+  <string name="delete">Sil</string>
+  <string name="new_postcard">Yeni Kartpostal</string>
+  <string name="add_images">Fotoğraf ekle</string>
+  <string name="welcome_message_no_account">Living Postcards\'a hoşgeldiniz. Devam etmek için giriş yapın veya bir hesap oluşturun.</string>
+  <string name="login_or_create_account">Giriş Yapın veya Hesap oluşturun</string>
+  <string name="send_intent_message">Bu Living Postcard\'ı Keşfet %1$s</string>
+  <string name="send_intent_subject">Living Postcard %1$s</string>
+  <string name="err_share_intent_no_web_url_editable">Kartpostalı paylaşmak icin öncelikle yayımlanmış olması gerekir. Yayımlama seçeneği düzenleme ekranındadır.</string>
+  <string name="send_intent_chooser_title">Kartpostal Gönder</string>
+  <string name="notice_publish_success">Kartpostalınız hemen yüklenmeye başlıyor. Bildirim alanını kontrol edin.</string>
+  <string name="err_publish_fail">Kartpostalınızın yayımlanmasında bir hata oluştu.</string>
+  <string name="edit_postcard">Kartpostal Düzenle</string>
+  <string name="postcard_edit_title_hint">Kartpostal Başlığı</string>
+  <string name="settings">Ayarlar</string>
+  <string name="log_out">Çıkış</string>
+  <string name="main_tab_whats_new">Yeni Neler Var</string>
+  <string name="main_tab_my_postcards">Kartpostallarım</string>
+  <string name="postcard_edit_description_hint">Tanim</string>
+  <string name="publish_postcard">Kartpostalı Yayımla</string>
+  <string name="save_postcard">Kartpostalı Kaydet</string>
+</resources>
