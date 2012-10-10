@@ -446,13 +446,9 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     }
 
     private void createNewCard() {
-
-        final String title = DateUtils.formatDateTime(this, System.currentTimeMillis(),
-                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME);
-
         final ContentValues cv = new ContentValues();
 
-        cv.put(Card.COL_TITLE, title);
+        cv.put(Card.COL_TITLE, "");
 
         if (mRecentImage != null) {
             cv.put(Card.COL_THUMBNAIL, mRecentImage.toString());
