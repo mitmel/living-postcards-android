@@ -20,7 +20,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
     public static final String AUTHORITY = "edu.mit.mobile.android.livingpostcards";
 
-    public static final int VERSION = 11;
+    public static final int VERSION = 12;
 
     protected static final String TAG = CardProvider.class.getSimpleName();
 
@@ -63,6 +63,11 @@ public class CardProvider extends SyncableSimpleContentProvider {
                             db.execSQL("DROP TRIGGER IF EXISTS trigger_card_modified_update");
                             invalidateLocalCards(db);
                         }
+
+                        if (oldVersion < 12) {
+                            db.execSQL("ALTER TABLE card ADD COLUMN dirty BOOLEAN");
+                        }
+
                     } else {
                         if (Constants.DEBUG) {
                             Log.d(TAG, "upgrading tables by dropping / recreating them");
@@ -124,6 +129,10 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
                         if (oldVersion < 11) {
                             db.execSQL("DROP TRIGGER IF EXISTS trigger_cardmedia_modified_update");
+                        }
+
+                        if (oldVersion < 12) {
+                            db.execSQL("ALTER TABLE cardmedia ADD COLUMN dirty BOOLEAN");
                         }
 
                     } else {
