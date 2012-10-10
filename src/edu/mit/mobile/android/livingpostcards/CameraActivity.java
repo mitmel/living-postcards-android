@@ -30,7 +30,6 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -201,7 +200,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             mPreviewHolder.addView(mPreview);
 
         } else {
-            Toast.makeText(this, "Error initializing camera", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.err_initializing_camera, Toast.LENGTH_LONG).show();
             setResult(RESULT_CANCELED);
             finish();
         }
@@ -495,6 +494,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         @Override
         public void onLocationChanged(Location location) {
             mLocation = location;
+            // XXX translate or kill
             setTitle("Location found. Accuracy ±" + location.getAccuracy() + "m");
 
         }

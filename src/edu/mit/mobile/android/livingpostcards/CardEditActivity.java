@@ -87,7 +87,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
     private void showDeleteDialog() {
         final DeleteDialogFragment del = DeleteDialogFragment.newInstance(mCard,
-                "are you sure you want to delete this card?");
+                getString(R.string.postcard_edit_delete_confirm_message));
         del.registerOnDeleteListener(this);
         del.show(getSupportFragmentManager(), "dialog");
     }
@@ -124,7 +124,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
     private boolean validate() {
         if (mTitle.length() == 0) {
-            mTitle.setError("Please enter a title");
+            mTitle.setError(getString(R.string.postcard_edit_title_empty));
             mTitle.requestFocus();
             return false;
         }

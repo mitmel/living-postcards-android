@@ -29,5 +29,9 @@
     <string name="save_postcard">Save Postcard</string>
     <string name="publish_postcard_condensed">Publish</string>
     <string name="save_postcard_condensed">Save</string>
+    <string name="postcard_edit_title_empty">Please enter a title</string>
+    <string name="postcard_edit_delete_confirm_message">Are you sure you want to delete this card?</string>
+    <string name="delete_postcard">Delete postcard</string>
+    <string name="err_initializing_camera">Error initializing camera</string>
 
 </resources>

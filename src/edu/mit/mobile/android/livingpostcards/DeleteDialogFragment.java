@@ -56,7 +56,8 @@ public class DeleteDialogFragment extends DialogFragment implements OnClickListe
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         return new AlertDialog.Builder(getActivity()).setIcon(R.drawable.ic_launcher)
-                .setTitle("Delete item").setPositiveButton("Delete", this).setMessage(mMessage)
+                .setTitle(R.string.delete_postcard).setPositiveButton(R.string.delete, this)
+                .setMessage(mMessage)
                 .setNegativeButton(android.R.string.cancel, this).setCancelable(true).create();
     }
 

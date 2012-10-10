@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-10-04 18:08-0400\n"
+"POT-Creation-Date: 2012-10-10 13:01-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -139,5 +139,21 @@ msgstr ""
 
 msgctxt "save_postcard_condensed"
 msgid "Save"
+msgstr ""
+
+msgctxt "postcard_edit_title_empty"
+msgid "Please enter a title"
+msgstr ""
+
+msgctxt "postcard_edit_delete_confirm_message"
+msgid "Are you sure you want to delete this card?"
+msgstr ""
+
+msgctxt "delete_postcard"
+msgid "Delete postcard"
+msgstr ""
+
+msgctxt "err_initializing_camera"
+msgid "Error initializing camera"
 msgstr ""
 
