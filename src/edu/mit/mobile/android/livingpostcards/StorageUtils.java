@@ -5,25 +5,26 @@ import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import android.content.Context;
 import android.os.Environment;
 
 public class StorageUtils {
-    public static final String EXTERNAL_PICTURE_SUBDIR = "livingpostcards";
-    public static final File EXTERNAL_PICTURES_DIR = new File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-            EXTERNAL_PICTURE_SUBDIR);
+    public static File getExternalPictureDir(Context context) {
+        return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    }
 
     /**
      * Gets the most recent image in the {@link #EXTERNAL_PICTURES_DIR}.
      *
      * @return
      */
-    public static File getMostRecentPicture() {
-        if (!EXTERNAL_PICTURES_DIR.exists()) {
+    public static File getMostRecentPicture(Context context) {
+        final File externalPicturesDir = getExternalPictureDir(context);
+        if (!externalPicturesDir.exists()) {
             return null;
         }
 
-        final File[] pictures = EXTERNAL_PICTURES_DIR.listFiles(new FileFilter() {
+        final File[] pictures = externalPicturesDir.listFiles(new FileFilter() {
 
             @Override
             public boolean accept(File pathname) {
@@ -40,7 +41,7 @@ public class StorageUtils {
             @Override
             public int compare(File lhs, File rhs) {
 
-                return new Long(lhs.lastModified()).compareTo(rhs.lastModified());
+                return Long.valueOf(lhs.lastModified()).compareTo(rhs.lastModified());
             }
         });
 

@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -516,11 +517,15 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                 mErr = new IllegalArgumentException("data was null or empty");
                 return null;
             }
-            final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            final File outFile = new File(StorageUtils.EXTERNAL_PICTURES_DIR, "IMG_" + timeStamp
+            final File externalPicturesDir = StorageUtils
+                    .getExternalPictureDir(CameraActivity.this);
+
+            final String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss.SSSZ", Locale.US)
+                    .format(new Date());
+            final File outFile = new File(externalPicturesDir, "IMG_" + timeStamp
                     + ".jpg");
 
-            StorageUtils.EXTERNAL_PICTURES_DIR.mkdirs();
+            externalPicturesDir.mkdirs();
 
             try {
                 final FileOutputStream fos = new FileOutputStream(outFile);
