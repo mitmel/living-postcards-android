@@ -102,7 +102,8 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         getListView().setOnItemClickListener(this);
 
         getLoaderManager().initLoader(0, null, this);
-        LocastSyncService.startExpeditedAutomaticSync(getActivity(), mCards);
+        LocastSyncService.startExpeditedAutomaticSync(getActivity(), mCards.buildUpon()
+                .clearQuery().build());
         registerForContextMenu(getListView());
 
         mDensity = getActivity().getResources().getDisplayMetrics().density;
