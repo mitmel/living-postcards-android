@@ -157,9 +157,12 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         menu.setHeaderTitle(Card.getTitle(getActivity(), c));
         Drawable icon;
         try {
-            icon = mImageCache.loadImage(0,
-                    Uri.parse(c.getString(c.getColumnIndexOrThrow(Card.COL_COVER_PHOTO))),
-                    (int) (133 * mDensity), (int) (100 * mDensity));
+            String iconUrl = c.getString(c.getColumnIndexOrThrow(Card.COL_COVER_PHOTO));
+            if (iconUrl == null || iconUrl.length() == 0) {
+                iconUrl = c.getString(c.getColumnIndexOrThrow(Card.COL_THUMBNAIL));
+            }
+            icon = mImageCache.loadImage(0, Uri.parse(iconUrl), (int) (133 * mDensity),
+                    (int) (100 * mDensity));
 
             if (icon != null) {
                 menu.setHeaderIcon(new InsetDrawable(icon, (int) (5 * mDensity)));
