@@ -30,6 +30,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
     private static final String TAG_SPLASH = "splash";
     private static final String TAG_NEW = "new";
     private static final String TAG_NEARBY = "nearby";
+    private static final String TAG_UNPUBLISHED = "unpublished";
     private static final String TAG_MY = "my";
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
@@ -126,6 +127,8 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
                     .setTabListener(this).setTag(TAG_NEW));
             actionBar.addTab(actionBar.newTab().setText(R.string.main_tab_my_postcards)
                     .setTabListener(this).setTag(TAG_MY));
+            actionBar.addTab(actionBar.newTab().setText(R.string.main_tab_unpublished)
+                    .setTabListener(this).setTag(TAG_UNPUBLISHED));
         }
 
         if (mSavedCurrentTab != NO_SAVED_TAB) {
@@ -209,10 +212,16 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
         Fragment f;
         if (TAG_MY.equals(tag)) {
             f = CardListFragment.instantiate(Authorable.getAuthoredBy(Card.CONTENT_URI,
-                    Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE)));
+                            Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE)).buildUpon()
+                    .appendQueryParameter(Card.COL_DRAFT + "!", "1").build());
 
         } else if (TAG_NEW.equals(tag)) {
-            f = CardListFragment.instantiate(Card.CONTENT_URI);
+            f = CardListFragment.instantiate(Card.CONTENT_URI.buildUpon()
+                    .appendQueryParameter(Card.COL_DRAFT + "!", "1").build());
+
+        } else if (TAG_UNPUBLISHED.equals(tag)) {
+            f = CardListFragment.instantiate(Card.CONTENT_URI.buildUpon()
+                    .appendQueryParameter(Card.COL_DRAFT, "1").build());
 
         } else {
             throw new IllegalArgumentException("cannot instantiate fragment for tag " + tag);
