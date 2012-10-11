@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.apache.http.HttpStatus;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaPlayer;
@@ -26,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.VideoView;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.utils.StreamUtils;
 
 public class CardViewVideoFragment extends Fragment implements LoaderCallbacks<Uri> {
@@ -116,22 +119,50 @@ public class CardViewVideoFragment extends Fragment implements LoaderCallbacks<U
             final File outdir = new File(getContext().getExternalFilesDir(
                     Environment.DIRECTORY_MOVIES), "livingpostcards");
 
+
+            boolean alreadyHasDownload = false;
+
             if (!outdir.exists() && !outdir.mkdirs()) {
                 throw new RuntimeException("could not mkdirs: " + outdir.getAbsolutePath());
             }
             final String fname = mUrl.substring(mUrl.lastIndexOf('/'));
             final File outfile = new File(outdir, fname);
 
-            if (outfile.exists() && outfile.length() > 1024) {
-                Log.d(TAG, fname + " has already been downloaded");
-                return Uri.fromFile(outfile);
-            }
+            alreadyHasDownload = outfile.exists() && outfile.length() > 1024;
+
+            final long lastModified = outfile.exists() ? outfile.lastModified() : 0;
 
             try {
-                final HttpURLConnection hc = (HttpURLConnection) new URL(mUrl).openConnection();
-                if (hc.getResponseCode() != 200) {
+                HttpURLConnection hc = (HttpURLConnection) new URL(mUrl).openConnection();
+
+                if (lastModified != 0) {
+                    hc.setIfModifiedSince(lastModified);
+                }
+
+                final int resp = hc.getResponseCode();
+                if (resp != HttpStatus.SC_OK && resp != HttpStatus.SC_NOT_MODIFIED) {
                     Log.e(TAG, "got a non-200 response from server");
                     return null;
+                }
+                if (resp == HttpStatus.SC_NOT_MODIFIED) {
+                    if (Constants.DEBUG) {
+                        Log.d(TAG, "got NOT MODIFIED");
+                    }
+                    // verify the integrity of the file
+                    if (alreadyHasDownload) {
+                        if (Constants.DEBUG) {
+                            Log.d(TAG, fname
+                                    + " has not been modified since it was downloaded last");
+                        }
+                        return Uri.fromFile(outfile);
+                    } else {
+                        // re-request without the if-modified header. This shouldn't happen.
+                        hc = (HttpURLConnection) new URL(mUrl).openConnection();
+                        if (hc.getResponseCode() != HttpStatus.SC_OK) {
+                            Log.e(TAG, "got a non-200 response from server");
+                            return null;
+                        }
+                    }
                 }
                 if (hc.getContentLength() < 1024) { // this is probably not a video
                     Log.e(TAG,
@@ -139,23 +170,37 @@ public class CardViewVideoFragment extends Fragment implements LoaderCallbacks<U
                                     + hc.getContentLength());
                     return null;
                 }
+                boolean downloadSucceeded = false;
                 try {
+
                     final BufferedInputStream bis = new BufferedInputStream(hc.getInputStream());
                     final FileOutputStream fos = new FileOutputStream(outfile);
-
-                    Log.d(TAG, "downloading...");
+                    if (Constants.DEBUG) {
+                        Log.d(TAG, "downloading...");
+                    }
                     StreamUtils.inputStreamToOutputStream(bis, fos);
 
                     fos.close();
 
-                    Log.d(TAG, "done! Saved to " + outfile);
+                    // store the server's last modified date in the filesystem
+                    outfile.setLastModified(hc.getLastModified());
+
+                    downloadSucceeded = true;
+                    if (Constants.DEBUG) {
+                        Log.d(TAG, "done! Saved to " + outfile);
+                    }
                     return Uri.fromFile(outfile);
 
                 } finally {
                     hc.disconnect();
+                    // cleanup if this is the first attempt to download
+                    if (!alreadyHasDownload && !downloadSucceeded) {
+                        outfile.delete();
+                    }
                 }
             } catch (final IOException e) {
                 Log.e(TAG, "error downloading video", e);
+
                 return null;
             }
         }
@@ -170,6 +215,9 @@ public class CardViewVideoFragment extends Fragment implements LoaderCallbacks<U
     @Override
     public void onLoadFinished(Loader<Uri> loader, Uri uriToPlay) {
         if (uriToPlay != null) {
+            if (Constants.DEBUG) {
+                Log.d(TAG, "playing video...");
+            }
             mVideoView.setVisibility(View.VISIBLE);
             mVideoView.setVideoURI(uriToPlay);
             mVideoView.seekTo(0);
@@ -198,10 +246,14 @@ public class CardViewVideoFragment extends Fragment implements LoaderCallbacks<U
                 if (video != null) {
                     final Bundle args = new Bundle();
                     args.putString(ARGUMENT_URI_STRING, video);
-                    Log.d(TAG, "loading video " + video);
+                    if (Constants.DEBUG) {
+                        Log.d(TAG, "loading video " + video + " with loader");
+                    }
                     getLoaderManager().initLoader(LOADER_VIDEO, args, CardViewVideoFragment.this);
                 } else {
-                    Log.d(TAG, "Card doesn't have a rendered video");
+                    if (Constants.DEBUG) {
+                        Log.d(TAG, "Card doesn't have a rendered video");
+                    }
                 }
             }
         }
