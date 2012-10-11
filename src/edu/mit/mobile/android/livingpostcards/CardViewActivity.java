@@ -173,6 +173,12 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
     }
 
     @Override
+    protected void onTitleChanged(CharSequence title, int color) {
+        mSherlock.dispatchTitleChanged(title, color);
+        super.onTitleChanged(title, color);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         return new CursorLoader(this, mCard, CARD_PROJECTION, null, null, null);
     }
@@ -180,7 +186,7 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
         if (c.moveToFirst()) {
-            mSherlock.setTitle(c.getString(c.getColumnIndexOrThrow(Card.COL_TITLE)));
+            setTitle(Card.getTitle(this, c));
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
             mWebUrl = c.getString(c.getColumnIndexOrThrow(Card.COL_WEB_URL));
             // resolve to a full URL

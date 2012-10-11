@@ -73,7 +73,7 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        final View v = inflater.inflate(R.layout.card_media_view_fragment, container, false);
+        final View v = inflater.inflate(R.layout.card_media_edit_fragment, container, false);
 
         mAdapter = new SimpleThumbnailCursorAdapter(getActivity(),
                 R.layout.card_media_thumb_square, null, new String[] { CardMedia.COL_LOCAL_URL,

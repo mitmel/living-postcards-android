@@ -45,7 +45,7 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
     private final static int LOADER_CARD = 100;
 
     private static final String[] CARD_PROJECTION = new String[] { Card._ID,
-            Card.COL_ANIMATED_RENDER, Card.COL_TITLE, Card.COL_DESCRIPTION, Card.COL_COVER_PHOTO,
+            Card.COL_ANIMATED_RENDER, Card.COL_DESCRIPTION, Card.COL_COVER_PHOTO,
             Card.COL_AUTHOR, Card.COL_TIMING, Card.COL_LATITUDE, Card.COL_LONGITUDE,
             Card.COL_MEDIA_URL };
 
@@ -118,7 +118,6 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
                     if (BuildConfig.DEBUG) {
                         ProviderUtils.dumpCursorToLog(c, CARD_PROJECTION);
                     }
-                    getActivity().setTitle(c.getString(c.getColumnIndex(Card.COL_TITLE)));
                     final View v = getView();
                     ((TextView) v.findViewById(R.id.description)).setText(c.getString(c
                             .getColumnIndexOrThrow(Card.COL_DESCRIPTION)));

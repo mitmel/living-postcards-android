@@ -138,6 +138,14 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
 
     }
 
+    public static CharSequence getTitle(Context context, Cursor c) {
+        CharSequence title = c.getString(c.getColumnIndexOrThrow(Card.COL_TITLE));
+        if (title == null || title.length() == 0) {
+            title = context.getText(R.string.untitled);
+        }
+        return title;
+    }
+
     public static class CardResources extends AbsResourcesSync {
 
         @Override

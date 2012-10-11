@@ -33,5 +33,5 @@
     <string name="postcard_edit_delete_confirm_message">Are you sure you want to delete this card?</string>
     <string name="delete_postcard">Delete postcard</string>
     <string name="err_initializing_camera">Error initializing camera</string>
-
+	<string name="untitled"><i>Untitled</i></string>
 </resources>

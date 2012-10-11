@@ -3,6 +3,7 @@ package edu.mit.mobile.android.livingpostcards;
 import java.io.IOException;
 
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.stackoverflow.ArrayUtils;
@@ -86,7 +88,13 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         mImageCache = ImageCache.getInstance(getActivity());
 
         mAdapter = new SimpleThumbnailCursorAdapter(getActivity(), R.layout.card_list_item, null,
-                FROM, TO, IMAGE_IDS, 0);
+                FROM, TO, IMAGE_IDS, 0) {
+            @Override
+            public void bindView(View v, Context context, Cursor c) {
+                super.bindView(v, context, c);
+                ((TextView) v.findViewById(R.id.title)).setText(Card.getTitle(context, c));
+            }
+        };
 
         setListAdapter(new ImageLoaderAdapter(getActivity(), mAdapter, mImageCache, IMAGE_IDS, 133,
                 100, ImageLoaderAdapter.UNIT_DIP));
@@ -146,7 +154,7 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         menu.findItem(R.id.delete).setVisible(isEditable);
         menu.findItem(R.id.edit).setVisible(isEditable);
 
-        menu.setHeaderTitle(c.getString(c.getColumnIndexOrThrow(Card.COL_TITLE)));
+        menu.setHeaderTitle(Card.getTitle(getActivity(), c));
         Drawable icon;
         try {
             icon = mImageCache.loadImage(0,
@@ -174,7 +182,7 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
             return;
         }
         startActivity(Card.createShareIntent(getActivity(), mWebUrl,
-                c.getString(c.getColumnIndexOrThrow(Card.COL_TITLE))));
+                Card.getTitle(getActivity(), c)));
     }
 
     @Override
