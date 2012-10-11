@@ -14,6 +14,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
@@ -112,7 +113,8 @@ public class CardViewVideoFragment extends Fragment implements LoaderCallbacks<U
         @Override
         public Uri loadInBackground() {
 
-            final File outdir = new File(getContext().getExternalFilesDir(null), "livingpostcards");
+            final File outdir = new File(getContext().getExternalFilesDir(
+                    Environment.DIRECTORY_MOVIES), "livingpostcards");
 
             if (!outdir.exists() && !outdir.mkdirs()) {
                 throw new RuntimeException("could not mkdirs: " + outdir.getAbsolutePath());
