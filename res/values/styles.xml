@@ -15,7 +15,10 @@
         <item name="android:layout_margin">@dimen/padding_medium</item>
     </style>
 
-    <style name="Image.CardImage"></style>
+    <style name="Image.CardImage">
+        <item name="android:maxHeight">@dimen/postcard_max_height</item>
+        <item name="android:maxWidth">@dimen/postcard_max_width</item>
+    </style>
 
     <style name="Image.StaticMap">
         <item name="android:adjustViewBounds">false</item>

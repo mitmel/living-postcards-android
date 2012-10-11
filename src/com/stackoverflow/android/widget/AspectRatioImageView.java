@@ -21,6 +21,7 @@ import android.widget.ImageView;
  */
 public class AspectRatioImageView extends ImageView {
 
+    private static final String TAG = AspectRatioImageView.class.getSimpleName();
     int mMaxWidth = Integer.MAX_VALUE;
     int mMaxHeight = Integer.MAX_VALUE;
 
@@ -72,19 +73,22 @@ public class AspectRatioImageView extends ImageView {
 
             if (MeasureSpec.EXACTLY == MeasureSpec.getMode(heightMeasureSpec) && height == 0) {
 
-                final int diw = drawable.getIntrinsicWidth();
+                final float diw = drawable.getIntrinsicWidth();
                 if (diw > 0) {
-                    height = Math.min(width * drawable.getIntrinsicHeight() / diw, mMaxHeight);
+                    height = (int) Math.max(getSuggestedMinimumHeight(),
+                            Math.min(width * (drawable.getIntrinsicHeight() / diw), mMaxHeight));
                     setMeasuredDimension(width, height);
                     setMeasuredDimension = true;
                 }
 
             } else if (MeasureSpec.EXACTLY == MeasureSpec.getMode(widthMeasureSpec) && width == 0) {
 
-                final int dih = drawable.getIntrinsicHeight();
+                final float dih = drawable.getIntrinsicHeight();
                 if (dih > 0) {
-                    width = Math.min(height * drawable.getIntrinsicWidth() / dih, mMaxWidth);
+                    width = (int) Math.max(getSuggestedMinimumWidth(),
+                            Math.min(height * (drawable.getIntrinsicWidth() / dih), mMaxWidth));
                     setMeasuredDimension(width, height);
+
                     setMeasuredDimension = true;
                 }
             }
