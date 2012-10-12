@@ -30,13 +30,13 @@
         android:background="@drawable/grid"
         android:visibility="gone" />
 
-    <TableLayout
+    <LinearLayout
         android:id="@+id/controls"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:orientation="vertical"
-        android:stretchColumns="*" >
+         >
 
         <ToggleButton
             android:id="@+id/grid_toggle"
@@ -45,15 +45,14 @@
             android:layout_gravity="center"
             android:text="Grid" />
 
-        <ToggleButton
+        <edu.mit.mobile.android.widget.MultiLevelButton
             android:id="@+id/onion_skin_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="72dip"
+            android:layout_height="72dip"
+            
             android:layout_gravity="center"
-            android:checked="true"
-            android:text="Onion Skin"
-            android:textOff=""
-            android:textOn="Onion" />
+            android:background="@drawable/btn_onionskin"
+		/>
 
         <Button
             android:id="@+id/capture"
@@ -61,15 +60,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="C" />
-
-        <ToggleButton
-            android:id="@+id/auto_manual"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_span="2"
-            android:textOff="manual"
-            android:textOn="auto" />
-    </TableLayout>
+    </LinearLayout>
 
 </RelativeLayout>

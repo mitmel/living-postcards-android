@@ -58,6 +58,8 @@ import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.locast.data.CastMedia.CastMediaInfo;
 import edu.mit.mobile.android.locast.data.MediaProcessingException;
 import edu.mit.mobile.android.location.IncrementalLocator;
+import edu.mit.mobile.android.widget.MultiLevelButton;
+import edu.mit.mobile.android.widget.MultiLevelButton.OnChangeLevelListener;
 
 public class CameraActivity extends FragmentActivity implements OnClickListener,
         OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor>,
@@ -84,7 +86,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     private Button mCaptureButton;
 
-    private CompoundButton mOnionskinToggle;
+    private MultiLevelButton mOnionskinToggle;
 
     private IncrementalLocator mLocator;
 
@@ -120,6 +122,28 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     private final Handler mHandler = new MyHandler(this);
 
+    private final OnChangeLevelListener mOnionskinChangeLevel = new OnChangeLevelListener() {
+
+        @Override
+        public int onChangeLevel(MultiLevelButton b, int curLevel) {
+            int newLevel;
+            switch (curLevel) {
+                case 0:
+                    newLevel = 30;
+                    break;
+                case 30:
+                    newLevel = 70;
+                    break;
+                case 70:
+                default:
+                    newLevel = 0;
+                    break;
+            }
+            setOnionSkinVisible(newLevel);
+            return newLevel;
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,8 +161,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         mCaptureButton = (Button) findViewById(R.id.capture);
         mCaptureButton.setOnClickListener(this);
 
-        mOnionskinToggle = (CompoundButton) findViewById(R.id.onion_skin_toggle);
-        mOnionskinToggle.setOnCheckedChangeListener(this);
+        mOnionskinToggle = (MultiLevelButton) findViewById(R.id.onion_skin_toggle);
+        mOnionskinToggle.setOnChangeLevelListener(mOnionskinChangeLevel);
         ((CompoundButton) findViewById(R.id.grid_toggle)).setOnCheckedChangeListener(this);
 
         setFullscreen(true);
@@ -206,7 +230,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             finish();
         }
 
-        setOnionSkinVisible(mOnionskinToggle.isChecked());
+        setOnionSkinVisible(mOnionskinToggle.getLevel());
     }
 
     public void setFullscreen(boolean fullscreen) {
@@ -288,14 +312,26 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         }
     }
 
+    private void setOnionSkinVisible(int level) {
+
+        mOnionSkin.setVisibility(level > 0 ? View.VISIBLE : View.GONE);
+
+        setOnionskinAlphaPercent(level);
+    }
+
     private void invalidateOnionskinImage() {
         mOnionSkin.setImageDrawable(null);
         mOnionskinToggle.setEnabled(false);
     }
 
+    @SuppressWarnings("deprecation")
+    private void setOnionskinAlphaPercent(int percent) {
+        mOnionSkin.setAlpha((int) (percent / 100.0 * 255));
+    }
+
     private void loadOnionskinImage(Drawable image) {
         mOnionSkin.setImageDrawable(image);
-        mOnionSkin.setAlpha(80);
+        setOnionskinAlphaPercent(mOnionskinToggle.getLevel());
         mOnionskinToggle.setEnabled(true);
     }
 
@@ -374,19 +410,10 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
-            case R.id.onion_skin_toggle:
-                setOnionSkinVisible(isChecked);
-
-                break;
 
             case R.id.grid_toggle:
                 findViewById(R.id.grid).setVisibility(isChecked ? View.VISIBLE : View.GONE);
         }
-    }
-
-    private void setOnionSkinVisible(boolean isChecked) {
-
-        mOnionSkin.setVisibility(isChecked ? View.VISIBLE : View.GONE);
     }
 
     // /////////////////////////////////////////////////////////////////////
