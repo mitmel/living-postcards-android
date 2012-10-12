@@ -139,7 +139,7 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
             if (uri == null) {
                 return;
             }
-            mImageCache.scheduleLoadImage(mImageCache.getNewID(), Uri.parse(uri), 640, 480);
+            mImageCache.scheduleLoadImage(mImageCache.getNewID(), Uri.parse(uri), 320, 240);
         }
     }
 
