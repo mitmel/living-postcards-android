@@ -2,18 +2,46 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/Image.CardImage"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:layout_gravity="center" >
 
-    <View
-        android:layout_width="352dip"
-        android:layout_height="288dip"
-        android:background="@drawable/image_placeholder" />
+    <RelativeLayout
+        android:id="@+id/error_box"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/error_message"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:padding="15sp"
+            android:textAppearance="?android:textAppearanceLarge" />
+
+        <Button
+            android:id="@+id/retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/error_message"
+            android:layout_centerHorizontal="true"
+            android:text="@string/retry" />
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:indeterminateOnly="true" />
 
     <VideoView
         android:id="@+id/video"
         android:layout_width="fill_parent"
         android:layout_height="288dip"
         android:background="#0000"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 
 </FrameLayout>

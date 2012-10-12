@@ -34,4 +34,7 @@
     <string name="delete_postcard">Delete postcard</string>
     <string name="err_initializing_camera">Error initializing camera</string>
 	<string name="untitled"><i>Untitled</i></string>
+	<string name="err_postcard_media_could_not_download">Error loading postcard: %1$s</string>
+	<string name="retry">Retry</string>
+	<string name="err_no_data_connection">No data connection.</string>
 </resources>

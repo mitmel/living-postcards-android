@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -29,7 +31,8 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
         OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>, OnPrepareOptionsMenuListener {
 
     private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
-            Card.COL_WEB_URL, Card.COL_AUTHOR_URI, Card.COL_PRIVACY };
+            Card.COL_WEB_URL, Card.COL_AUTHOR_URI, Card.COL_PRIVACY, Card.COL_VIDEO_RENDER,
+            Card.COL_DELETED };
     private static final String TAG = CardViewActivity.class.getSimpleName();
     private static final int REQUEST_DELETE = 100;
     private Uri mCard;
@@ -40,6 +43,29 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
     private boolean mIsEditable;
     private String mWebUrl = null;
     private CardDetailsFragment mCardDetailsFragment;
+    private boolean mHasVideo;
+
+    private static final int MSG_LOAD_CARD_MEDIA = 100;
+
+    private static class CardViewHandler extends Handler {
+
+        private final CardViewActivity mActivity;
+
+        public CardViewHandler(CardViewActivity activity) {
+            mActivity = activity;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_LOAD_CARD_MEDIA:
+                    mActivity.loadCardMedia(mActivity.mHasVideo);
+                    break;
+            }
+        };
+    }
+
+    private final CardViewHandler mHandler = new CardViewHandler(this);
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -51,29 +77,18 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
 
         mCard = getIntent().getData();
 
+        mUserUri = Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE);
+
+        getSupportLoaderManager().initLoader(0, null, this);
+
+        loadCardDetails();
+    }
+
+    private void loadCardDetails() {
+
         final FragmentManager fm = getSupportFragmentManager();
 
         final FragmentTransaction ft = fm.beginTransaction();
-
-        final boolean useViewFlipper = false;
-
-        final Fragment cardView = fm.findFragmentById(R.id.card_view_fragment);
-
-        if (useViewFlipper) {
-            if (cardView != null && cardView instanceof CardViewFragment) {
-                mCardViewFragment = cardView;
-            } else {
-                mCardViewFragment = CardViewFragment.newInstance(mCard);
-                ft.replace(R.id.card_view_fragment, mCardViewFragment);
-            }
-        } else {
-            if (cardView != null && cardView instanceof CardViewVideoFragment) {
-                mCardViewFragment = cardView;
-            } else {
-                mCardViewFragment = CardViewVideoFragment.newInstance(mCard);
-                ft.replace(R.id.card_view_fragment, mCardViewFragment);
-            }
-        }
 
         final Fragment details = fm.findFragmentById(R.id.card_details_fragment);
         if (details != null) {
@@ -84,11 +99,36 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
             ft.replace(R.id.card_details_fragment, mCardDetailsFragment);
         }
 
-        mUserUri = Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE);
+        ft.commit();
+    }
 
-        getSupportLoaderManager().initLoader(0, null, this);
+    private void loadCardMedia(boolean useVideo) {
+
+        final FragmentManager fm = getSupportFragmentManager();
+
+        final FragmentTransaction ft = fm.beginTransaction();
+
+        final Fragment cardView = fm.findFragmentById(R.id.card_view_fragment);
+
+        if (useVideo) {
+            if (cardView != null && cardView instanceof CardViewVideoFragment) {
+                mCardViewFragment = cardView;
+            } else {
+                mCardViewFragment = CardViewVideoFragment.newInstance(mCard);
+                ft.replace(R.id.card_view_fragment, mCardViewFragment);
+            }
+        } else {
+
+            if (cardView != null && cardView instanceof CardViewFragment) {
+                mCardViewFragment = cardView;
+            } else {
+                mCardViewFragment = CardViewFragment.newInstance(mCard);
+                ft.replace(R.id.card_view_fragment, mCardViewFragment);
+            }
+        }
 
         ft.commit();
+
     }
 
     @Override
@@ -186,6 +226,19 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
         if (c.moveToFirst()) {
+
+            // don't show deleted cards. This just confuses things.
+            if (Card.isDeleted(c)) {
+                finish();
+                return;
+            }
+            final int videoCol = c.getColumnIndexOrThrow(Card.COL_VIDEO_RENDER);
+
+            // if the card has a video render, show that
+            mHasVideo = !c.isNull(videoCol) && c.getString(videoCol).length() > 0;
+
+            mHandler.sendEmptyMessage(MSG_LOAD_CARD_MEDIA);
+
             setTitle(Card.getTitle(this, c));
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
             mWebUrl = c.getString(c.getColumnIndexOrThrow(Card.COL_WEB_URL));
@@ -200,5 +253,6 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
+
     }
 }
