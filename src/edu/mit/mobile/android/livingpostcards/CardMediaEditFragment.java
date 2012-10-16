@@ -176,7 +176,10 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
                     Log.e(TAG, "bad menuInfo", e);
                     return;
                 }
-                c.moveToPosition(info.position);
+
+                // the below is a special case due to a bug in the infinite gallery spinner.
+
+                c.moveToPosition(info.position % mAdapter.getCount());
 
                 final String myUserUri = Authenticator.getUserUri(getActivity());
 
