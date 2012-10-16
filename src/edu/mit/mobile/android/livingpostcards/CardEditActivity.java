@@ -51,8 +51,8 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
     @Override
     protected void onCreate(Bundle arg0) {
-
         super.onCreate(arg0);
+
         mSherlock.setContentView(R.layout.activity_card_edit);
 
         mTitle = (EditText) findViewById(R.id.title);

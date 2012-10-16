@@ -1,6 +1,7 @@
 package edu.mit.mobile.android.livingpostcards;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -9,7 +10,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,7 +27,10 @@ import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 import edu.mit.mobile.android.imagecache.ImageLoaderAdapter;
 import edu.mit.mobile.android.imagecache.SimpleThumbnailCursorAdapter;
+import edu.mit.mobile.android.livingpostcards.DeleteDialogFragment.OnDeleteListener;
+import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
+import edu.mit.mobile.android.locast.data.Authorable;
 
 public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<Cursor>,
         OnItemSelectedListener, OnImageLoadListener {
@@ -90,6 +98,8 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
         mGallery.setOnItemSelectedListener(this);
 
+        registerForContextMenu(mGallery);
+
         mFrame = (ImageView) v.findViewById(R.id.frame);
 
         return v;
@@ -115,7 +125,8 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 
         return new CursorLoader(getActivity(), mUri, new String[] { CardMedia._ID,
-                CardMedia.COL_LOCAL_URL, CardMedia.COL_MEDIA_URL }, null, null, null);
+                CardMedia.COL_LOCAL_URL, CardMedia.COL_MEDIA_URL, CardMedia.COL_AUTHOR_URI }, null,
+                null, null);
     }
 
     @Override
@@ -146,6 +157,76 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
     @Override
     public void onNothingSelected(AdapterView<?> adapter) {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        switch (v.getId()) {
+            case R.id.gallery: {
+                getActivity().getMenuInflater().inflate(R.menu.context_card_media, menu);
+                final Cursor c = mAdapter.getCursor();
+                if (c == null) {
+                    return;
+                }
+                AdapterView.AdapterContextMenuInfo info;
+                try {
+                    info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+                } catch (final ClassCastException e) {
+                    Log.e(TAG, "bad menuInfo", e);
+                    return;
+                }
+                c.moveToPosition(info.position);
+
+                final String myUserUri = Authenticator.getUserUri(getActivity());
+
+                final boolean isEditable = Authorable.canEdit(myUserUri, c);
+
+                menu.findItem(R.id.delete).setVisible(isEditable);
+
+            }
+                break;
+            default:
+                super.onCreateContextMenu(menu, v, menuInfo);
+        }
+
+    }
+
+    private void showDeleteDialog(Uri item) {
+        final DeleteDialogFragment del = DeleteDialogFragment.newInstance(item, getActivity()
+                .getString(R.string.delete_postcard_image),
+                getString(R.string.delete_postcard_image_confirm_message));
+        del.registerOnDeleteListener(mOnDeleteListener);
+        del.show(getFragmentManager(), "delete-item-dialog");
+    }
+
+    private final OnDeleteListener mOnDeleteListener = new OnDeleteListener() {
+
+        @Override
+        public void onDelete(Uri item, boolean deleted) {
+
+        }
+    };
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info;
+        try {
+            info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        } catch (final ClassCastException e) {
+            Log.e(TAG, "bad menuInfo", e);
+            return false;
+        }
+
+        final Uri itemUri = ContentUris.withAppendedId(mUri, info.id);
+
+        switch (item.getItemId()) {
+            case R.id.delete:
+                showDeleteDialog(itemUri);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
 
     }
 
