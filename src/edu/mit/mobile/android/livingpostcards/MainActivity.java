@@ -208,11 +208,11 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
     private Fragment instantiateFragment(String tag) {
         Fragment f;
         if (TAG_MY.equals(tag)) {
-            f = CardListFragment.instantiate(Authorable.getAuthoredBy(Card.ALL_BUT_DELETED,
+            f = CardListFragment.instantiate(Authorable.getAuthoredBy(Card.CONTENT_URI,
                     Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE)));
 
         } else if (TAG_NEW.equals(tag)) {
-            f = CardListFragment.instantiate(Card.ALL_BUT_DELETED);
+            f = CardListFragment.instantiate(Card.CONTENT_URI);
 
         } else {
             throw new IllegalArgumentException("cannot instantiate fragment for tag " + tag);
