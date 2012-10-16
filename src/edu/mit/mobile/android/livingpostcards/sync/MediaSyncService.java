@@ -9,7 +9,6 @@ import com.stackoverflow.ArrayUtils;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
-import edu.mit.mobile.android.locast.data.Authorable;
 import edu.mit.mobile.android.locast.data.CastMedia;
 import edu.mit.mobile.android.locast.data.SyncException;
 import edu.mit.mobile.android.locast.sync.AbsMediaSync;
@@ -25,21 +24,7 @@ public class MediaSyncService extends AbsMediaSync {
     public void enqueueUnpublishedMedia() throws SyncException {
         Log.d(TAG, "TODO enqueue unpublished media");
         // TODO
-        // startService(new Intent(Intent.ACTION_SYNC, Card.MEDIA..))
         LocastSyncService.startSync(this, Card.MEDIA.getAll(Card.CONTENT_URI));
-        // final ContentResolver cr = getContentResolver();
-        // final CardMedia c = new CardMedia(cr.query(Card.MEDIA.getAll(Card.CONTENT_URI),
-        // PROJECTION,
-        // CardMedia.COL_MEDIA_URL + " IS NULL OR " + CardMedia.COL_PUBLIC_URL + " IS NULL",
-        // null, null));
-        //
-        // try {
-        // for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-        // LocastSyncService.c.getCanonicalUri();
-        // }
-        // } finally {
-        // c.close();
-        // }
     }
 
     @Override
@@ -50,7 +35,8 @@ public class MediaSyncService extends AbsMediaSync {
 
     @Override
     public boolean getKeepOffline(Uri castMediaUri, CastMedia castMedia) {
-        return Authorable.canEdit(Authenticator.getUserUri(this, getAccount()), castMedia);
+        // by default, don't keep any originals offline.
+        return false;
     }
 
     @Override
