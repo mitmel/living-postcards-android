@@ -88,15 +88,18 @@ public class DeleteDialogFragment extends DialogFragment implements OnClickListe
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
-            case AlertDialog.BUTTON_POSITIVE:
+            case AlertDialog.BUTTON_POSITIVE: {
                 final int count = JsonSyncableItem.markDeleted(getActivity().getContentResolver(),
                         mItem, true, null, null);
                 dialog.dismiss();
                 if (count >= 1) {
-                    LocastSyncService.startSync(getActivity(), mItem);
+                    LocastSyncService.startSync(getActivity(), mItem, true);
+                } else {
+                    Log.w(TAG, "Failed to delete  " + mItem + ". Count from markDeleted() was "
+                            + count);
                 }
                 mOnDeleteListener.onDelete(mItem, count >= 1); // it should only ever be 1, but...
-
+            }
                 break;
 
             case AlertDialog.BUTTON_NEGATIVE:
