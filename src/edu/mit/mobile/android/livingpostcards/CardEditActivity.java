@@ -87,7 +87,8 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
     private void showDeleteDialog() {
         final DeleteDialogFragment del = DeleteDialogFragment.newInstance(mCard,
-                getString(R.string.postcard_edit_delete_confirm_message));
+                getText(R.string.delete_postcard),
+                getText(R.string.postcard_edit_delete_confirm_message));
         del.registerOnDeleteListener(this);
         del.show(getSupportFragmentManager(), "dialog");
     }
