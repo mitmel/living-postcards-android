@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
@@ -35,8 +36,10 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -68,7 +71,7 @@ import edu.mit.mobile.android.widget.MultiLevelButton.OnChangeLevelListener;
 
 public class CameraActivity extends FragmentActivity implements OnClickListener,
         OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor>,
-        OnOptionsItemSelectedListener, OnCreateOptionsMenuListener {
+        OnOptionsItemSelectedListener, OnCreateOptionsMenuListener, OnTouchListener {
 
     private static final String TAG = CameraActivity.class.getSimpleName();
 
@@ -105,6 +108,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             CardMedia.COL_LOCAL_URL };
 
     private static final int MSG_RELOAD_CARD_AND_MEDIA = 100;
+    private static final int MSG_START_AUTOFOCUS = 101;
 
     private static class MyHandler extends Handler {
         private final CameraActivity mActivity;
@@ -120,6 +124,10 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                     final LoaderManager lm = mActivity.getSupportLoaderManager();
                     lm.restartLoader(LOADER_CARD, null, mActivity);
                     lm.restartLoader(LOADER_CARDMEDIA, null, mActivity);
+                    break;
+
+                case MSG_START_AUTOFOCUS:
+                    mActivity.onShutterHalfwayPressed();
                     break;
             }
         }
@@ -167,6 +175,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         mCaptureButton = (Button) findViewById(R.id.capture);
         mCaptureButton.setOnClickListener(this);
+        mCaptureButton.setOnTouchListener(this);
 
         mOnionskinToggle = (MultiLevelButton) findViewById(R.id.onion_skin_toggle);
         mOnionskinToggle.setOnChangeLevelListener(mOnionskinChangeLevel);
@@ -379,19 +388,38 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         return c; // returns null if camera is unavailable
     }
 
+    private volatile boolean mDelayedCapture;
+
     private void capture() {
-        invalidateOnionskinImage();
         mCaptureButton.setEnabled(false);
-        mCamera.takePicture(null, null, mPictureCallback);
+
+        if (mAutofocusStarted) {
+            // don't capture while autofocusing. Capture will be done on the callback.
+            mDelayedCapture = true;
+            return;
+        }
+
+        invalidateOnionskinImage();
+
+        try {
+            mCamera.takePicture(null, null, mPictureCallback);
+            // make this error non-fatal.
+        }catch (final RuntimeException re){
+            Toast.makeText(CameraActivity.this, R.string.err_camera_take_picture_failed,
+                    Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Error taking picture", re);
+            setReadyToCapture();
+        }
     }
 
     private final PictureCallback mPictureCallback = new PictureCallback() {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+            mCamera.cancelAutoFocus();
+            mCamera.startPreview();
             setFullscreen(true);
             savePicture(data);
-            mCamera.startPreview();
         }
     };
 
@@ -422,6 +450,49 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                 findViewById(R.id.grid).setVisibility(isChecked ? View.VISIBLE : View.GONE);
         }
     }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (v.getId()) {
+            case R.id.capture:
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mHandler.sendEmptyMessageDelayed(MSG_START_AUTOFOCUS, 500);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        mHandler.removeMessages(MSG_START_AUTOFOCUS);
+                        break;
+                }
+                return false;
+            default:
+                return false;
+        }
+    }
+
+    private volatile boolean mAutofocusStarted = false;
+    /**
+     * Called when the shutter button has been pressed and held halfway.
+     */
+    private void onShutterHalfwayPressed() {
+        mAutofocusStarted = true;
+        mCamera.autoFocus(mAutoFocusCallback);
+    }
+
+    AutoFocusCallback mAutoFocusCallback = new AutoFocusCallback() {
+
+        @Override
+        public void onAutoFocus(boolean success, Camera camera) {
+            mAutofocusStarted = false;
+            if (mDelayedCapture) {
+                if (success) {
+                    capture();
+                } else {
+                    setReadyToCapture();
+                }
+                mDelayedCapture = false;
+            }
+        }
+    };
 
     // /////////////////////////////////////////////////////////////////////
     // content loading
@@ -611,13 +682,17 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         protected void onPostExecute(Uri result) {
             if (mErr != null) {
                 Log.e(TAG, "error writing file", mErr);
-                Toast.makeText(CameraActivity.this,
-                        "Sorry, there was an error while saving the photo. Please try again.",
+                Toast.makeText(CameraActivity.this, R.string.err_camera_take_picture_failed,
                         Toast.LENGTH_LONG).show();
             }
-            CameraActivity.this.setProgressBarIndeterminateVisibility(false);
-            mCaptureButton.setEnabled(true);
+            setReadyToCapture();
         }
+    }
+
+    private void setReadyToCapture() {
+        CameraActivity.this.setProgressBarIndeterminateVisibility(false);
+        mCaptureButton.setEnabled(true);
+        mCamera.startPreview();
     }
 
     /***
