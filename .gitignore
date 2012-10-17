@@ -4,3 +4,4 @@ gen/
 build.xml
 local.properties
 .project
+*.apk
