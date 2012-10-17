@@ -234,7 +234,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         if (mCamera != null) {
             mPreview = new CameraPreview(this, mCamera);
-
+            mPreview.setForceAspectRatio((float) 640 / 480);
             mPreviewHolder.addView(mPreview);
 
         } else {
@@ -518,6 +518,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             case LOADER_CARD:
                 if (c.moveToFirst()) {
                     setTitle(Card.getTitle(this, c));
+
                 }
                 break;
 

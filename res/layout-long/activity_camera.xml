@@ -6,23 +6,21 @@
 
     <RelativeLayout
         android:id="@+id/viewfinder"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/controls"
         android:background="@android:color/black" >
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="NOT LONG"/>
         <FrameLayout
             android:id="@+id/camera_preview"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_centerInParent="true" />
 
         <com.stackoverflow.android.widget.AspectRatioImageView
             android:id="@+id/onion_skin_image"
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:contentDescription="@null"
             android:scaleType="fitXY"
@@ -30,10 +28,10 @@
 
         <View
             android:id="@+id/grid"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/camera_preview"
-            android:layout_alignTop="@+id/camera_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignLeft="@+id/camera_preview"
+            android:layout_alignRight="@+id/camera_preview"
             android:layout_alignWithParentIfMissing="true"
             android:layout_centerInParent="true"
             android:background="@drawable/grid"
@@ -42,10 +40,12 @@
 
     <LinearLayout
         android:id="@+id/controls"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/location"
+        android:layout_toRightOf="@+id/viewfinder"
         android:background="@drawable/bg_fading_edge_inner_left"
         android:gravity="bottom"
         android:orientation="vertical" >

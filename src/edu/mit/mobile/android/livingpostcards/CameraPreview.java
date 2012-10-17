@@ -5,10 +5,12 @@ import java.io.IOException;
 import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import edu.mit.mobile.android.locast.Constants;
 
 /**
  * Camera preview, based on the Android example code.
@@ -21,6 +23,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private static final String TAG = CameraPreview.class.getSimpleName();
     private final SurfaceHolder mHolder;
     private final Camera mCamera;
+    private float mForceAspectRatio = 0f;
+
+    private static final float ASPECT_RATIO_TOLERENCE = 0.001f;
 
     @SuppressWarnings("deprecation")
     public CameraPreview(Context context, final Camera camera) {
@@ -39,13 +44,22 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
+    /**
+     * Instead of letting the preview pick the best size based on
+     *
+     * @param widthByHeight
+     */
+    public void setForceAspectRatio(float widthByHeight) {
+        mForceAspectRatio = widthByHeight;
+    }
+
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (final IOException e) {
-            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
+            Log.e(TAG, "Error setting camera preview: " + e.getMessage());
         }
     }
 
@@ -68,7 +82,26 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         final Parameters p = mCamera.getParameters();
 
-        final Camera.Size size = getBestPreviewSize(w, h, p);
+        Camera.Size size = getBestPreviewSize(w, h, p, mForceAspectRatio);
+
+        // This means our screen is probably small and there are no pixel-for-pixel preview sizes
+        // that have the same aspect ratio. Try searching from the original picture size and letting
+        // the UI scale.
+        if (size == null) {
+            Log.w(TAG,
+                    "Couldn't find the best size that maps pixel-for-pixel on the screen. Trying larger ones...");
+            final Size picSize = p.getPictureSize();
+            size = getBestPreviewSize(picSize.width, picSize.height, p, (float) picSize.width
+                    / picSize.height);
+        }
+
+        // ok, this isn't good. But it's better than failing.
+        if (size == null) {
+            Log.e(TAG,
+                    "Trying to find the best size, but couldn't find one with the request aspect ratio ("
+                            + mForceAspectRatio + "). Ignoring ratio request...");
+            size = getBestPreviewSize(w, h, p, 0f);
+        }
 
         p.setPreviewSize(size.width, size.height);
 
@@ -80,21 +113,26 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.startPreview();
 
         } catch (final Exception e) {
-            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+            Log.e(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-        // if width is specified exactly, we won't attempt to resize ourselves
-        if (View.MeasureSpec.getMode(widthMeasureSpec) == View.MeasureSpec.EXACTLY) {
+        final int wMode = View.MeasureSpec.getMode(widthMeasureSpec);
+        final int hMode = View.MeasureSpec.getMode(heightMeasureSpec);
+        // if the size is specified exactly, we won't attempt to resize ourselves
+        if (wMode == View.MeasureSpec.EXACTLY && hMode == View.MeasureSpec.EXACTLY) {
+            if (Constants.DEBUG) {
+                Log.d(TAG, "not correcting aspect ratio for preview");
+            }
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
 
         int w = View.MeasureSpec.getSize(widthMeasureSpec);
-        final int h = View.MeasureSpec.getSize(heightMeasureSpec);
+        int h = View.MeasureSpec.getSize(heightMeasureSpec);
 
         final Parameters p = mCamera.getParameters();
 
@@ -102,9 +140,24 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // picture instead.
         final Camera.Size picSize = p.getPictureSize();
 
-        // preserve aspect ratio
-        w = (int) (((float) picSize.width / picSize.height) * h);
+        if (wMode == View.MeasureSpec.AT_MOST) {
+            // preserve aspect ratio
+            w = (int) (((float) picSize.width / picSize.height) * h);
+        } else if (hMode == View.MeasureSpec.AT_MOST) {
+            // preserve aspect ratio
+            h = (int) (((float) picSize.height / picSize.width) * w);
+        } else {
+            if (Constants.DEBUG) {
+                Log.d(TAG, "not correcting aspect ratio for preview");
+            }
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
 
+        if (Constants.DEBUG) {
+            Log.d(TAG, "Adjusting view to match aspect ratio of preview " + picSize.width + "x"
+                    + picSize.height + "; set to " + w + "x" + h);
+        }
         setMeasuredDimension(w, h);
     }
 
@@ -127,10 +180,32 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
      * @param parameters
      * @return
      */
-    public static Camera.Size getBestPreviewSize(int width, int height, Camera.Parameters parameters) {
+    public static Camera.Size getBestPreviewSize(int width, int height,
+            Camera.Parameters parameters, float widthByHeight) {
         Camera.Size result = null;
 
+
+        if (Constants.DEBUG) {
+            Log.d(TAG, "Looking for best preview size that fits within " + width + "x" + height
+                    + (widthByHeight != 0f ? " and has aspect ratio of " + widthByHeight : ""));
+            final StringBuilder sb = new StringBuilder();
+            for (final Camera.Size size : parameters.getSupportedPreviewSizes()) {
+                sb.append(size.width);
+                sb.append('x');
+                sb.append(size.height);
+                sb.append(" ");
+            }
+            Log.d(TAG, "available sizes: " + sb.toString());
+        }
         for (final Camera.Size size : parameters.getSupportedPreviewSizes()) {
+            if (widthByHeight != 0f
+                    && Math.abs((float) size.width / size.height - widthByHeight) >= ASPECT_RATIO_TOLERENCE) {
+                continue;
+            }
+            if (Constants.DEBUG && widthByHeight != 0f) {
+                Log.d(TAG, size.width + "x" + size.height + " has the correct aspect ratio");
+            }
+
             if (size.width <= width && size.height <= height) {
                 if (result == null) {
                     result = size;
@@ -144,7 +219,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 }
             }
         }
-
+        if (Constants.DEBUG) {
+            if (result == null) {
+                Log.e(TAG, "Couldn't find a size that matches the requirements.");
+            } else {
+                Log.d(TAG, "choose " + result.width + "x" + result.height);
+            }
+        }
         return result;
     }
 }
