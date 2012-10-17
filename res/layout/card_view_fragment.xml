@@ -4,5 +4,6 @@
     style="@style/Image.CardImage"
     android:layout_width="320dip"
     android:layout_height="240dip"
+    android:layout_gravity="center_horizontal"
     android:layout_alignParentTop="true"
     android:contentDescription="@null" />
