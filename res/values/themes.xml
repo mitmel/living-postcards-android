@@ -10,6 +10,9 @@
         <item name="android:titleTextStyle">@style/Widget.Styled.ActionBar.Title</item>
     </style>
 
-    <style name="CameraTheme" parent="Theme.Sherlock" />
+    <style name="CameraTheme" parent="Theme.Sherlock.Light">
+        <item name="android:windowBackground">@drawable/bg_arches</item>
+        <item name="android:colorBackground">@color/bg_arches_solid</item>
+    </style>
 
 </resources>

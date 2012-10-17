@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import android.content.ContentValues;
@@ -17,6 +18,8 @@ import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -41,6 +44,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.ActionBarSherlock;
@@ -58,6 +62,7 @@ import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.locast.data.CastMedia.CastMediaInfo;
 import edu.mit.mobile.android.locast.data.MediaProcessingException;
 import edu.mit.mobile.android.location.IncrementalLocator;
+import edu.mit.mobile.android.utils.AddressUtils;
 import edu.mit.mobile.android.widget.MultiLevelButton;
 import edu.mit.mobile.android.widget.MultiLevelButton.OnChangeLevelListener;
 
@@ -129,12 +134,14 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             int newLevel;
             switch (curLevel) {
                 case 0:
-                    newLevel = 30;
+                    newLevel = 25;
                     break;
-                case 30:
-                    newLevel = 70;
+                case 25:
+                    newLevel = 50;
                     break;
-                case 70:
+                case 50:
+                    newLevel = 75;
+                    break;
                 default:
                     newLevel = 0;
                     break;
@@ -148,7 +155,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         mSherlock.setContentView(R.layout.activity_camera);
 
@@ -362,8 +369,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             final Parameters params = c.getParameters();
             final Size s = getBestPictureSize(640, 480, params);
             params.setPictureSize(s.width, s.height);
-            if (Constants.DEBUG){
-                Log.d(TAG, "best picture size is " + s.width + "x" + s.height );
+            if (Constants.DEBUG) {
+                Log.d(TAG, "best picture size is " + s.width + "x" + s.height);
             }
             c.setParameters(params);
         } catch (final Exception e) {
@@ -429,8 +436,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
             case LOADER_CARDMEDIA:
                 return new CursorLoader(this, Card.MEDIA.getUri(mCard), CARD_MEDIA_PROJECTION,
-                        null, null,
-                        CardMedia._ID + " DESC LIMIT 1");
+                        null, null, CardMedia._ID + " DESC LIMIT 1");
 
             default:
                 return null;
@@ -442,7 +448,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         switch (loader.getId()) {
             case LOADER_CARD:
                 if (c.moveToFirst()) {
-                    mSherlock.setTitle(c.getString(c.getColumnIndex(Card.COL_TITLE)));
+                    setTitle(Card.getTitle(this, c));
                 }
                 break;
 
@@ -450,6 +456,12 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                 showLastPhoto(c);
                 break;
         }
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        super.setTitle(title);
+        ((TextView) findViewById(R.id.title)).setText(title);
     }
 
     /**
@@ -486,9 +498,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             cv.put(Card.COL_LATITUDE, mLocation.getLatitude());
             cv.put(Card.COL_LONGITUDE, mLocation.getLongitude());
         }
-        final Uri card = Card.createNewCard(this, Authenticator.getFirstAccount(this,
-                Authenticator.ACCOUNT_TYPE),
-               cv);
+        final Uri card = Card.createNewCard(this,
+                Authenticator.getFirstAccount(this, Authenticator.ACCOUNT_TYPE), cv);
 
         final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
 
@@ -518,9 +529,21 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         @Override
         public void onLocationChanged(Location location) {
             mLocation = location;
-            // XXX translate or kill
-            setTitle("Location found. Accuracy ±" + location.getAccuracy() + "m");
+            final TextView loc = (TextView) findViewById(R.id.location);
+            final Geocoder g = new Geocoder(CameraActivity.this);
+            List<Address> addresses;
+            try {
+                addresses = g.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
+                if (addresses.size() > 0) {
+                    loc.setText(AddressUtils.addressToName(addresses.get(0)));
+                } else {
+                    loc.setText("Locating...");
+                }
+            } catch (final IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     };
 
@@ -549,8 +572,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
             final String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss.SSSZ", Locale.US)
                     .format(new Date());
-            final File outFile = new File(externalPicturesDir, "IMG_" + timeStamp
-                    + ".jpg");
+            final File outFile = new File(externalPicturesDir, "IMG_" + timeStamp + ".jpg");
 
             externalPicturesDir.mkdirs();
 

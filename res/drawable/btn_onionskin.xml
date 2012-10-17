@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level-list xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:maxLevel="0" android:drawable="@drawable/btn_onionskin_0" />
-    <item android:maxLevel="30" android:drawable="@drawable/btn_onionskin_30" />
-    <item android:maxLevel="70" android:drawable="@drawable/btn_onionskin_70" />
+    <item android:maxLevel="25" android:drawable="@drawable/btn_onionskin_1" />
+    <item android:maxLevel="50" android:drawable="@drawable/btn_onionskin_2" />
+    <item android:maxLevel="75" android:drawable="@drawable/btn_onionskin_3" />
 
 </level-list>

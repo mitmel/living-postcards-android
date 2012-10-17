@@ -1,9 +1,11 @@
 package edu.mit.mobile.android.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
+import edu.mit.mobile.android.livingpostcards.R;
 
 public class MultiLevelButton extends Button {
 
@@ -36,21 +38,25 @@ public class MultiLevelButton extends Button {
 
     public MultiLevelButton(Context context) {
         super(context);
-        init(context);
+        init(context, null);
     }
 
     public MultiLevelButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init(context, attrs);
     }
 
     public MultiLevelButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context);
+        init(context, attrs);
     }
 
-    private void init(Context context) {
+    private void init(Context context, AttributeSet attrs) {
         super.setOnClickListener(mOnClickListener);
+        final TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.MultiLevelButton);
+
+        final int level = ta.getInteger(R.styleable.MultiLevelButton_level, 0);
+        setLevel(level);
     }
 
     @Override
