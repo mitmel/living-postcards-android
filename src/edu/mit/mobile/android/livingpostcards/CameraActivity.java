@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import android.content.ContentValues;
@@ -19,8 +18,6 @@ import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -65,7 +62,7 @@ import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.locast.data.CastMedia.CastMediaInfo;
 import edu.mit.mobile.android.locast.data.MediaProcessingException;
 import edu.mit.mobile.android.location.IncrementalLocator;
-import edu.mit.mobile.android.utils.AddressUtils;
+import edu.mit.mobile.android.maps.GeocodeTask;
 import edu.mit.mobile.android.widget.MultiLevelButton;
 import edu.mit.mobile.android.widget.MultiLevelButton.OnChangeLevelListener;
 
@@ -601,21 +598,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         @Override
         public void onLocationChanged(Location location) {
             mLocation = location;
-            final TextView loc = (TextView) findViewById(R.id.location);
-            final Geocoder g = new Geocoder(CameraActivity.this);
-            List<Address> addresses;
-            try {
-                addresses = g.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-
-                if (addresses.size() > 0) {
-                    loc.setText(AddressUtils.addressToName(addresses.get(0)));
-                } else {
-                    loc.setText("Locating...");
-                }
-            } catch (final IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            showLocationAsText(location);
         }
     };
 
@@ -694,6 +677,22 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         CameraActivity.this.setProgressBarIndeterminateVisibility(false);
         mCaptureButton.setEnabled(true);
         mCamera.startPreview();
+    }
+
+    private GeocodeTask mGeocodeTask;
+
+    /**
+     * Displays the given location as text by reverse geocoding it. The result is displayed
+     * asynchronously.
+     *
+     * @param location
+     */
+    protected void showLocationAsText(Location location) {
+        if (mGeocodeTask != null) {
+            mGeocodeTask.cancel(true);
+        }
+        mGeocodeTask = new GeocodeTask(this, (TextView) findViewById(R.id.location));
+        mGeocodeTask.execute(location);
     }
 
     /***
