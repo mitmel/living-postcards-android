@@ -163,7 +163,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mSherlock.requestFeature(Window.FEATURE_NO_TITLE);
 
         mSherlock.setContentView(R.layout.activity_camera);
 
@@ -404,7 +404,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         try {
             mCamera.takePicture(null, null, mPictureCallback);
             // make this error non-fatal.
-        }catch (final RuntimeException re){
+        } catch (final RuntimeException re) {
             Toast.makeText(CameraActivity.this, R.string.err_camera_take_picture_failed,
                     Toast.LENGTH_LONG).show();
             Log.e(TAG, "Error taking picture", re);
@@ -470,6 +470,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     }
 
     private volatile boolean mAutofocusStarted = false;
+
     /**
      * Called when the shutter button has been pressed and held halfway.
      */

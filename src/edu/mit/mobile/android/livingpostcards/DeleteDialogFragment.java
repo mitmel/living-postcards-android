@@ -30,7 +30,7 @@ public class DeleteDialogFragment extends DialogFragment implements OnClickListe
 
     private static final String ARG_ITEM_URI = "uri";
     private static final String ARG_MESSAGE = "message";
-    private static final String ARG_TITLE = "message";
+    private static final String ARG_TITLE = "title";
     private static final String TAG = DeleteDialogFragment.class.getSimpleName();
 
     private OnDeleteListener mOnDeleteListener;
