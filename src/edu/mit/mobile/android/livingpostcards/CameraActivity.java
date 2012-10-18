@@ -48,9 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.ActionBarSherlock;
-import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
 import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
-import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 import edu.mit.mobile.android.imagecache.ImageCache;
@@ -68,7 +66,7 @@ import edu.mit.mobile.android.widget.MultiLevelButton.OnChangeLevelListener;
 
 public class CameraActivity extends FragmentActivity implements OnClickListener,
         OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor>,
-        OnOptionsItemSelectedListener, OnCreateOptionsMenuListener, OnTouchListener {
+        OnOptionsItemSelectedListener, OnTouchListener {
 
     private static final String TAG = CameraActivity.class.getSimpleName();
 
@@ -270,17 +268,6 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        mSherlock.getMenuInflater().inflate(R.menu.activity_camera, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(android.view.Menu menu) {
-        return mSherlock.dispatchCreateOptionsMenu(menu);
     }
 
     @Override

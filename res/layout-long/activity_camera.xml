@@ -80,8 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dip"
             android:layout_marginRight="15dip"
-            android:maxLines="2"
-            android:text="20 Ames St. Cambridge MA" />
+            android:maxLines="2" />
 
         <View
             android:layout_width="0dip"
