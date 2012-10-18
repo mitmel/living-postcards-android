@@ -22,11 +22,26 @@
   <string name="postcard_edit_title_hint">Kartpostal Başlığı</string>
   <string name="settings">Ayarlar</string>
   <string name="log_out">Çıkış</string>
-  <string name="main_tab_whats_new">Yeni Neler Var</string>
-  <string name="main_tab_my_postcards">Kartpostallarım</string>
-  <string name="postcard_edit_description_hint">Tanim</string>
+  <string name="main_tab_whats_new">Yeniler</string>
+  <string name="main_tab_my_postcards">Kartlarım</string>
+  <string name="postcard_edit_description_hint">Tanım</string>
   <string name="publish_postcard">Kartpostalı Yayımla</string>
   <string name="save_postcard">Kartpostalı Kaydet</string>
   <string name="publish_postcard_condensed">Yayımla</string>
   <string name="save_postcard_condensed">Kaydet</string>
+  <string name="delete_postcard">Kartpostalı sil</string>
+  <string name="postcard_edit_delete_confirm_message">Bu kartpostalı silmek istediğinize emin misiniz?</string>
+  <string name="postcard_edit_title_empty">Bir başlık girin</string>
+  <string name="err_initializing_camera">Kamera başlatma hatası</string>
+  <string name="delete_postcard_image_confirm_message">Bu fotoğrafı kartpostalınızdan silmek istediginize emin misiniz?</string>
+  <string name="retry">Yeniden dene</string>
+  <string name="delete_postcard_image">Kartpostalı sil</string>
+  <string name="untitled">
+    <i>Başlıksız</i>
+  </string>
+  <string name="err_no_data_connection">Veri bağlantısı yok.</string>
+  <string name="err_postcard_media_could_not_download">Kartpostalı yüklemede hata var: %1$s</string>
+  <string name="geocoder_lookup_unknown_location">bilinmeyen yer</string>
+  <string name="main_tab_unpublished">Taslaklar</string>
+  <string name="err_camera_take_picture_failed">Üzgünüz, fotoğrafı kaydederken bir hata oluştu. Lüften tekrardan deneyiniz.</string>
 </resources>

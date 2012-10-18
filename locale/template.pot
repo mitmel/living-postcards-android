@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-10-10 13:01-0400\n"
+"POT-Creation-Date: 2012-10-18 11:59-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -121,6 +121,10 @@ msgctxt "main_tab_my_postcards"
 msgid "My Postcards"
 msgstr ""
 
+msgctxt "main_tab_unpublished"
+msgid "Unpublished"
+msgstr ""
+
 msgctxt "postcard_edit_description_hint"
 msgid "Description"
 msgstr ""
@@ -155,5 +159,38 @@ msgstr ""
 
 msgctxt "err_initializing_camera"
 msgid "Error initializing camera"
+msgstr ""
+
+msgctxt "untitled"
+msgid "<i>Untitled</i>"
+msgstr ""
+
+#, c-format
+msgctxt "err_postcard_media_could_not_download"
+msgid "Error loading postcard: %1$s"
+msgstr ""
+
+msgctxt "retry"
+msgid "Retry"
+msgstr ""
+
+msgctxt "err_no_data_connection"
+msgid "No data connection."
+msgstr ""
+
+msgctxt "err_camera_take_picture_failed"
+msgid "Sorry, there was an error while saving the photo. Please try again."
+msgstr ""
+
+msgctxt "delete_postcard_image"
+msgid "Delete postcard image"
+msgstr ""
+
+msgctxt "delete_postcard_image_confirm_message"
+msgid "Are you sure you want to delete this image from the postcard?"
+msgstr ""
+
+msgctxt "geocoder_lookup_unknown_location"
+msgid "unknown location"
 msgstr ""
 

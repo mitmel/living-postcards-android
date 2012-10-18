@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2012-10-04 17:38-0400\n"
-"PO-Revision-Date: 2012-10-10 20:11+0200\n"
-"Last-Translator: Administrator <>\n"
+"PO-Revision-Date: 2012-10-18 18:58+0200\n"
+"Last-Translator: Pelin Arslan <parslan@mit.edu>\n"
 "Language-Team: tr <LL@li.org>\n"
 "Language: tk\n"
 "MIME-Version: 1.0\n"
@@ -122,15 +122,15 @@ msgstr "Çıkış"
 
 msgctxt "main_tab_whats_new"
 msgid "What's new"
-msgstr "Yeni Neler Var"
+msgstr "Yeniler"
 
 msgctxt "main_tab_my_postcards"
 msgid "My Postcards"
-msgstr "Kartpostallarım"
+msgstr "Kartlarım"
 
 msgctxt "postcard_edit_description_hint"
 msgid "Description"
-msgstr "Tanim"
+msgstr "Tanım"
 
 msgctxt "publish_postcard"
 msgid "Publish Postcard"
@@ -150,7 +150,7 @@ msgstr "Kaydet"
 
 msgctxt "delete_postcard"
 msgid "Delete postcard"
-msgstr "Kartpostalı Sil"
+msgstr "Kartpostalı sil"
 
 msgctxt "postcard_edit_delete_confirm_message"
 msgid "Are you sure you want to delete this card?"
@@ -163,3 +163,42 @@ msgstr "Bir başlık girin"
 msgctxt "err_initializing_camera"
 msgid "Error initializing camera"
 msgstr "Kamera başlatma hatası"
+
+msgctxt "delete_postcard_image_confirm_message"
+msgid "Are you sure you want to delete this image from the postcard?"
+msgstr "Bu fotoğrafı kartpostalınızdan silmek istediginize emin misiniz?"
+
+msgctxt "retry"
+msgid "Retry"
+msgstr "Yeniden dene"
+
+# Kartpostalı Sil
+msgctxt "delete_postcard_image"
+msgid "Delete postcard image"
+msgstr "Kartpostalı sil"
+
+msgctxt "untitled"
+msgid "<i>Untitled</i>"
+msgstr "<i>Başlıksız</i>"
+
+msgctxt "err_no_data_connection"
+msgid "No data connection."
+msgstr "Veri bağlantısı yok."
+
+#, c-format
+msgctxt "err_postcard_media_could_not_download"
+msgid "Error loading postcard: %1$s"
+msgstr "Kartpostalı yüklemede hata var: %1$s"
+
+msgctxt "geocoder_lookup_unknown_location"
+msgid "unknown location"
+msgstr "bilinmeyen yer"
+
+msgctxt "main_tab_unpublished"
+msgid "Unpublished"
+msgstr "Taslaklar"
+
+msgctxt "err_camera_take_picture_failed"
+msgid "Sorry, there was an error while saving the photo. Please try again."
+msgstr ""
+"Üzgünüz, fotoğrafı kaydederken bir hata oluştu. Lüften tekrardan deneyiniz."
