@@ -37,4 +37,9 @@ public class AuthenticatorActivity extends AbsLocastAuthenticatorActivity {
     protected String getAuthtokenType() {
         return Authenticator.ACCOUNT_TYPE;
     }
+
+    @Override
+    protected boolean isEmailAddressLogin() {
+        return false;
+    }
 }
