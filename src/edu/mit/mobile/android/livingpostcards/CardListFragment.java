@@ -40,7 +40,7 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         OnItemClickListener {
 
     private static final String[] FROM = { Card.COL_TITLE, Card.COL_AUTHOR, Card.COL_COVER_PHOTO,
-            Card.COL_THUMBNAIL };
+            Card.COL_THUMBNAIL, Card.COL_DRAFT };
     private static final int[] TO = { R.id.title, R.id.author, R.id.card_media_thumbnail,
             R.id.card_media_thumbnail };
 
@@ -135,8 +135,13 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final Uri item = ContentUris.withAppendedId(mCards, id);
-        startActivity(new Intent(Intent.ACTION_VIEW, item));
-
+        final Cursor c = mAdapter.getCursor();
+        c.moveToPosition(position);
+        if (Card.isDraft(c)) {
+            startActivity(new Intent(Intent.ACTION_EDIT, item));
+        } else {
+            startActivity(new Intent(Intent.ACTION_VIEW, item));
+        }
     }
 
     @Override
