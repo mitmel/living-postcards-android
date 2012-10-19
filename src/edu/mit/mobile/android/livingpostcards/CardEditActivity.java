@@ -39,6 +39,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
             Card.COL_DESCRIPTION, Card.COL_DRAFT, Card.COL_TIMING, Card.COL_AUTHOR_URI,
             Card.COL_PRIVACY };
     private static final String TAG = CardEditActivity.class.getSimpleName();
+    private static final String TAG_DELETE_DIALOG = "delete-dialog";
     private Uri mCard;
     private CardMediaEditFragment mCardViewFragment;
 
@@ -77,11 +78,18 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
             mUserUri = Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE);
 
             getSupportLoaderManager().initLoader(0, null, this);
-            ft.commit();
-        }
 
-        if (Intent.ACTION_DELETE.equals(action)) {
-            showDeleteDialog();
+            // if this isn't null, it was saved automatically for us. So hook it back in.
+            final DeleteDialogFragment deleteDialog = (DeleteDialogFragment) fm
+                    .findFragmentByTag(TAG_DELETE_DIALOG);
+            if (deleteDialog != null) {
+                deleteDialog.registerOnDeleteListener(this);
+
+            } else if (Intent.ACTION_DELETE.equals(action)) {
+                showDeleteDialog();
+            }
+
+            ft.commit();
         }
     }
 
@@ -90,7 +98,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
                 getText(R.string.delete_postcard),
                 getText(R.string.postcard_edit_delete_confirm_message));
         del.registerOnDeleteListener(this);
-        del.show(getSupportFragmentManager(), "dialog");
+        del.show(getSupportFragmentManager(), TAG_DELETE_DIALOG);
     }
 
     @Override
@@ -245,7 +253,8 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
     public void onDelete(Uri item, boolean deleted) {
         if (mCard.equals(item) && deleted) {
             setResult(RESULT_OK);
-            finish();
+            // no need to call finish, as the loader will automatically reload, which will result in
+            // no data being loaded, which will then call finish()
 
         } else if (Intent.ACTION_DELETE.equals(getIntent().getAction()) && !deleted) {
             setResult(RESULT_CANCELED);

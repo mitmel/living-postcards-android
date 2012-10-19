@@ -98,13 +98,18 @@ public class DeleteDialogFragment extends DialogFragment implements OnClickListe
                     Log.w(TAG, "Failed to delete  " + mItem + ". Count from markDeleted() was "
                             + count);
                 }
-                mOnDeleteListener.onDelete(mItem, count >= 1); // it should only ever be 1, but...
+                if (mOnDeleteListener != null) {
+                    mOnDeleteListener.onDelete(mItem, count >= 1); // it should only ever be 1,
+                                                                   // but...
+                }
             }
                 break;
 
             case AlertDialog.BUTTON_NEGATIVE:
                 dialog.cancel();
-                mOnDeleteListener.onDelete(mItem, false);
+                if (mOnDeleteListener != null) {
+                    mOnDeleteListener.onDelete(mItem, false);
+                }
                 break;
         }
 
