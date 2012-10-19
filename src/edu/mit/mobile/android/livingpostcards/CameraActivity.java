@@ -97,7 +97,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     private static final int LOADER_CARD = 100, LOADER_CARDMEDIA = 101;
 
     private static final String[] CARD_MEDIA_PROJECTION = new String[] { CardMedia._ID,
-            CardMedia.COL_LOCAL_URL };
+            CardMedia.COL_LOCAL_URL, CardMedia.COL_MEDIA_URL };
 
     private static final int MSG_RELOAD_CARD_AND_MEDIA = 100;
     private static final int MSG_START_AUTOFOCUS = 101;
@@ -526,8 +526,12 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
      */
     private void showLastPhoto(Cursor cardMedia) {
         if (cardMedia.moveToLast()) {
-            final String localUrl = cardMedia.getString(cardMedia
-                    .getColumnIndex(CardMedia.COL_LOCAL_URL));
+            String localUrl = cardMedia
+                    .getString(cardMedia.getColumnIndex(CardMedia.COL_LOCAL_URL));
+            if (localUrl == null) {
+                localUrl = cardMedia.getString(cardMedia
+                        .getColumnIndexOrThrow(CardMedia.COL_MEDIA_URL));
+            }
             if (localUrl != null) {
                 showOnionskinImage(Uri.parse(localUrl));
             }
