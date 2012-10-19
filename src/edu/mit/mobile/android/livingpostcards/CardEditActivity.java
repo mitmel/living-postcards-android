@@ -1,10 +1,20 @@
 package edu.mit.mobile.android.livingpostcards;
 
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +38,7 @@ import com.actionbarsherlock.view.MenuItem;
 import edu.mit.mobile.android.livingpostcards.DeleteDialogFragment.OnDeleteListener;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.livingpostcards.data.CardMedia;
 import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
@@ -41,7 +52,10 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
             Card.COL_DESCRIPTION, Card.COL_DRAFT, Card.COL_TIMING, Card.COL_AUTHOR_URI,
             Card.COL_PRIVACY };
     private static final String TAG = CardEditActivity.class.getSimpleName();
+    public static final String PREF_DIALOG_COLLABORATIVE_SEEN = "CardEditActivity.DIALOG_COLLABORATIVE_SEEN";
     private static final String TAG_DELETE_DIALOG = "delete-dialog";
+    private static final String TAG_DIALOG_COLLABORATIVE = "dialog-collaborative";
+
     private Uri mCard;
     private CardMediaEditFragment mCardViewFragment;
 
@@ -51,6 +65,30 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
     private boolean mIsDraft;
     private EditText mTitle;
     private EditText mDescription;
+    private final SetCollabDescDialogFragment.OnMarkCollaborativeListener mOnMarkCollabListener = new SetCollabDescDialogFragment.OnMarkCollaborativeListener() {
+
+        @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+        @Override
+        public void onMarkCollaborative() {
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(CardEditActivity.this);
+
+            final boolean neverShowAgain = false;
+            if (neverShowAgain) {
+                final Editor e = prefs.edit().putBoolean(PREF_DIALOG_COLLABORATIVE_SEEN, true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                    e.apply(); // this was introduced in Gingerbread
+                } else {
+                    e.commit();
+                }
+            }
+            setCollaborative(true);
+
+        }
+    };
+
+    private boolean mIsOwner;
+    private boolean mIsCollaborative;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -79,6 +117,13 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
                 ft.replace(R.id.card_edit_fragment, mCardViewFragment);
             }
 
+            // if the dialog has been automatically restored by the system, hook it in.
+            final SetCollabDescDialogFragment collab = (SetCollabDescDialogFragment) fm
+                    .findFragmentByTag(TAG_DIALOG_COLLABORATIVE);
+            if (collab != null) {
+                collab.setOnMarkCollaborativeListener(mOnMarkCollabListener);
+            }
+
             mUserUri = Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE);
 
             getSupportLoaderManager().initLoader(0, null, this);
@@ -90,14 +135,14 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
                 deleteDialog.registerOnDeleteListener(this);
 
             } else if (Intent.ACTION_DELETE.equals(action)) {
-                showDeleteDialog();
+                onDeletePostcard();
             }
 
             ft.commit();
         }
     }
 
-    private void showDeleteDialog() {
+    private void onDeletePostcard() {
         final DeleteDialogFragment del = DeleteDialogFragment.newInstance(mCard,
                 getText(R.string.delete_postcard),
                 getText(R.string.postcard_edit_delete_confirm_message));
@@ -109,24 +154,164 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.publish:
-                publish();
+                onPublish();
                 return true;
 
             case R.id.save:
-                saveButton();
+                onSave();
                 return true;
 
             case R.id.delete:
-                showDeleteDialog();
+                onDeletePostcard();
                 return true;
 
             case android.R.id.home:
                 startActivity(new Intent(Intent.ACTION_VIEW, Card.CONTENT_URI));
                 return true;
 
+            case R.id.add_frame:
+                // this is conceptually starting it for a result, but the result isn't actually
+                // used.
+                startActivityForResult(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard), 0);
+                return true;
+
+            case R.id.make_collaborative:
+                onMakeCollaborative();
+                return true;
+
+            case R.id.make_personal:
+                onMakePersonal();
+                return true;
+
             default:
                 return false;
         }
+    }
+
+    /**
+     * Queries the card media to determine if the card media have any contributors other than the
+     * owner of the card.
+     *
+     * @param card
+     * @return
+     */
+    private boolean hasNonOwnerContributors(Uri card) {
+        boolean hasNonOwnerContributors = false;
+        final String myAuthorUri = Authenticator.getUserUri(this);
+        final String[] proj = new String[] { CardMedia.COL_AUTHOR_URI };
+        final Cursor media = Card.MEDIA.query(getContentResolver(), card, proj);
+        final int cardMediaAuthorCol = media.getColumnIndexOrThrow(CardMedia.COL_AUTHOR_URI);
+        try {
+            for (media.moveToFirst(); !hasNonOwnerContributors && !media.isAfterLast(); media
+                    .moveToNext()) {
+                final String cardAuthor = media.getString(cardMediaAuthorCol);
+                hasNonOwnerContributors |= !myAuthorUri.equals(cardAuthor);
+            }
+        } finally {
+            media.close();
+        }
+
+        return hasNonOwnerContributors;
+    }
+
+    public static class SetCollabDescDialogFragment extends DialogFragment implements
+            DialogInterface.OnClickListener {
+        public interface OnMarkCollaborativeListener {
+            public void onMarkCollaborative();
+        }
+
+        private OnMarkCollaborativeListener mListener;
+
+        public void setOnMarkCollaborativeListener(OnMarkCollaborativeListener l) {
+            mListener = l;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity()).setIcon(R.drawable.ic_launcher)
+                    .setTitle(R.string.make_collaborative)
+                    .setPositiveButton(R.string.make_collaborative, this)
+                    .setMessage(R.string.make_collaborative_feature_description)
+                    .setNegativeButton(android.R.string.cancel, this).setCancelable(true).create();
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            mListener = null;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    mListener.onMarkCollaborative();
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    dismiss();
+                    break;
+            }
+        }
+    }
+
+    private void setCollaborative(boolean collaborative) {
+        final boolean success = Card.setCollaborative(getContentResolver(), mCard, collaborative);
+        if (success) {
+            if (Constants.DEBUG) {
+                Log.d(TAG, mCard + " saved successfully.");
+            }
+            LocastSyncService.startSync(this, mCard, true);
+        }
+    }
+
+    private void onMakeCollaborative() {
+        if (mIsCollaborative) {
+            return;
+        }
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        final boolean dialogSeen = prefs.getBoolean(PREF_DIALOG_COLLABORATIVE_SEEN, false);
+
+        if (!dialogSeen) {
+            final SetCollabDescDialogFragment df = new SetCollabDescDialogFragment();
+            df.setOnMarkCollaborativeListener(mOnMarkCollabListener);
+            df.show(getSupportFragmentManager(), TAG_DIALOG_COLLABORATIVE);
+        } else {
+            setCollaborative(true);
+            Toast.makeText(this, R.string.notice_make_collaborative_success, Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
+    private void onMakePersonal() {
+        if (!mIsCollaborative) {
+            return;
+        }
+
+        new AsyncTask<Uri, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Uri... params) {
+                boolean madePersonal = false;
+                if (!hasNonOwnerContributors(mCard)) {
+                    madePersonal = Card.setCollaborative(getContentResolver(), mCard, false);
+                }
+
+                return madePersonal;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (result) {
+                    Toast.makeText(CardEditActivity.this,
+                            R.string.notice_make_card_personal_success, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(CardEditActivity.this,
+                            R.string.notice_cannot_make_card_personal, Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute(mCard);
     }
 
     private boolean validate() {
@@ -160,7 +345,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         return success;
     }
 
-    private void saveButton() {
+    private void onSave() {
         if (!validate()) {
             return;
         }
@@ -172,7 +357,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         }
     }
 
-    protected void publish() {
+    protected void onPublish() {
         if (!validate()) {
             return;
         }
@@ -201,9 +386,21 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.delete).setVisible(mIsEditable);
-        menu.findItem(R.id.publish).setVisible(mIsDraft && mIsEditable);
-        menu.findItem(R.id.save).setVisible(!mIsDraft && mIsEditable);
+
+        // only the owner can do the following.
+        menu.findItem(R.id.delete).setVisible(mIsOwner);
+        menu.findItem(R.id.delete_photos).setVisible(mIsOwner);
+        menu.findItem(R.id.publish).setVisible(mIsOwner && mIsDraft);
+        menu.findItem(R.id.save).setVisible(mIsOwner && !mIsDraft);
+
+        final MenuItem makeCollab = menu.findItem(R.id.make_collaborative);
+        makeCollab.setVisible(mIsOwner);
+        makeCollab.setEnabled(!mIsCollaborative);
+
+        final MenuItem makePersonal = menu.findItem(R.id.make_personal);
+        makePersonal.setVisible(mIsOwner);
+        makePersonal.setEnabled(mIsCollaborative);
+
         return true;
     }
 
@@ -230,9 +427,13 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
             findViewById(R.id.add_frame).setVisibility(mIsEditable ? View.VISIBLE : View.GONE);
+            mIsOwner = mUserUri.equals(c.getString(c.getColumnIndexOrThrow(Card.COL_AUTHOR_URI)));
 
-            mTitle.setEnabled(mIsEditable);
-            mDescription.setEnabled(mIsEditable);
+            final String privacy = c.getString(c.getColumnIndexOrThrow(Card.COL_PRIVACY));
+            mIsCollaborative = Card.PRIVACY_PUBLIC.equals(privacy);
+
+            mTitle.setEnabled(mIsEditable && mIsOwner);
+            mDescription.setEnabled(mIsEditable && mIsOwner);
 
             mIsDraft = JsonSyncableItem.isDraft(c);
             mSherlock.dispatchInvalidateOptionsMenu();

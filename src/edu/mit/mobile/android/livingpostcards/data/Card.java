@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -144,6 +145,15 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
             title = context.getText(R.string.untitled);
         }
         return title;
+    }
+
+    public static boolean setCollaborative(ContentResolver cr, Uri card, boolean collaborative) {
+        final ContentValues cv = new ContentValues();
+
+        cv.put(Card.COL_PRIVACY, collaborative ? Card.PRIVACY_PUBLIC : Card.PRIVACY_PROTECTED);
+        final int count = cr.update(card, cv, null, null);
+
+        return count >= 1;
     }
 
     public static class CardResources extends AbsResourcesSync {

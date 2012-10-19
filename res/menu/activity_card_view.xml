@@ -5,19 +5,24 @@
         android:id="@+id/edit"
         android:icon="@android:drawable/ic_menu_edit"
         android:showAsAction="ifRoom"
-        android:visible="false"
-        android:title="@string/edit"/>
+        android:title="@string/edit"
+        android:visible="false"/>
     <item
         android:id="@+id/share"
         android:icon="@android:drawable/ic_menu_share"
         android:showAsAction="ifRoom"
         android:title="@string/share"/>
-    
-    <item android:id="@+id/delete"
-        android:title="@string/delete"
+    <item
+        android:id="@+id/add_frame"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:showAsAction="ifRoom"
+        android:title="@string/add_images"
+        android:visible="false"/>
+    <item
+        android:id="@+id/delete"
         android:icon="@android:drawable/ic_menu_delete"
-        android:visible="false"
         android:showAsAction="never"
-        />
+        android:title="@string/delete"
+        android:visible="false"/>
 
 </menu>

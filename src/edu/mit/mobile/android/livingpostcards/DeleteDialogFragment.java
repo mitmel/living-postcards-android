@@ -70,6 +70,12 @@ public class DeleteDialogFragment extends DialogFragment implements OnClickListe
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mOnDeleteListener = null;
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         return new AlertDialog.Builder(getActivity()).setIcon(R.drawable.ic_launcher)

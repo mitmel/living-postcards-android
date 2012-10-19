@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item android:id="@+id/save"
+    <item
+        android:id="@+id/save"
         android:icon="@android:drawable/ic_menu_save"
+        android:showAsAction="always|withText"
         android:title="@string/save_postcard"
         android:titleCondensed="@string/save_postcard_condensed"
-        android:showAsAction="always|withText"
-        android:visible="false"
-        />
+        android:visible="false"/>
     <item
         android:id="@+id/publish"
         android:icon="@android:drawable/ic_menu_send"
@@ -16,9 +16,22 @@
         android:titleCondensed="@string/publish_postcard_condensed"/>
 
     <item
+        android:id="@+id/make_collaborative"
+        android:showAsAction="never"
+        android:title="@string/make_collaborative"/>
+    <item
+        android:id="@+id/make_personal"
+        android:showAsAction="never"
+        android:title="make personal"/>
+    <item
         android:id="@+id/delete"
         android:icon="@android:drawable/ic_menu_delete"
-        android:showAsAction="ifRoom"
+        android:showAsAction="never"
         android:title="@string/delete"/>
+    <item
+        android:id="@+id/delete_photos"
+        android:enabled="false"
+        android:showAsAction="never"
+        android:title="@string/delete_photos"/>
 
 </menu>

@@ -66,6 +66,7 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
     }
 
     private final CardViewHandler mHandler = new CardViewHandler(this);
+    private boolean mIsOwner;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -156,6 +157,10 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
                 startActivityForResult(new Intent(Intent.ACTION_DELETE, mCard), REQUEST_DELETE);
                 return true;
 
+            case R.id.add_frame:
+                startActivity(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard));
+                return true;
+
             default:
                 return false;
         }
@@ -195,10 +200,15 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.edit).setVisible(mIsEditable);
-        menu.findItem(R.id.delete).setVisible(mIsEditable);
+        menu.findItem(R.id.edit).setVisible(mIsOwner);
+        menu.findItem(R.id.delete).setVisible(mIsOwner);
         // hide the share button if there's nothing the user can do to share it.
+        // isEditable is allowed here so that the error message is displayed in order to explain
+        // that postcards need to be published before sharing.
         menu.findItem(R.id.share).setVisible(mWebUrl != null || mIsEditable);
+
+        // when it's editable, but the user isn't the owner, the should be able to contribute
+        menu.findItem(R.id.add_frame).setVisible(mIsEditable && !mIsOwner);
         return true;
     }
 
@@ -241,6 +251,8 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
 
             setTitle(Card.getTitle(this, c));
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
+            mIsOwner = mUserUri.equals(c.getString(c.getColumnIndexOrThrow(Card.COL_AUTHOR_URI)));
+
             mWebUrl = c.getString(c.getColumnIndexOrThrow(Card.COL_WEB_URL));
             // resolve to a full URL
             mWebUrl = mWebUrl != null ? NetworkClient.getInstance(this,

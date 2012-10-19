@@ -42,5 +42,11 @@
 	<string name="delete_postcard_image">Delete postcard image</string>
 	<string name="delete_postcard_image_confirm_message">Are you sure you want to delete this image from the postcard?</string>
 	<string name="geocoder_lookup_unknown_location">unknown location</string>
+	<string name="make_collaborative">Make collaborative</string>
+	<string name="delete_photos">Delete photos</string>
+	<string name="make_collaborative_feature_description">This will allow anyone to contribute a photo to this postcard. As the creator of the postcard, you can moderate the added photos. You can undo this until someone other than you adds a photo.</string>
+	<string name="notice_cannot_make_card_personal">Cannot make card personal: card contains photos by other authors. You can delete them to change this.</string>
+	<string name="notice_make_card_personal_success">You are now the only person who can add photos to this card.</string>
+	<string name="notice_make_collaborative_success">Anyone can now add a photo to this postcard. As the creator, you can moderate them.</string>
 	
 </resources>
