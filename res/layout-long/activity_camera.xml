@@ -38,13 +38,38 @@
             android:visibility="gone" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/title"
+        style="@style/Card.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/location"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="@string/untitled"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/location"
+        style="@style/Card.Location"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:maxLines="2" />
+
     <LinearLayout
         android:id="@+id/controls"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/location"
         android:layout_toRightOf="@+id/viewfinder"
         android:background="@drawable/bg_fading_edge_inner_left"
         android:gravity="bottom"
@@ -57,30 +82,7 @@
             android:drawableLeft="@android:drawable/ic_menu_save"
             android:text="@string/done"
             android:textAllCaps="true"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/Card.Title"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dip"
-            android:layout_marginRight="15dip"
-            android:layout_marginTop="15dip"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:text="@string/untitled"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/location"
-            style="@style/Card.Location"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dip"
-            android:layout_marginRight="15dip"
-            android:maxLines="2" />
+            android:enabled="false" />
 
         <View
             android:layout_width="0dip"

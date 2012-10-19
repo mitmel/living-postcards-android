@@ -29,7 +29,6 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -48,11 +47,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.ActionBarSherlock;
-import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
-import com.actionbarsherlock.view.MenuItem;
 
 import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
+import edu.mit.mobile.android.livingpostcards.CameraPreview.OnPreviewStartedListener;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
@@ -65,8 +63,7 @@ import edu.mit.mobile.android.widget.MultiLevelButton;
 import edu.mit.mobile.android.widget.MultiLevelButton.OnChangeLevelListener;
 
 public class CameraActivity extends FragmentActivity implements OnClickListener,
-        OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor>,
-        OnOptionsItemSelectedListener, OnTouchListener {
+        OnImageLoadListener, OnCheckedChangeListener, LoaderCallbacks<Cursor>, OnTouchListener {
 
     private static final String TAG = CameraActivity.class.getSimpleName();
 
@@ -154,6 +151,15 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         }
     };
 
+    private final OnPreviewStartedListener mOnPreviewStartedListener = new OnPreviewStartedListener() {
+
+        @Override
+        public void onPreviewStarted() {
+            Log.d(TAG, "onPreviewStarted");
+            autoFocus();
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,8 +167,6 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         mSherlock.requestFeature(Window.FEATURE_NO_TITLE);
 
         mSherlock.setContentView(R.layout.activity_camera);
-
-        // getActionBar().setDisplayHomeAsUpEnabled(true);
 
         mPreviewHolder = (FrameLayout) findViewById(R.id.camera_preview);
 
@@ -175,6 +179,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         mOnionskinToggle = (MultiLevelButton) findViewById(R.id.onion_skin_toggle);
         mOnionskinToggle.setOnChangeLevelListener(mOnionskinChangeLevel);
         ((CompoundButton) findViewById(R.id.grid_toggle)).setOnCheckedChangeListener(this);
+
+        findViewById(R.id.done).setOnClickListener(this);
 
         setFullscreen(true);
 
@@ -211,6 +217,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         mLocator.removeLocationUpdates(mLocationListener);
 
         mImageCache.unregisterOnImageLoadListener(this);
+        mPreview.setOnPreviewStartedListener(null);
         if (mCamera != null) {
             mCamera.stopPreview();
         }
@@ -234,6 +241,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             mPreview = new CameraPreview(this, mCamera);
             mPreview.setForceAspectRatio((float) 640 / 480);
             mPreviewHolder.addView(mPreview);
+            mPreview.setOnPreviewStartedListener(mOnPreviewStartedListener);
 
         } else {
             Toast.makeText(this, R.string.err_initializing_camera, Toast.LENGTH_LONG).show();
@@ -268,31 +276,6 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-
-            case R.id.done:
-                setResult(RESULT_OK);
-                finish();
-                if (getCallingActivity() == null) {
-                    startActivity(new Intent(Intent.ACTION_EDIT, mCard));
-                }
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-        return mSherlock.dispatchOptionsItemSelected(item);
     }
 
     /**
@@ -423,6 +406,14 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             case R.id.capture:
                 capture();
                 break;
+            case R.id.done:
+                setResult(RESULT_OK);
+                finish();
+                // when a new card is added, show the editor immediately afterward.
+                if (Intent.ACTION_INSERT.equals(getIntent().getAction())) {
+                    startActivity(new Intent(Intent.ACTION_EDIT, mCard));
+                }
+                break;
         }
     }
 
@@ -459,8 +450,14 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
      * Called when the shutter button has been pressed and held halfway.
      */
     private void onShutterHalfwayPressed() {
-        mAutofocusStarted = true;
-        mCamera.autoFocus(mAutoFocusCallback);
+        autoFocus();
+    }
+
+    private synchronized void autoFocus() {
+        if (!mAutofocusStarted) {
+            mAutofocusStarted = true;
+            mCamera.autoFocus(mAutoFocusCallback);
+        }
     }
 
     AutoFocusCallback mAutoFocusCallback = new AutoFocusCallback() {
@@ -560,7 +557,6 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         final Intent intent = new Intent(CameraActivity.ACTION_ADD_PHOTO, card);
 
-        setIntent(intent);
         processIntent(intent);
     }
 
@@ -656,7 +652,10 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                 Log.e(TAG, "error writing file", mErr);
                 Toast.makeText(CameraActivity.this, R.string.err_camera_take_picture_failed,
                         Toast.LENGTH_LONG).show();
+            } else {
+                findViewById(R.id.done).setEnabled(true);
             }
+
             setReadyToCapture();
         }
     }

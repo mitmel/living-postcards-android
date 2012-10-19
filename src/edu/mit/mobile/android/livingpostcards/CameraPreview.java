@@ -24,6 +24,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private final SurfaceHolder mHolder;
     private final Camera mCamera;
     private float mForceAspectRatio = 0f;
+    private OnPreviewStartedListener mOnPreviewStartedListener;
 
     private static final float ASPECT_RATIO_TOLERENCE = 0.001f;
 
@@ -111,6 +112,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
+            if (mOnPreviewStartedListener != null) {
+                mOnPreviewStartedListener.onPreviewStarted();
+            }
 
         } catch (final Exception e) {
             Log.e(TAG, "Error starting camera preview: " + e.getMessage());
@@ -227,5 +231,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
         }
         return result;
+    }
+
+    public void setOnPreviewStartedListener(OnPreviewStartedListener l) {
+        mOnPreviewStartedListener = l;
+    }
+
+    public interface OnPreviewStartedListener {
+        public void onPreviewStarted();
     }
 }
