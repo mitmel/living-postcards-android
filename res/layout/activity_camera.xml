@@ -88,23 +88,15 @@
             android:enabled="false"
             app:level="50" />
 
-        <View
-            android:layout_width="0dip"
-            android:layout_height="0dip"
-            android:layout_weight="1" />
 
         <Button
             android:id="@+id/capture"
             style="@style/Widget.Button.Camera.Shutter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dip" />
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip" />
 
-        <View
-            android:layout_width="0dip"
-            android:layout_height="0dip"
-            android:layout_weight="1" />
 
         <ToggleButton
             android:id="@+id/grid_toggle"
