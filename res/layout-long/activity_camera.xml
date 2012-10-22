@@ -40,29 +40,18 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/Card.Title"
+        style="@style/Card.Title.Camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/location"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="10dip"
-        android:layout_marginRight="10dip"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:text="@string/untitled"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold" />
+        android:layout_alignParentLeft="true" />
 
     <TextView
         android:id="@+id/location"
-        style="@style/Card.Location"
+        style="@style/Card.Location.Camera"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dip"
-        android:layout_marginLeft="10dip"
-        android:layout_marginRight="10dip"
-        android:maxLines="2" />
+        android:layout_alignParentBottom="true" />
 
     <LinearLayout
         android:id="@+id/controls"
@@ -75,13 +64,16 @@
         android:gravity="bottom"
         android:orientation="vertical" >
 
+        <View
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/done"
+            style="@style/Widget.Button.Camera.Done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@android:drawable/ic_menu_save"
-            android:text="@string/done"
-            android:textAllCaps="true"
             android:enabled="false" />
 
         <View
@@ -91,10 +83,9 @@
 
         <edu.mit.mobile.android.widget.MultiLevelButton
             android:id="@+id/onion_skin_toggle"
+            style="@style/Widget.Button.Camera.OnionSkin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/btn_onionskin"
             android:enabled="false"
             app:level="50" />
 
@@ -105,11 +96,10 @@
 
         <Button
             android:id="@+id/capture"
+            style="@style/Widget.Button.Camera.Shutter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dip"
-            android:background="@drawable/btn_shutter" />
+            android:layout_margin="10dip" />
 
         <View
             android:layout_width="0dip"
@@ -118,12 +108,9 @@
 
         <ToggleButton
             android:id="@+id/grid_toggle"
+            style="@style/Widget.Button.Camera.Grid"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/btn_grid"
-            android:textOff=""
-            android:textOn="" />
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="0dip"

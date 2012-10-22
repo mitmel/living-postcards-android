@@ -10,6 +10,8 @@
         <item name="android:textColorPrimary">@color/actionbar_foreground</item>
     </style>
 
+    <style name="Widget.Button" parent="@android:style/Widget.Button" />
+
     <style name="Image">
         <item name="android:background">@android:drawable/picture_frame</item>
         <item name="android:layout_margin">@dimen/padding_medium</item>
@@ -31,12 +33,15 @@
     <style name="Card.Title">
         <item name="android:textColor">@color/text_title_fg_primary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="Card.Location">
         <item name="android:textColor">@color/text_title_fg_primary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textSize">10sp</item>
+        <item name="android:maxLines">2</item>
     </style>
 
     <style name="Card.Description">
@@ -49,6 +54,43 @@
         <item name="android:textColor">@color/text_title_fg_secondary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:layout_margin">@dimen/padding_medium</item>
+    </style>
+
+    <!-- Camera -->
+
+    <style name="Widget.Button.Camera">
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="Widget.Button.Camera.Done">
+        <item name="android:background">@drawable/btn_done</item>
+    </style>
+
+    <style name="Widget.Button.Camera.OnionSkin">
+        <item name="android:background">@drawable/btn_onionskin</item>
+    </style>
+
+    <style name="Widget.Button.Camera.Shutter">
+        <item name="android:background">@drawable/btn_shutter</item>
+    </style>
+
+    <style name="Widget.Button.Camera.Grid">
+        <item name="android:background">@drawable/btn_grid</item>
+        <item name="android:textOn"></item>
+        <item name="android:textOff"></item>
+    </style>
+
+    <style name="Card.Title.Camera">
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginLeft">10dip</item>
+        <item name="android:layout_marginRight">10dip</item>
+        <item name="android:text">@string/untitled</item>
+    </style>
+
+    <style name="Card.Location.Camera">
+        <item name="android:layout_marginLeft">10dip</item>
+        <item name="android:layout_marginBottom">10dip</item>
+        <item name="android:layout_marginRight">10dip</item>
     </style>
 
 </resources>
