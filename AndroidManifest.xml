@@ -28,15 +28,15 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
-    
+
     <!-- to show more useful error messages if there's a loss of connectivity -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:allowBackup="true"
         android:theme="@style/AppTheme" >
         <uses-library android:name="com.google.android.maps" />
 
@@ -108,7 +108,6 @@
             android:exported="false"
             android:label="@string/edit_postcard"
             android:windowSoftInputMode="stateHidden" >
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.mit.mobile.android.livingpostcards.CardViewActivity" />
@@ -126,7 +125,7 @@
         <!-- auth -->
 
         <activity android:name=".auth.AuthenticatorActivity" />
-        <activity android:name=".auth.RegisterActivity"/>
+        <activity android:name=".auth.RegisterActivity" />
 
         <service
             android:name=".auth.AuthenticationService"

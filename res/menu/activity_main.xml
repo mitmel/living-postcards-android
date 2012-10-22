@@ -18,14 +18,14 @@
         android:id="@+id/settings"
         android:icon="@android:drawable/ic_menu_preferences"
         android:showAsAction="never|withText"
-        android:visible="false"
-        android:title="@string/settings"/>
-            <item
+        android:title="@string/settings"
+        android:visible="false"/>
+    <item
         android:id="@+id/log_out"
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
         android:showAsAction="never|withText"
-        android:visible="false"
-        android:title="@string/log_out"/>
+        android:title="@string/log_out"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_help"
         android:icon="@android:drawable/ic_menu_help"
