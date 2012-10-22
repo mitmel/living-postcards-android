@@ -14,11 +14,7 @@
         android:showAsAction="always|withText"
         android:title="@string/publish_postcard"
         android:titleCondensed="@string/publish_postcard_condensed"/>
-    <item
-        android:id="@+id/add_frame"
-        android:icon="@android:drawable/ic_menu_camera"
-        android:showAsAction="ifRoom"
-        android:title="@string/add_images"/>
+
     <item
         android:id="@+id/delete"
         android:icon="@android:drawable/ic_menu_delete"

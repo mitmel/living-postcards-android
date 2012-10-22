@@ -13,6 +13,8 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -33,7 +35,7 @@ import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
 public class CardEditActivity extends FragmentActivity implements OnCreateOptionsMenuListener,
         OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>, OnPrepareOptionsMenuListener,
-        OnDeleteListener {
+        OnDeleteListener, OnClickListener {
 
     private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
             Card.COL_DESCRIPTION, Card.COL_DRAFT, Card.COL_TIMING, Card.COL_AUTHOR_URI,
@@ -59,6 +61,8 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         mTitle = (EditText) findViewById(R.id.title);
         mDescription = (EditText) findViewById(R.id.description);
         mSherlock.getActionBar().setHomeButtonEnabled(true);
+
+        findViewById(R.id.add_frame).setOnClickListener(this);
 
         mCard = getIntent().getData();
         final String action = getIntent().getAction();
@@ -118,12 +122,6 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
             case android.R.id.home:
                 startActivity(new Intent(Intent.ACTION_VIEW, Card.CONTENT_URI));
-                return true;
-
-            case R.id.add_frame:
-                // this is conceptually starting it for a result, but the result isn't actually
-                // used.
-                startActivityForResult(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard), 0);
                 return true;
 
             default:
@@ -203,7 +201,6 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.add_frame).setVisible(mIsEditable);
         menu.findItem(R.id.delete).setVisible(mIsEditable);
         menu.findItem(R.id.publish).setVisible(mIsDraft && mIsEditable);
         menu.findItem(R.id.save).setVisible(!mIsDraft && mIsEditable);
@@ -232,6 +229,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
             mDescription.setText(c.getString(c.getColumnIndex(Card.COL_DESCRIPTION)));
 
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
+            findViewById(R.id.add_frame).setVisibility(mIsEditable ? View.VISIBLE : View.GONE);
 
             mTitle.setEnabled(mIsEditable);
             mDescription.setEnabled(mIsEditable);
@@ -259,6 +257,20 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         } else if (Intent.ACTION_DELETE.equals(getIntent().getAction()) && !deleted) {
             setResult(RESULT_CANCELED);
             finish();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add_frame:
+                // this is conceptually starting it for a result, but the result isn't actually
+                // used.
+                startActivityForResult(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard), 0);
+                break;
+
+            default:
+                break;
         }
     }
 }

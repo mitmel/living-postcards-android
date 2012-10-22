@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    >
 
     <FrameLayout
         android:id="@+id/card_edit_fragment"
@@ -12,6 +12,7 @@
         tools:layout="@layout/card_edit_fragment" />
 
     <ScrollView
+        android:layout_toRightOf="@+id/card_edit_fragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:fillViewport="true" >
@@ -39,5 +40,10 @@
                 android:minLines="3" />
         </LinearLayout>
     </ScrollView>
-
-</LinearLayout>
+    
+    <include
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/bottom_bar_new_photo" />
+    
+    </RelativeLayout>

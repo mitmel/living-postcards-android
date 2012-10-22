@@ -1,38 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <RelativeLayout
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_bar" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/bottom_bar_overflow" >
+
+            <EditText
+                android:id="@+id/title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/postcard_edit_title_hint"
+                android:inputType="textCapWords"
+                android:lines="1" />
+
+            <FrameLayout
+                android:id="@+id/card_edit_fragment"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title"
+                android:layout_centerHorizontal="true"
+                tools:layout="@layout/card_edit_fragment" />
+
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/card_edit_fragment"
+                android:hint="@string/postcard_edit_description_hint"
+                android:inputType="textMultiLine"
+                android:minLines="3" />
+        </RelativeLayout>
+    </ScrollView>
+
+    <include
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-        
-        <EditText android:id="@+id/title" 
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/postcard_edit_title_hint"
-            android:lines="1"
-            android:inputType="textCapWords"
-            />
+        android:layout_height="wrap_content"
+        layout="@layout/bottom_bar_new_photo" />
 
-        <FrameLayout
-            android:id="@+id/card_edit_fragment"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/title"
-            android:layout_centerHorizontal="true"
-            tools:layout="@layout/card_edit_fragment" />
-        
-        <EditText android:id="@+id/description"
-            android:hint="@string/postcard_edit_description_hint"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:minLines="3"
-            android:layout_below="@+id/card_edit_fragment"
-            />
-
-    </RelativeLayout>
-
-</ScrollView>
+</RelativeLayout>

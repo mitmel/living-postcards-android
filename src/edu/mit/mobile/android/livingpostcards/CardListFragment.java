@@ -20,6 +20,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -37,7 +38,7 @@ import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
 public class CardListFragment extends ListFragment implements LoaderCallbacks<Cursor>,
-        OnItemClickListener {
+        OnItemClickListener, OnClickListener {
 
     private static final String[] FROM = { Card.COL_TITLE, Card.COL_AUTHOR, Card.COL_COVER_PHOTO,
             Card.COL_THUMBNAIL, Card.COL_DRAFT };
@@ -116,6 +117,12 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        view.findViewById(R.id.new_card).setOnClickListener(this);
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         return new CursorLoader(getActivity(), mCards, PROJECTION, null, null, null);
     }
@@ -123,13 +130,11 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
         mAdapter.swapCursor(c);
-
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
         mAdapter.swapCursor(null);
-
     }
 
     @Override
@@ -219,6 +224,25 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
                 return true;
             default:
                 return super.onContextItemSelected(item);
+        }
+
+    }
+
+    private void createNewCard() {
+
+        final Intent intent = new Intent(Intent.ACTION_INSERT, Card.CONTENT_URI);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.new_card:
+                createNewCard();
+                break;
+
+            default:
+                break;
         }
 
     }

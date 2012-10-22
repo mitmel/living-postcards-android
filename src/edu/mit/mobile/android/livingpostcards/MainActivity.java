@@ -139,10 +139,6 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.new_card:
-                createNewCard();
-
-                return true;
 
             case R.id.log_out:
                 AuthenticatorActivity.createLogoutDialog(this, getText(R.string.app_name),
@@ -182,7 +178,6 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
 
-        menu.findItem(R.id.new_card).setVisible(mIsLoggedIn);
         menu.findItem(R.id.log_out).setVisible(mIsLoggedIn);
 
         return true;
