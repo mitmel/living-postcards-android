@@ -45,9 +45,8 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
     private final static int LOADER_CARD = 100;
 
     private static final String[] CARD_PROJECTION = new String[] { Card._ID,
-            Card.COL_ANIMATED_RENDER, Card.COL_DESCRIPTION, Card.COL_COVER_PHOTO,
-            Card.COL_AUTHOR, Card.COL_TIMING, Card.COL_LATITUDE, Card.COL_LONGITUDE,
-            Card.COL_MEDIA_URL };
+            Card.COL_ANIMATED_RENDER, Card.COL_DESCRIPTION, Card.COL_COVER_PHOTO, Card.COL_TIMING,
+            Card.COL_LATITUDE, Card.COL_LONGITUDE, Card.COL_MEDIA_URL };
 
     private static final String TAG = CardDetailsFragment.class.getSimpleName();
 
@@ -119,10 +118,15 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
                         ProviderUtils.dumpCursorToLog(c, CARD_PROJECTION);
                     }
                     final View v = getView();
-                    ((TextView) v.findViewById(R.id.description)).setText(c.getString(c
-                            .getColumnIndexOrThrow(Card.COL_DESCRIPTION)));
-                    ((TextView) v.findViewById(R.id.author)).setText(c.getString(c
-                            .getColumnIndexOrThrow(Card.COL_AUTHOR)));
+                    final String description = c.getString(c
+                            .getColumnIndexOrThrow(Card.COL_DESCRIPTION));
+                    final TextView descriptionTv = ((TextView) v.findViewById(R.id.description));
+                    if (description != null && description.length() > 0) {
+                        descriptionTv.setVisibility(View.VISIBLE);
+                        descriptionTv.setText(description);
+                    } else {
+                        descriptionTv.setVisibility(View.GONE);
+                    }
 
                     mStaticMap.setMap(c.getFloat(c.getColumnIndexOrThrow(Card.COL_LATITUDE)),
                             c.getFloat(c.getColumnIndexOrThrow(Card.COL_LONGITUDE)), false);

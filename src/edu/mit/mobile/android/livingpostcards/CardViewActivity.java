@@ -36,7 +36,7 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
 
     private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
             Card.COL_WEB_URL, Card.COL_AUTHOR_URI, Card.COL_PRIVACY, Card.COL_VIDEO_RENDER,
-            Card.COL_DELETED };
+            Card.COL_DELETED, Card.COL_AUTHOR };
     private static final String TAG = CardViewActivity.class.getSimpleName();
     private static final int REQUEST_DELETE = 100;
     private Uri mCard;
@@ -261,6 +261,9 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
             mHandler.sendEmptyMessage(MSG_LOAD_CARD_MEDIA);
 
             setTitle(Card.getTitle(this, c));
+            mSherlock.getActionBar().setSubtitle(
+                    c.getString(c.getColumnIndexOrThrow(Card.COL_AUTHOR)));
+
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
             mIsOwner = mUserUri.equals(c.getString(c.getColumnIndexOrThrow(Card.COL_AUTHOR_URI)));
 

@@ -3,11 +3,14 @@
     <style name="Widget.Styled.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid">
         <item name="background">@color/actionbar_background</item>
         <item name="android:background">@color/actionbar_background</item>
+        <item name="titleTextStyle">@style/Widget.Styled.ActionBar.Title</item>
+        <item name="android:titleTextStyle">@style/Widget.Styled.ActionBar.Title</item>
     </style>
 
-    <style name="Widget.Styled.ActionBar.Title">
+    <style name="Widget.Styled.ActionBar.Title"  parent="TextAppearance.Sherlock.Widget.ActionBar.Title">
         <item name="textColorPrimary">@color/actionbar_foreground</item>
         <item name="android:textColorPrimary">@color/actionbar_foreground</item>
+        <item name="android:textColor">@color/actionbar_foreground</item>
     </style>
 
     <style name="Widget.Button" parent="@android:style/Widget.Button" />
