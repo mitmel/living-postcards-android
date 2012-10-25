@@ -37,8 +37,10 @@
                 android:inputType="textMultiLine"
                 android:minLines="3" />
 
-            <include
+            <include android:id="@+id/footer"
                 android:layout_below="@+id/description"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/bottom_bar_overflow"
                 layout="@layout/scroll_footer" />
         </RelativeLayout>
     </ScrollView>
