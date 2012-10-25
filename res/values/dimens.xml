@@ -8,6 +8,6 @@
     <dimen name="gallery_height">100dip</dimen>
     <dimen name="postcard_max_height">480dip</dimen>
     <dimen name="postcard_max_width">640dip</dimen>
-    <dimen name="bottom_bar_overflow">94dip</dimen>
+    <dimen name="bottom_bar_overflow">84dip</dimen>
 
 </resources>
