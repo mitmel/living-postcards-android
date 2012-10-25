@@ -6,16 +6,10 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/bottom_bar" />
+        android:layout_height="fill_parent" />
 
-    <View
-        android:id="@+id/bottom_bar"
-        style="@style/Widget.BottomBar.Bar"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom" />
 
-    <Button
+    <ImageButton
         android:id="@+id/new_card"
         style="@style/Widget.BottomBar.BigRedButton.NewPostcard"
         android:layout_width="wrap_content"

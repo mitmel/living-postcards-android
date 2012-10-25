@@ -9,14 +9,12 @@
         android:id="@+id/card_edit_fragment"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/bottom_bar"
         tools:layout="@layout/card_edit_fragment" />
 
     <ScrollView
         android:layout_toRightOf="@+id/card_edit_fragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/bottom_bar"
         android:fillViewport="true" >
 
         <LinearLayout

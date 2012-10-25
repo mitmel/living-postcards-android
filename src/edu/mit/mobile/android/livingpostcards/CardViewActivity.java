@@ -86,11 +86,8 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
 
         addFrame.setOnClickListener(this);
 
-        final View bottomBar = findViewById(R.id.bottom_bar);
-
         // so we can show it later
         addFrame.setVisibility(View.GONE);
-        bottomBar.setVisibility(View.GONE);
 
         mUserUri = Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE);
 
@@ -267,16 +264,12 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
             mIsOwner = mUserUri.equals(c.getString(c.getColumnIndexOrThrow(Card.COL_AUTHOR_URI)));
 
-            final View bottomBar = findViewById(R.id.bottom_bar);
             final View addPicture = findViewById(R.id.add_frame);
 
             if (mIsEditable) {
-                bottomBar.setVisibility(View.VISIBLE);
                 addPicture.setVisibility(View.VISIBLE);
-                bottomBar.startAnimation(AnimationUtils.makeInChildBottomAnimation(this));
                 addPicture.startAnimation(AnimationUtils.makeInChildBottomAnimation(this));
             } else {
-                bottomBar.setVisibility(View.GONE);
                 addPicture.setVisibility(View.GONE);
             }
 

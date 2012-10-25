@@ -92,22 +92,23 @@
         <item name="android:layout_marginBottom">10dip</item>
         <item name="android:layout_marginRight">10dip</item>
     </style>
-    
-    <style name="Widget.BottomBar"/>
-    
-    <style name="Widget.BottomBar.Bar">
-        <item name="android:background">#929d9b</item>
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">@dimen/bottom_bar_height</item>
-    </style>
+
+    <style name="Widget.BottomBar" />
+
     <style name="Widget.BottomBar.BigRedButton">
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:background">@drawable/btn_bottom</item>
     </style>
+
     <style name="Widget.BottomBar.BigRedButton.NewPostcard">
-        <item name="android:background">@drawable/btn_action_bar_bottom_new</item>
+        <item name="android:src">@drawable/ic_btn_bottom_add</item>
+        <item name="android:contentDescription">@string/new_postcard</item>
     </style>
+
     <style name="Widget.BottomBar.BigRedButton.NewPhoto">
-        <item name="android:background">@drawable/btn_action_bar_bottom_camera</item>
+        <item name="android:src">@drawable/ic_btn_bottom_camera</item>
+        <item name="android:contentDescription">@string/add_images</item>
     </style>
+
 </resources>

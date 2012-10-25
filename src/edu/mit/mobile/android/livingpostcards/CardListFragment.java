@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,6 +83,25 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        return inflater.inflate(R.layout.card_list_fragment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        view.findViewById(R.id.new_card).setOnClickListener(this);
+
+        // add a footer so that there's enough room for the content even with the red button at the
+        // bottom
+        final ListView lv = getListView();
+        lv.addFooterView(
+                getLayoutInflater(savedInstanceState).inflate(R.layout.scroll_footer, lv, false),
+                null, false);
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
@@ -108,18 +128,6 @@ public class CardListFragment extends ListFragment implements LoaderCallbacks<Cu
         registerForContextMenu(getListView());
 
         mDensity = getActivity().getResources().getDisplayMetrics().density;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.card_list_fragment, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        view.findViewById(R.id.new_card).setOnClickListener(this);
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override

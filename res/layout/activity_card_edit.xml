@@ -6,13 +6,11 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_bar" >
+        android:layout_height="match_parent" >
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/bottom_bar_overflow" >
+            android:layout_height="wrap_content" >
 
             <EditText
                 android:id="@+id/title"
@@ -38,6 +36,10 @@
                 android:hint="@string/postcard_edit_description_hint"
                 android:inputType="textMultiLine"
                 android:minLines="3" />
+
+            <include
+                android:layout_below="@+id/description"
+                layout="@layout/scroll_footer" />
         </RelativeLayout>
     </ScrollView>
 
