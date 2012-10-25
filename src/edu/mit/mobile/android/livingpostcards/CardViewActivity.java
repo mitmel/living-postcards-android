@@ -13,6 +13,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.actionbarsherlock.ActionBarSherlock;
@@ -28,7 +31,8 @@ import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 import edu.mit.mobile.android.locast.net.NetworkClient;
 
 public class CardViewActivity extends FragmentActivity implements OnCreateOptionsMenuListener,
-        OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>, OnPrepareOptionsMenuListener {
+        OnOptionsItemSelectedListener, LoaderCallbacks<Cursor>, OnPrepareOptionsMenuListener,
+        OnClickListener {
 
     private static final String[] CARD_PROJECTION = new String[] { Card._ID, Card.COL_TITLE,
             Card.COL_WEB_URL, Card.COL_AUTHOR_URI, Card.COL_PRIVACY, Card.COL_VIDEO_RENDER,
@@ -77,6 +81,16 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
         mSherlock.getActionBar().setHomeButtonEnabled(true);
 
         mCard = getIntent().getData();
+
+        final View addFrame = findViewById(R.id.add_frame);
+
+        addFrame.setOnClickListener(this);
+
+        final View bottomBar = findViewById(R.id.bottom_bar);
+
+        // so we can show it later
+        addFrame.setVisibility(View.GONE);
+        bottomBar.setVisibility(View.GONE);
 
         mUserUri = Authenticator.getUserUri(this, Authenticator.ACCOUNT_TYPE);
 
@@ -158,7 +172,7 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
                 return true;
 
             case R.id.add_frame:
-                startActivity(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard));
+
                 return true;
 
             default:
@@ -253,6 +267,19 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
             mIsEditable = PrivatelyAuthorable.canEdit(mUserUri, c);
             mIsOwner = mUserUri.equals(c.getString(c.getColumnIndexOrThrow(Card.COL_AUTHOR_URI)));
 
+            final View bottomBar = findViewById(R.id.bottom_bar);
+            final View addPicture = findViewById(R.id.add_frame);
+
+            if (mIsEditable) {
+                bottomBar.setVisibility(View.VISIBLE);
+                addPicture.setVisibility(View.VISIBLE);
+                bottomBar.startAnimation(AnimationUtils.makeInChildBottomAnimation(this));
+                addPicture.startAnimation(AnimationUtils.makeInChildBottomAnimation(this));
+            } else {
+                bottomBar.setVisibility(View.GONE);
+                addPicture.setVisibility(View.GONE);
+            }
+
             mWebUrl = c.getString(c.getColumnIndexOrThrow(Card.COL_WEB_URL));
             // resolve to a full URL
             mWebUrl = mWebUrl != null ? NetworkClient.getInstance(this,
@@ -266,5 +293,17 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add_frame:
+                startActivity(new Intent(CameraActivity.ACTION_ADD_PHOTO, mCard));
+                break;
+
+            default:
+                break;
+        }
     }
 }

@@ -100,7 +100,9 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         mDescription = (EditText) findViewById(R.id.description);
         mSherlock.getActionBar().setHomeButtonEnabled(true);
 
-        findViewById(R.id.add_frame).setOnClickListener(this);
+        final View addFrame = findViewById(R.id.add_frame);
+
+        addFrame.setOnClickListener(this);
 
         mCard = getIntent().getData();
         final String action = getIntent().getAction();
@@ -394,12 +396,10 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         menu.findItem(R.id.save).setVisible(mIsOwner && !mIsDraft);
 
         final MenuItem makeCollab = menu.findItem(R.id.make_collaborative);
-        makeCollab.setVisible(mIsOwner);
-        makeCollab.setEnabled(!mIsCollaborative);
+        makeCollab.setVisible(mIsOwner && !mIsCollaborative);
 
         final MenuItem makePersonal = menu.findItem(R.id.make_personal);
-        makePersonal.setVisible(mIsOwner);
-        makePersonal.setEnabled(mIsCollaborative);
+        makePersonal.setVisible(mIsOwner && mIsCollaborative);
 
         return true;
     }

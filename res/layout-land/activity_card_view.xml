@@ -8,6 +8,7 @@
         android:id="@+id/card_view_fragment"
         android:layout_width="@dimen/postcard_width"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_bar"
         android:layout_alignParentLeft="true"
         android:layout_centerHorizontal="true"
         tools:layout="@layout/card_view_fragment" />
@@ -15,6 +16,7 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@+id/bottom_bar"
         android:layout_toRightOf="@+id/card_view_fragment" >
 
         <FrameLayout
@@ -23,5 +25,10 @@
             android:layout_height="wrap_content"
             tools:layout="@layout/card_details_fragment" />
     </ScrollView>
+
+    <include
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/bottom_bar_new_photo" />
 
 </RelativeLayout>
