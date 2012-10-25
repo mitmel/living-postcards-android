@@ -168,10 +168,6 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
                 startActivityForResult(new Intent(Intent.ACTION_DELETE, mCard), REQUEST_DELETE);
                 return true;
 
-            case R.id.add_frame:
-
-                return true;
-
             default:
                 return false;
         }
@@ -218,8 +214,6 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
         // that postcards need to be published before sharing.
         menu.findItem(R.id.share).setVisible(mWebUrl != null || mIsEditable);
 
-        // when it's editable, but the user isn't the owner, the should be able to contribute
-        menu.findItem(R.id.add_frame).setVisible(mIsEditable && !mIsOwner);
         return true;
     }
 
