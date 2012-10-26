@@ -12,6 +12,10 @@
         <item name="android:textColorPrimary">@color/actionbar_foreground</item>
         <item name="android:textColor">@color/actionbar_foreground</item>
     </style>
+    
+    <style name="Widget.Styled.ActionBar.TabView" parent="Widget.Sherlock.Light.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_holo</item>
+        </style>
 
     <style name="Widget.Button" parent="@android:style/Widget.Button" />
 
