@@ -7,26 +7,30 @@
         <item name="android:titleTextStyle">@style/Widget.Styled.ActionBar.Title</item>
     </style>
 
-    <style name="Widget.Styled.ActionBar.Title"  parent="TextAppearance.Sherlock.Widget.ActionBar.Title">
+    <style name="Widget.Styled.ActionBar.Title" parent="TextAppearance.Sherlock.Widget.ActionBar.Title">
         <item name="textColorPrimary">@color/actionbar_foreground</item>
         <item name="android:textColorPrimary">@color/actionbar_foreground</item>
         <item name="android:textColor">@color/actionbar_foreground</item>
     </style>
-    
+
     <style name="Widget.Styled.ActionBar.TabView" parent="Widget.Sherlock.Light.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_ab_holo</item>
-        </style>
+    </style>
 
     <style name="Widget.Button" parent="@android:style/Widget.Button" />
 
     <style name="Image">
-        <item name="android:background">@android:drawable/picture_frame</item>
+        <item name="android:background">@drawable/picture_frame</item>
         <item name="android:layout_margin">@dimen/padding_medium</item>
     </style>
 
     <style name="Image.CardImage">
         <item name="android:maxHeight">@dimen/postcard_max_height</item>
         <item name="android:maxWidth">@dimen/postcard_max_width</item>
+        <item name="android:cropToPadding">true</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:src">@drawable/image_placeholder</item>
+        <item name="android:adjustViewBounds">true</item>
     </style>
 
     <style name="Image.StaticMap">
