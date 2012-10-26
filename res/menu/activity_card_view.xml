@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/edit"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/ic_menu_edit"
         android:showAsAction="ifRoom"
         android:title="@string/edit"
         android:visible="false"/>
@@ -14,7 +14,7 @@
         android:title="@string/share"/>
     <item
         android:id="@+id/delete"
-        android:icon="@android:drawable/ic_menu_delete"
+        android:icon="@drawable/ic_menu_delete"
         android:showAsAction="never"
         android:title="@string/delete"
         android:visible="false"/>

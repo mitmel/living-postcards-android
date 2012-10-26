@@ -3,14 +3,14 @@
 
     <item
         android:id="@+id/save"
-        android:icon="@android:drawable/ic_menu_save"
+        android:icon="@drawable/ic_menu_accept"
         android:showAsAction="always|withText"
         android:title="@string/save_postcard"
         android:titleCondensed="@string/save_postcard_condensed"
         android:visible="false"/>
     <item
         android:id="@+id/publish"
-        android:icon="@android:drawable/ic_menu_send"
+        android:icon="@drawable/ic_menu_accept"
         android:showAsAction="always|withText"
         android:title="@string/publish_postcard"
         android:titleCondensed="@string/publish_postcard_condensed"/>
@@ -25,7 +25,7 @@
         android:title="make personal"/>
     <item
         android:id="@+id/delete"
-        android:icon="@android:drawable/ic_menu_delete"
+        android:icon="@drawable/ic_menu_delete"
         android:showAsAction="never"
         android:title="@string/delete"/>
     <item
