@@ -35,7 +35,15 @@
         <item name="android:scaleType">center</item>
     </style>
 
+    <style name="Scrollable">
+        <item name="android:background">@drawable/bg_arches</item>
+    </style>
+
     <style name="Card"></style>
+
+    <style name="Card.ListItem">
+        <item name="android:background">@drawable/bg_arches</item>
+    </style>
 
     <style name="Card.Title">
         <item name="android:textColor">@color/text_title_fg_primary</item>

@@ -19,6 +19,7 @@
 
         <FrameLayout
             android:id="@+id/card_details_fragment"
+            style="@style/Scrollable"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             tools:layout="@layout/card_details_fragment" />
