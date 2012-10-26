@@ -409,7 +409,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                 setResult(RESULT_OK);
                 finish();
                 // when a new card is added, show the editor immediately afterward.
-                if (Intent.ACTION_INSERT.equals(getIntent().getAction())) {
+                if (mCard != null && Intent.ACTION_INSERT.equals(getIntent().getAction())) {
                     startActivity(new Intent(Intent.ACTION_EDIT, mCard));
                 }
                 break;
@@ -655,8 +655,6 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
                 Log.e(TAG, "error writing file", mErr);
                 Toast.makeText(CameraActivity.this, R.string.err_camera_take_picture_failed,
                         Toast.LENGTH_LONG).show();
-            } else {
-                findViewById(R.id.done).setEnabled(true);
             }
 
             setReadyToCapture();
