@@ -48,5 +48,5 @@
 	<string name="notice_cannot_make_card_personal">Cannot make card personal: card contains photos by other authors. You can delete them to change this.</string>
 	<string name="notice_make_card_personal_success">You are now the only person who can add photos to this card.</string>
 	<string name="notice_make_collaborative_success">Anyone can now add a photo to this postcard. As the creator, you can moderate them.</string>
-	
+	<string name="take_picture">Take picture</string>
 </resources>

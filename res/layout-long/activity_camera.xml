@@ -89,14 +89,12 @@
             android:enabled="false"
             app:level="50" />
 
-
-        <Button
+        <ImageButton
             android:id="@+id/capture"
             style="@style/Widget.Button.Camera.Shutter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dip" />
-
+            android:contentDescription="@string/take_picture" />
 
         <ToggleButton
             android:id="@+id/grid_toggle"

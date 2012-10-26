@@ -38,7 +38,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
@@ -84,7 +83,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     private ImageView mOnionSkin;
 
-    private Button mCaptureButton;
+    private View mCaptureButton;
 
     private MultiLevelButton mOnionskinToggle;
 
@@ -172,7 +171,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         mOnionSkin = (ImageView) findViewById(R.id.onion_skin_image);
 
-        mCaptureButton = (Button) findViewById(R.id.capture);
+        mCaptureButton = findViewById(R.id.capture);
         mCaptureButton.setOnClickListener(this);
         mCaptureButton.setOnTouchListener(this);
 
