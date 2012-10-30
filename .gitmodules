@@ -10,3 +10,6 @@
 [submodule "libs-src/LocastCore"]
 	path = libs-src/LocastCore
 	url = http://mel-tools.mit.edu/git-ro/LocastCoreAndroid.git
+[submodule "libs-src/staticmap"]
+	path = libs-src/staticmap
+	url = http://mel-tools.mit.edu/git-ro/android-staticmap.git

@@ -1,5 +1,7 @@
 package edu.mit.mobile.android.livingpostcards;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -9,21 +11,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import edu.mit.mobile.android.content.ProviderUtils;
+import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.locast.net.NetworkClient;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
 import edu.mit.mobile.android.maps.GoogleStaticMapView;
+import edu.mit.mobile.android.maps.OnMapUpdateListener;
 
 public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cursor>,
-        OnImageLoadListener {
+        OnImageLoadListener, OnMapUpdateListener {
 
     /**
      * The card URI
@@ -38,9 +43,7 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
 
     private Uri mCardMedia;
 
-    private int mMapWidth;
-
-    private int mMapHeight;
+    private ImageCache mImageCache;
 
     private final static int LOADER_CARD = 100;
 
@@ -70,6 +73,8 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
 
         super.onCreate(savedInstanceState);
 
+        mImageCache = ImageCache.getInstance(getActivity());
+
         if (getArguments() != null) {
             mCard = getArguments().getParcelable(ARGUMENT_URI);
 
@@ -87,7 +92,7 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
 
         mStaticMap = (GoogleStaticMapView) v.findViewById(R.id.static_map);
 
-        mStaticMap.setOnImageLoadListener(this);
+        mStaticMap.setOnMapUpdateListener(this);
         return v;
     }
 
@@ -95,7 +100,14 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
     public void onResume() {
         super.onResume();
 
+        mImageCache.registerOnImageLoadListener(this);
         LocastSyncService.startExpeditedAutomaticSync(getActivity(), mCard);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mImageCache.unregisterOnImageLoadListener(this);
     }
 
     @Override
@@ -154,8 +166,26 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
     }
 
     @Override
+    public void onMapUpdate(GoogleStaticMapView v, Uri staticMap) {
+        Log.d(TAG, "scheduling load of " + staticMap);
+        try {
+            final Drawable d = mImageCache.loadImage(v.getId(), staticMap, v.getMapWidth(),
+                    v.getMapHeight());
+            v.setImageDrawable(d);
+        } catch (final IOException e) {
+            Log.e(TAG, "error updating static map", e);
+        }
+    }
+
+    @Override
     public void onImageLoaded(long id, Uri imageUri, Drawable image) {
         if (id == R.id.static_map) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "loaded " + imageUri + " (id " + id + ")");
+            }
+
+            mStaticMap.setImageDrawable(image);
+
             mStaticMap.startAnimation(AnimationUtils.makeInAnimation(getActivity(), true));
             mStaticMap.setVisibility(View.VISIBLE);
         }
