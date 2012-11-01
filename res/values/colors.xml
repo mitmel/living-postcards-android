@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="actionbar_background">#d5dfdb</color>
+    <color name="actionbar_background">#ffc2cfca</color>
     <color name="actionbar_foreground">#cd4644</color>
     <color name="text_title_fg_primary">#cd4644</color>
     <color name="text_title_fg_secondary">#3d3d3d</color>
-    <color name="actionbar_tabs_background">#b6bfbd</color>
-    <color name="actionbar_tabs_foreground">#6d7170</color>
     <color name="bg_arches_solid">#d0ded9</color>
     
 </resources>

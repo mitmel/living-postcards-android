@@ -3,6 +3,8 @@
     <style name="Widget.Styled.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid">
         <item name="background">@color/actionbar_background</item>
         <item name="android:background">@color/actionbar_background</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_light_holo</item>
+        <item name="backgroundStacked">@drawable/ab_stacked_solid_light_holo</item>
         <item name="titleTextStyle">@style/Widget.Styled.ActionBar.Title</item>
         <item name="android:titleTextStyle">@style/Widget.Styled.ActionBar.Title</item>
     </style>
