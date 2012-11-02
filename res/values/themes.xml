@@ -8,6 +8,8 @@
         <item name="android:colorBackground">@color/bg_arches_solid</item>
         <item name="android:actionBarTabStyle">@style/Widget.Styled.ActionBar.TabView</item>
         <item name="actionBarTabStyle">@style/Widget.Styled.ActionBar.TabView</item>
+        <item name="actionBarItemBackground">@drawable/btn_action_bar_item</item>
+        <item name="android:actionBarItemBackground">@drawable/btn_action_bar_item</item>
     </style>
 
     <style name="CameraTheme" parent="Theme.Sherlock.Light">
