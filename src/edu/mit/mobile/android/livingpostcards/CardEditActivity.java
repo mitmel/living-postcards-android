@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -32,6 +33,7 @@ import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
 import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
 import com.actionbarsherlock.ActionBarSherlock.OnPrepareOptionsMenuListener;
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -95,10 +97,12 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         super.onCreate(arg0);
 
         mSherlock.setContentView(R.layout.activity_card_edit);
+        final ActionBar ab = mSherlock.getActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
 
         mTitle = (EditText) findViewById(R.id.title);
         mDescription = (EditText) findViewById(R.id.description);
-        mSherlock.getActionBar().setHomeButtonEnabled(true);
+
 
         final View addFrame = findViewById(R.id.add_frame);
 
@@ -167,8 +171,10 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
                 onDeletePostcard();
                 return true;
 
-            case android.R.id.home:
-                startActivity(new Intent(Intent.ACTION_VIEW, Card.CONTENT_URI));
+            case android.R.id.home: {
+                final Intent i = new Intent(Intent.ACTION_VIEW, mCard);
+                NavUtils.navigateUpTo(this, i);
+            }
                 return true;
 
             case R.id.add_frame:

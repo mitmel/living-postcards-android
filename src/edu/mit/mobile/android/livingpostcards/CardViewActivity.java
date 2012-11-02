@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.ActionBarSherlock.OnCreateOptionsMenuListener;
 import com.actionbarsherlock.ActionBarSherlock.OnOptionsItemSelectedListener;
 import com.actionbarsherlock.ActionBarSherlock.OnPrepareOptionsMenuListener;
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -78,7 +80,10 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
         super.onCreate(arg0);
         mSherlock.setContentView(R.layout.activity_card_view);
 
-        mSherlock.getActionBar().setHomeButtonEnabled(true);
+        final ActionBar ab = mSherlock.getActionBar();
+
+        ab.setHomeButtonEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
 
         mCard = getIntent().getData();
 
@@ -156,8 +161,9 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
                 send();
                 return true;
 
-            case android.R.id.home:
-                startActivity(new Intent(Intent.ACTION_VIEW, Card.CONTENT_URI));
+            case android.R.id.home: {
+                NavUtils.navigateUpFromSameTask(this);
+            }
                 return true;
 
             case R.id.edit:

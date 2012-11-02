@@ -90,7 +90,7 @@
         </activity>
         <activity
             android:name=".CardViewActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.mit.mobile.android.livingpostcards.MainActivity" />
@@ -108,9 +108,6 @@
             android:exported="false"
             android:label="@string/edit_postcard"
             android:windowSoftInputMode="stateHidden" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.mit.mobile.android.livingpostcards.CardViewActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />
