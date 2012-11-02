@@ -101,6 +101,8 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     private static final int MSG_RELOAD_CARD_AND_MEDIA = 100;
     private static final int MSG_START_AUTOFOCUS = 101;
 
+    private static final String INSTANCE_CARD = "edu.mit.mobile.android.livingpostcards.INSTANCE_CARD";
+
     private static class MyHandler extends Handler {
         private final CameraActivity mActivity;
 
@@ -187,6 +189,11 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         mImageCache = ImageCache.getInstance(this);
 
         processIntent(getIntent());
+
+        if (savedInstanceState != null) {
+            final Uri card = savedInstanceState.getParcelable(INSTANCE_CARD);
+            loadCard(card);
+        }
     }
 
     private void processIntent(Intent intent) {
@@ -194,9 +201,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
         if (ACTION_ADD_PHOTO.equals(action)) {
             mCardDir = null;
-            mCard = intent.getData();
-
-            mHandler.sendEmptyMessage(MSG_RELOAD_CARD_AND_MEDIA);
+            loadCard(intent.getData());
 
         } else if (Intent.ACTION_INSERT.equals(action)) {
             mCard = null;
@@ -207,6 +212,18 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             setResult(RESULT_CANCELED);
             finish();
         }
+    }
+
+    private void loadCard(Uri card) {
+        mCard = card;
+
+        mHandler.sendEmptyMessage(MSG_RELOAD_CARD_AND_MEDIA);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(INSTANCE_CARD, mCard);
     }
 
     @Override
