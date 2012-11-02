@@ -3,8 +3,6 @@ package edu.mit.mobile.android.livingpostcards;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -270,27 +268,18 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     public void setFullscreen(boolean fullscreen) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            try {
-                final Method setSystemUiVisibility = View.class.getMethod("setSystemUiVisibility",
-                        int.class);
-                setSystemUiVisibility.invoke(mPreviewHolder,
-                        fullscreen ? View.SYSTEM_UI_FLAG_LOW_PROFILE : 0);
-
-            } catch (final NoSuchMethodException e) {
-                Log.e(TAG, "missing setSystemUiVisibility method, despite version checking", e);
-            } catch (final IllegalArgumentException e) {
-                Log.e(TAG, "reflection error", e);
-            } catch (final IllegalAccessException e) {
-                Log.e(TAG, "reflection error", e);
-            } catch (final InvocationTargetException e) {
-                Log.e(TAG, "reflection error", e);
-            }
+            mPreviewHolder.setSystemUiVisibility(  fullscreen ? View.SYSTEM_UI_FLAG_LOW_PROFILE : 0);
         }
 
         if (fullscreen) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            final Window w = getWindow();
+            w.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            w.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            final Window w = getWindow();
+            w.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            w.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
