@@ -48,7 +48,7 @@
     <style name="Card"></style>
 
     <style name="Card.ListItem">
-        <item name="android:background">@drawable/bg_arches</item>
+        <item name="android:background">@drawable/bg_list_item</item>
     </style>
 
     <style name="Card.Title">
