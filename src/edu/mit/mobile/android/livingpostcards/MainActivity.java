@@ -35,7 +35,6 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
 
     private static final boolean DEBUG = BuildConfig.DEBUG;
 
-
     private static final String INSTANCE_CURRENT_TAB = "edu.mit.mobile.android.INSTANCE_CURRENT_TAB";
 
     private boolean mIsLoggedIn = false;
@@ -49,7 +48,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            mSavedCurrentTab = savedInstanceState.getInt(INSTANCE_CURRENT_TAB, 0);
+            mSavedCurrentTab = savedInstanceState.getInt(INSTANCE_CURRENT_TAB, NO_SAVED_TAB);
         }
     }
 
@@ -187,9 +186,19 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
     public void onTabSelected(Tab tab, FragmentTransaction ft) {
         final FragmentManager fm = getSupportFragmentManager();
 
+        Fragment f = fm.findFragmentById(android.R.id.content);
+
         final String tag = (String) tab.getTag();
 
-        final Fragment f = fm.findFragmentByTag(tag);
+        if (f != null && !tag.equals(f.getTag())) {
+            ft.detach(f);
+            f = null;
+        }
+
+        if (f == null) {
+            f = fm.findFragmentByTag(tag);
+        }
+
         if (f != null) {
             ft.attach(f);
         } else {
