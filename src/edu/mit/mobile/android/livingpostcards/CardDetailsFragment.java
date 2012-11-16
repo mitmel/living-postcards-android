@@ -171,10 +171,23 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
         try {
             final Drawable d = mImageCache.loadImage(v.getId(), staticMap, v.getMapWidth(),
                     v.getMapHeight());
-            v.setImageDrawable(d);
+            if (BuildConfig.DEBUG && d != null) {
+                Log.d(TAG, "set map image immediately");
+            }
+            setMapDrawable(d, false);
         } catch (final IOException e) {
             Log.e(TAG, "error updating static map", e);
         }
+    }
+
+    private void setMapDrawable(Drawable image, boolean animate) {
+
+        mStaticMap.setImageDrawable(image);
+
+        if (animate) {
+            mStaticMap.startAnimation(AnimationUtils.makeInAnimation(getActivity(), true));
+        }
+        mStaticMap.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -184,10 +197,7 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
                 Log.d(TAG, "loaded " + imageUri + " (id " + id + ")");
             }
 
-            mStaticMap.setImageDrawable(image);
-
-            mStaticMap.startAnimation(AnimationUtils.makeInAnimation(getActivity(), true));
-            mStaticMap.setVisibility(View.VISIBLE);
+            setMapDrawable(image, true);
         }
     }
 }
