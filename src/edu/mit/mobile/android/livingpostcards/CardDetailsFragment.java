@@ -167,7 +167,9 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
 
     @Override
     public void onMapUpdate(GoogleStaticMapView v, Uri staticMap) {
-        Log.d(TAG, "scheduling load of " + staticMap);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "scheduling load of " + staticMap);
+        }
         try {
             final Drawable d = mImageCache.loadImage(v.getId(), staticMap, v.getMapWidth(),
                     v.getMapHeight());

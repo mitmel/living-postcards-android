@@ -10,6 +10,7 @@ import edu.mit.mobile.android.content.ForeignKeyDBHelper;
 import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.QuerystringWrapper;
+import edu.mit.mobile.android.livingpostcards.BuildConfig;
 import edu.mit.mobile.android.locast.Constants;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.NoPublicPath;
@@ -181,7 +182,9 @@ public class CardProvider extends SyncableSimpleContentProvider {
     @Override
     public boolean canSync(Uri uri) {
         // TODO Auto-generated method stub
-        Log.d(TAG, uri + " can sync");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, uri + " can sync");
+        }
         return true;
     }
 
@@ -196,7 +199,9 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
     @Override
     public String getPublicPath(Context context, Uri uri) throws NoPublicPath {
-        Log.d(TAG, "getPublicPath " + uri);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "getPublicPath " + uri);
+        }
         final String type = getType(uri);
 
         // TODO this is the only hard-coded URL. This should be removed eventually.
