@@ -25,8 +25,8 @@ public class CardMedia extends ImageContent implements Authorable.Columns {
         super(c);
     }
 
-    public static final String TYPE_DIR = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.card.#.media";
-    public static final String TYPE_ITEM = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.card.#.media";
+    public static final String TYPE_DIR = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.cardmedia";
+    public static final String TYPE_ITEM = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.cardmedia";
 
     @DBColumn(type = TextColumn.class, unique = true, notnull = true)
     public static final String COL_UUID = "uuid";

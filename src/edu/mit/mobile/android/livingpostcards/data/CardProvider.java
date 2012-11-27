@@ -201,7 +201,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
         // TODO this is the only hard-coded URL. This should be removed eventually.
         if (Card.TYPE_DIR.equals(type)) {
-            return NetworkClient.getBaseUrlFromManifest(context) + "postcard/";
+            return NetworkClient.getFullUrlAsString(context, "postcard/");
 
             // TODO find a way to make this generic. Inspect the SYNC_MAP somehow?
         } else if (CardMedia.TYPE_DIR.equals(type)) {
