@@ -22,7 +22,7 @@ import edu.mit.mobile.android.imagecache.ImageCache;
 import edu.mit.mobile.android.imagecache.ImageCache.OnImageLoadListener;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
-import edu.mit.mobile.android.locast.net.NetworkClient;
+import edu.mit.mobile.android.locast.app.LocastApplication;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
 import edu.mit.mobile.android.maps.GoogleStaticMapView;
 import edu.mit.mobile.android.maps.OnMapUpdateListener;
@@ -149,10 +149,9 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
                     if (pubMediaUri != null) {
                         LocastSyncService.startSync(
                                 getActivity(),
-                                NetworkClient.getInstance(
-                                        getActivity(),
-                                        Authenticator.getFirstAccount(getActivity(),
-                                                Authenticator.ACCOUNT_TYPE))
+                                ((LocastApplication) getActivity().getApplication())
+                                        .getNetworkClient(getActivity(),
+                                                Authenticator.getFirstAccount(getActivity()))
                                         .getFullUrl(pubMediaUri), mCardMedia, false);
                     }
                 }
