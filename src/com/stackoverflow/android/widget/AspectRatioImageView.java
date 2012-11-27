@@ -3,9 +3,11 @@ package com.stackoverflow.android.widget;
 import java.lang.reflect.Field;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+import edu.mit.mobile.android.livingpostcards.R;
 
 /**
  * Preserves the aspect ratio of an image while allowing it to scale up.
@@ -24,6 +26,11 @@ public class AspectRatioImageView extends ImageView {
     private static final String TAG = AspectRatioImageView.class.getSimpleName();
     int mMaxWidth = Integer.MAX_VALUE;
     int mMaxHeight = Integer.MAX_VALUE;
+    private int mStretch;
+
+    private static final int STRETCH_UNDEFINED = -1;
+    private static final int STRETCH_HORIZONTAL = 0;
+    private static final int STRETCH_VERTICAL = 1;
 
     public AspectRatioImageView(Context context) {
         super(context);
@@ -60,10 +67,17 @@ public class AspectRatioImageView extends ImageView {
         } catch (final IllegalAccessException e) {
             // we don't care if we can't get it. We weren't really supposed to anyhow.
         }
+        final TypedArray ta = context.obtainStyledAttributes(attrs,
+                R.styleable.AspectRatioImageView);
+        mStretch = ta.getInt(R.styleable.AspectRatioImageView_stretch, STRETCH_UNDEFINED);
+
+        setAdjustViewBounds(true);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         final Drawable drawable = getDrawable();
         boolean setMeasuredDimension = false;
         if (drawable != null) {
@@ -71,7 +85,8 @@ public class AspectRatioImageView extends ImageView {
             int width = MeasureSpec.getSize(widthMeasureSpec);
             int height = MeasureSpec.getSize(heightMeasureSpec);
 
-            if (MeasureSpec.EXACTLY == MeasureSpec.getMode(heightMeasureSpec) && height == 0) {
+            if (MeasureSpec.EXACTLY == MeasureSpec.getMode(heightMeasureSpec)
+                    && (height == 0 || STRETCH_VERTICAL == mStretch)) {
 
                 final float diw = drawable.getIntrinsicWidth();
                 if (diw > 0) {
@@ -81,7 +96,8 @@ public class AspectRatioImageView extends ImageView {
                     setMeasuredDimension = true;
                 }
 
-            } else if (MeasureSpec.EXACTLY == MeasureSpec.getMode(widthMeasureSpec) && width == 0) {
+            } else if (MeasureSpec.EXACTLY == MeasureSpec.getMode(widthMeasureSpec)
+                    && (width == 0 || STRETCH_HORIZONTAL == mStretch)) {
 
                 final float dih = drawable.getIntrinsicHeight();
                 if (dih > 0) {
