@@ -21,6 +21,7 @@ import edu.mit.mobile.android.imagecache.SimpleThumbnailCursorAdapter;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.livingpostcards.data.CardMedia;
+import edu.mit.mobile.android.locast.app.LocastApplication;
 import edu.mit.mobile.android.locast.net.NetworkClient;
 import edu.mit.mobile.android.locast.sync.LocastSyncService;
 
@@ -168,13 +169,10 @@ public class CardViewFragment extends Fragment implements LoaderCallbacks<Cursor
                     final String pubMediaUri = c.getString(c
                             .getColumnIndexOrThrow(Card.COL_MEDIA_URL));
                     if (pubMediaUri != null) {
-                        LocastSyncService.startSync(
-                                getActivity(),
-                                NetworkClient.getInstance(
-                                        getActivity(),
-                                        Authenticator.getFirstAccount(getActivity(),
-                                                Authenticator.ACCOUNT_TYPE))
-                                        .getFullUrl(pubMediaUri), mCardMedia, false);
+                        final NetworkClient nc = LocastApplication.getNetworkClient(getActivity(),
+                                Authenticator.getFirstAccount(getActivity()));
+                        LocastSyncService.startSync(getActivity(), nc.getFullUrl(pubMediaUri),
+                                mCardMedia, false);
                     }
 
                 }

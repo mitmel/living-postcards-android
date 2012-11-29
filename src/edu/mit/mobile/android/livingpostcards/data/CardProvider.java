@@ -11,7 +11,9 @@ import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.QuerystringWrapper;
 import edu.mit.mobile.android.livingpostcards.BuildConfig;
+import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.locast.Constants;
+import edu.mit.mobile.android.locast.app.LocastApplication;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.NoPublicPath;
 import edu.mit.mobile.android.locast.net.NetworkClient;
@@ -206,7 +208,9 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
         // TODO this is the only hard-coded URL. This should be removed eventually.
         if (Card.TYPE_DIR.equals(type)) {
-            return NetworkClient.getFullUrlAsString(context, "postcard/");
+            final NetworkClient nc = LocastApplication.getNetworkClient(context,
+                    Authenticator.getFirstAccount(context));
+            return nc.getFullUrlAsString("postcard/");
 
             // TODO find a way to make this generic. Inspect the SYNC_MAP somehow?
         } else if (CardMedia.TYPE_DIR.equals(type)) {

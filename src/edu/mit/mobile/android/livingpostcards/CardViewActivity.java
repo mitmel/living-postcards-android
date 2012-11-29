@@ -29,6 +29,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.data.Card;
+import edu.mit.mobile.android.locast.app.LocastApplication;
 import edu.mit.mobile.android.locast.data.PrivatelyAuthorable;
 import edu.mit.mobile.android.locast.net.NetworkClient;
 
@@ -278,8 +279,9 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
 
             mWebUrl = c.getString(c.getColumnIndexOrThrow(Card.COL_WEB_URL));
             // resolve to a full URL
-            mWebUrl = mWebUrl != null ? NetworkClient.getInstance(this,
-                    Authenticator.getFirstAccount(this)).getFullUrlAsString(mWebUrl) : null;
+            final NetworkClient nc = LocastApplication.getNetworkClient(this,
+                    Authenticator.getFirstAccount(this));
+            mWebUrl = mWebUrl != null ? nc.getFullUrlAsString(mWebUrl) : null;
             mSherlock.dispatchInvalidateOptionsMenu();
         } else {
             finish();

@@ -18,6 +18,8 @@ import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.column.IntegerColumn;
 import edu.mit.mobile.android.content.column.TextColumn;
 import edu.mit.mobile.android.livingpostcards.R;
+import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
+import edu.mit.mobile.android.locast.app.LocastApplication;
 import edu.mit.mobile.android.locast.data.AbsResourcesSync;
 import edu.mit.mobile.android.locast.data.Authorable;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
@@ -126,12 +128,12 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
      *         {@link Context#startActivity(Intent)}
      */
     public static Intent createShareIntent(Context context, String webUrl, CharSequence title) {
-
+        final NetworkClient nc = LocastApplication.getNetworkClient(context,
+                Authenticator.getFirstAccount(context));
         final Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.setType("text/plain");
         sendIntent.putExtra(Intent.EXTRA_TEXT,
-                context.getString(R.string.send_intent_message,
-                        NetworkClient.getFullUrlAsString(context, webUrl)));
+                context.getString(R.string.send_intent_message, nc.getFullUrlAsString(webUrl)));
         sendIntent.putExtra(Intent.EXTRA_SUBJECT,
                 context.getString(R.string.send_intent_subject, title));
         return Intent.createChooser(sendIntent,
