@@ -41,9 +41,10 @@
         android:theme="@style/AppTheme" >
         <uses-library android:name="com.google.android.maps" />
 
+        <!-- make sure to also update the URLs in the intent filters below for sync -->
         <meta-data
             android:name="edu.mit.mobile.android.locast.base_url"
-            android:value="http://mel-pydev.mit.edu/avea/api/" />
+            android:value="http://livingpostcards.org/api/" />
         <meta-data
             android:name="edu.mit.mobile.android.maps.GOOGLE_STATIC_MAPS_API_KEY"
             android:value="AIzaSyDBjmUDwMkjHFpIdGTIHcfM4fCESx3hwm0" />
@@ -91,7 +92,7 @@
         </activity>
         <activity
             android:name=".CardViewActivity"
-            android:exported="false">
+            android:exported="false" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.mit.mobile.android.livingpostcards.MainActivity" />
@@ -109,7 +110,6 @@
             android:exported="false"
             android:label="@string/edit_postcard"
             android:windowSoftInputMode="stateHidden" >
-
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />
                 <action android:name="android.intent.action.DELETE" />
@@ -152,20 +152,20 @@
                 <action android:name="android.intent.action.SYNC" />
 
                 <data
-                    android:host="mel-pydev.mit.edu"
-                    android:pathPrefix="/avea/api/"
+                    android:host="www.livingpostcards.org"
+                    android:pathPrefix="/api/"
                     android:scheme="http" />
                 <data
-                    android:host="locast.mit.edu"
-                    android:pathPrefix="/avea/api/"
-                    android:scheme="http" />
-                <data
-                    android:host="mel-pydev.mit.edu"
-                    android:pathPrefix="/avea/api/"
+                    android:host="www.livingpostcards.org"
+                    android:pathPrefix="/api/"
                     android:scheme="https" />
                 <data
-                    android:host="locast.mit.edu"
-                    android:pathPrefix="/avea/api/"
+                    android:host="livingpostcards.org"
+                    android:pathPrefix="/api/"
+                    android:scheme="http" />
+                <data
+                    android:host="livingpostcards.org"
+                    android:pathPrefix="/api/"
                     android:scheme="https" />
             </intent-filter>
             <intent-filter>
