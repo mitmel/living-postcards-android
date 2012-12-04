@@ -24,6 +24,11 @@ public class DownloadLoader extends AsyncTaskLoader<Uri> {
 
     public static final String TAG = DownloadLoader.class.getSimpleName();
 
+    /**
+     * Videos smaller than this will be presumed corrupted.
+     */
+    private static final long MINIMUM_REASONABLE_VIDEO_SIZE = 1024; // bytes
+
     Exception mException;
     private final String mUrl;
     private final File outdir;
@@ -61,7 +66,8 @@ public class DownloadLoader extends AsyncTaskLoader<Uri> {
         final String fname = mUrl.substring(mUrl.lastIndexOf('/'));
         final File outfile = new File(outdir, fname);
 
-        alreadyHasDownload = outfile.exists() && outfile.length() > 1024;
+        alreadyHasDownload = outfile.exists() && outfile.length() > MINIMUM_REASONABLE_VIDEO_SIZE;
+
 
         final long lastModified = outfile.exists() ? outfile.lastModified() : 0;
 
@@ -113,7 +119,8 @@ public class DownloadLoader extends AsyncTaskLoader<Uri> {
                     }
                 }
             }
-            if (hc.getContentLength() < 1024) { // this is probably not a video
+            if (hc.getContentLength() < MINIMUM_REASONABLE_VIDEO_SIZE) { // this is probably not a
+                                                                         // video
                 Log.e(TAG,
                         "got a very small response from server of length " + hc.getContentLength());
                 mException = new IOException("Received an unusually-small response from server.");
