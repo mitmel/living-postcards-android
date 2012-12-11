@@ -282,7 +282,11 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
             final NetworkClient nc = LocastApplication.getNetworkClient(this,
                     Authenticator.getFirstAccount(this));
             mWebUrl = mWebUrl != null ? nc.getFullUrlAsString(mWebUrl) : null;
-            mSherlock.dispatchInvalidateOptionsMenu();
+            try {
+                mSherlock.dispatchInvalidateOptionsMenu();
+            } catch (final OutOfMemoryError oom) {
+                // well, damn.
+            }
         } else {
             finish();
         }
