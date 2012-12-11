@@ -669,8 +669,12 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
 
     private void setReadyToCapture() {
         CameraActivity.this.setProgressBarIndeterminateVisibility(false);
-        mCaptureButton.setEnabled(true);
-        mCamera.startPreview();
+        if (mCamera != null) {
+            mCaptureButton.setEnabled(true);
+            mCamera.startPreview();
+        } else {
+            mCaptureButton.setEnabled(false);
+        }
     }
 
     private GeocodeTask mGeocodeTask;
