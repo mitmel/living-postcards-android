@@ -1,11 +1,15 @@
 package edu.mit.mobile.android.livingpostcards;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -38,6 +42,8 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
     private static final String TAG = CardMediaEditFragment.class.getSimpleName();
 
+    private static final long NO_PENDING = -1;
+
     private Uri mUri;
 
     private SimpleThumbnailCursorAdapter mAdapter;
@@ -45,6 +51,16 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
     private ImageView mFrame;
 
     private ImageCache mImageCache;
+
+    private long mShowBigId;
+
+    private static final int THUMB_W = 160;
+    private static final int THUMB_H = 120;
+
+    private static final int HIGHRES_W = 640;
+    private static final int HIGHRES_H = 480;
+
+    private static final int HIGHRES_LOAD_DELAY = 100; // ms
 
     public static CardMediaEditFragment newInstance(Uri cardMedia) {
         final CardMediaEditFragment cmf = new CardMediaEditFragment();
@@ -60,8 +76,18 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
         super.onAttach(activity);
 
+        mCMEFHandler = new CMEFHandler(this);
         mImageCache = ImageCache.getInstance(activity);
 
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        mImageCache = null;
+        mCMEFHandler.removeMessages(CMEFHandler.MSG_LOAD_HIGHRES);
+        mCMEFHandler = null;
     }
 
     @Override
@@ -90,8 +116,9 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
         mGallery = (Gallery) v.findViewById(R.id.gallery);
 
-        mGallery.setAdapter(new ImageLoaderAdapter(mAdapter, mImageCache,
-                new int[] { R.id.card_media_thumbnail }, 100, 100));
+        mGallery.setAdapter(new ImageLoaderAdapter(getActivity(), mAdapter, mImageCache,
+                new int[] { R.id.card_media_thumbnail }, THUMB_W, THUMB_H,
+                ImageLoaderAdapter.UNIT_PX, false));
 
         mGallery.setWrap(true);
         mGallery.setInfiniteScroll(true);
@@ -142,15 +169,36 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
     @Override
     public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
         final Cursor item = (Cursor) mAdapter.getItem(position);
-        if (item != null) {
-            String uri = item.getString(item.getColumnIndex(CardMedia.COL_LOCAL_URL));
-            if (uri == null) {
-                uri = item.getString(item.getColumnIndex(CardMedia.COL_MEDIA_URL));
+        if (item == null) {
+            return;
+        }
+        String uri = item.getString(item.getColumnIndex(CardMedia.COL_LOCAL_URL));
+        if (uri == null) {
+            uri = item.getString(item.getColumnIndex(CardMedia.COL_MEDIA_URL));
+        }
+        if (uri == null) {
+            return;
+        }
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onItemSelected(" + adapter + ", " + view + ", " + position + ", " + id
+                    + ")");
+        }
+
+        // clear the highres request; if the load has already started, it won't be shown.
+        mShowHighresId = NO_PENDING;
+        mCMEFHandler.removeMessages(CMEFHandler.MSG_LOAD_HIGHRES);
+
+        mShowBigId = mImageCache.getNewID();
+
+        final Uri imageUri = Uri.parse(uri);
+        try {
+            final Drawable d = mImageCache.loadImage(mShowBigId, imageUri, THUMB_W, THUMB_H);
+            if (d != null) {
+                onImageLoaded(mShowBigId, imageUri, d);
             }
-            if (uri == null) {
-                return;
-            }
-            mImageCache.scheduleLoadImage(mImageCache.getNewID(), Uri.parse(uri), 320, 240);
+        } catch (final IOException e) {
+            Log.e(TAG, "Error loading image", e);
         }
     }
 
@@ -211,6 +259,8 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
         }
     };
 
+    private long mShowHighresId;
+
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info;
@@ -230,13 +280,28 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
             default:
                 return super.onContextItemSelected(item);
         }
-
     }
 
     @Override
     public void onImageLoaded(long id, Uri imageUri, Drawable image) {
-        image.setAlpha(255);
-        mFrame.setImageDrawable(image);
+        Log.d(TAG, "onImageLoaded(" + id + ", " + imageUri);
+        if (id == mShowBigId || id == mShowHighresId) {
+            Log.d(TAG, "ID was either showBigId " + mShowBigId + " or highresId " + mShowHighresId);
+            image.setAlpha(255);
+            mFrame.setImageDrawable(image);
+            if (mShowHighresId != id) {
+                // the cast below is not ideal, but MAX_VALUE at ~500 loads / second would yield 50
+                // days worth of loads. It's unlikely that this will ever roll over unless the ID
+                // generator changes to something other than a simple counter.
+                if (!mCMEFHandler.sendMessageDelayed(mCMEFHandler.obtainMessage(
+                        CMEFHandler.MSG_LOAD_HIGHRES, (int) mShowBigId, 0, imageUri),
+                        HIGHRES_LOAD_DELAY)) {
+                    Log.e(TAG, "could not send highres load message");
+                }
+            } else {
+                mShowHighresId = NO_PENDING;
+            }
+        }
     }
 
     public void setAnimationTiming(int timing) {
@@ -245,5 +310,38 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
     public int getAnimationTiming() {
         return (int) mGallery.getInterframeDelay();
+    }
+
+    public static class CMEFHandler extends Handler {
+
+        private final CardMediaEditFragment mCmef;
+        public static final int MSG_LOAD_HIGHRES = 100;
+
+        public CMEFHandler(CardMediaEditFragment cmef) {
+            mCmef = cmef;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_LOAD_HIGHRES:
+                    mCmef.loadHighres(msg.arg1, (Uri) msg.obj);
+                    break;
+            }
+        }
+    }
+
+    private CMEFHandler mCMEFHandler;
+
+    public void loadHighres(int loadId, Uri image) {
+
+        if (mShowBigId == loadId) {
+            Log.d(TAG, "Load highres of image ID " + loadId + ": " + image);
+            mShowHighresId = mImageCache.getNewID();
+            mImageCache.scheduleLoadImage(mShowHighresId, image, HIGHRES_W, HIGHRES_H);
+        } else {
+            Log.w(TAG, "Did not load highres of image ID " + loadId + ": " + image
+                    + " as ID didn't match");
+        }
     }
 }

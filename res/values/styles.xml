@@ -30,7 +30,7 @@
         <item name="android:maxHeight">@dimen/postcard_max_height</item>
         <item name="android:maxWidth">@dimen/postcard_max_width</item>
         <item name="android:cropToPadding">true</item>
-        <item name="android:scaleType">centerCrop</item>
+        <item name="android:scaleType">fitCenter</item>
         <item name="android:src">@drawable/image_placeholder</item>
     </style>
 
