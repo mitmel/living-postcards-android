@@ -16,12 +16,12 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import edu.mit.mobile.android.livingpostcards.app.CardMapFragment;
 import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.livingpostcards.auth.AuthenticatorActivity;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.locast.accounts.AbsLocastAuthenticatorActivity.LogoutHandler;
 import edu.mit.mobile.android.locast.data.Authorable;
-import edu.mit.mobile.android.locast.maps.LocatableMapFragment;
 
 public class MainActivity extends SherlockFragmentActivity implements OnCreateOptionsMenuListener,
         OnOptionsItemSelectedListener, NoAccountFragment.OnLoggedInListener,
@@ -237,7 +237,7 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
                     .appendQueryParameter(Card.COL_DRAFT, "1").build());
 
         } else if (TAG_NEARBY.equals(tag)) {
-            f = LocatableMapFragment.getInstance(Card.CONTENT_NOT_DRAFT);
+            f = CardMapFragment.instantiate(Card.CONTENT_NOT_DRAFT, true);
 
         } else {
             throw new IllegalArgumentException("cannot instantiate fragment for tag " + tag);

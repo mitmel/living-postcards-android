@@ -158,6 +158,10 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
         return count >= 1;
     }
 
+    public static boolean isCollaborative(Cursor c) {
+        return Card.PRIVACY_PUBLIC.equals(c.getString(c.getColumnIndexOrThrow(COL_PRIVACY)));
+    }
+
     public static class CardResources extends AbsResourcesSync {
 
         @Override
