@@ -212,6 +212,9 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
 
     public static final Uri CONTENT_URI = ProviderUtils.toContentUri(CardProvider.AUTHORITY, PATH);
 
+    public static final Uri CONTENT_NOT_DRAFT = CONTENT_URI.buildUpon()
+            .appendQueryParameter(Card.COL_DRAFT + "!", "1").build();
+
     public static final String TYPE_DIR = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.card";
     public static final String TYPE_ITEM = "vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.card";
 

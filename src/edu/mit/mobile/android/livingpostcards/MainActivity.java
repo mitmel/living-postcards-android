@@ -21,6 +21,7 @@ import edu.mit.mobile.android.livingpostcards.auth.AuthenticatorActivity;
 import edu.mit.mobile.android.livingpostcards.data.Card;
 import edu.mit.mobile.android.locast.accounts.AbsLocastAuthenticatorActivity.LogoutHandler;
 import edu.mit.mobile.android.locast.data.Authorable;
+import edu.mit.mobile.android.locast.maps.LocatableMapFragment;
 
 public class MainActivity extends SherlockFragmentActivity implements OnCreateOptionsMenuListener,
         OnOptionsItemSelectedListener, NoAccountFragment.OnLoggedInListener,
@@ -122,10 +123,16 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
         final ActionBar actionBar = getSupportActionBar();
         if (ActionBar.NAVIGATION_MODE_TABS != actionBar.getNavigationMode()) {
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
             actionBar.addTab(actionBar.newTab().setText(R.string.main_tab_whats_new)
                     .setTabListener(this).setTag(TAG_NEW));
+
+            actionBar.addTab(actionBar.newTab().setText(R.string.main_tab_nearby)
+                    .setTabListener(this).setTag(TAG_NEARBY));
+
             actionBar.addTab(actionBar.newTab().setText(R.string.main_tab_my_postcards)
                     .setTabListener(this).setTag(TAG_MY));
+
             actionBar.addTab(actionBar.newTab().setText(R.string.main_tab_unpublished)
                     .setTabListener(this).setTag(TAG_UNPUBLISHED));
         }
@@ -223,12 +230,14 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
                     .appendQueryParameter(Card.COL_DRAFT + "!", "1").build());
 
         } else if (TAG_NEW.equals(tag)) {
-            f = CardListFragment.instantiate(Card.CONTENT_URI.buildUpon()
-                    .appendQueryParameter(Card.COL_DRAFT + "!", "1").build());
+            f = CardListFragment.instantiate(Card.CONTENT_NOT_DRAFT);
 
         } else if (TAG_UNPUBLISHED.equals(tag)) {
             f = CardListFragment.instantiate(Card.CONTENT_URI.buildUpon()
                     .appendQueryParameter(Card.COL_DRAFT, "1").build());
+
+        } else if (TAG_NEARBY.equals(tag)) {
+            f = LocatableMapFragment.getInstance(Card.CONTENT_NOT_DRAFT);
 
         } else {
             throw new IllegalArgumentException("cannot instantiate fragment for tag " + tag);
