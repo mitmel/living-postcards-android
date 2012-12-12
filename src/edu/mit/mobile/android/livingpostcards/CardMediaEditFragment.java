@@ -168,6 +168,11 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
     @Override
     public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
+        // detached
+        if (mCMEFHandler == null) {
+            return;
+        }
+
         final Cursor item = (Cursor) mAdapter.getItem(position);
         if (item == null) {
             return;
@@ -284,9 +289,14 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
     @Override
     public void onImageLoaded(long id, Uri imageUri, Drawable image) {
-        Log.d(TAG, "onImageLoaded(" + id + ", " + imageUri);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onImageLoaded(" + id + ", " + imageUri);
+        }
         if (id == mShowBigId || id == mShowHighresId) {
-            Log.d(TAG, "ID was either showBigId " + mShowBigId + " or highresId " + mShowHighresId);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "ID was either showBigId " + mShowBigId + " or highresId "
+                        + mShowHighresId);
+            }
             image.setAlpha(255);
             mFrame.setImageDrawable(image);
             if (mShowHighresId != id) {
@@ -336,7 +346,9 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
     public void loadHighres(int loadId, Uri image) {
 
         if (mShowBigId == loadId) {
-            Log.d(TAG, "Load highres of image ID " + loadId + ": " + image);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Load highres of image ID " + loadId + ": " + image);
+            }
             mShowHighresId = mImageCache.getNewID();
             mImageCache.scheduleLoadImage(mShowHighresId, image, HIGHRES_W, HIGHRES_H);
         } else {
