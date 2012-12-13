@@ -75,6 +75,15 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
+    <!-- Map view -->
+
+    <style name="Image.CardImage.MapInfoWindow">
+        <item name="android:maxWidth">@dimen/postcard_max_width_small</item>
+        <item name="android:maxHeight">@dimen/postcard_max_height_small</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
     <!-- Camera -->
 
     <style name="Widget.Button.Camera">

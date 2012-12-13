@@ -8,6 +8,9 @@
     <dimen name="gallery_height">100dip</dimen>
     <dimen name="postcard_max_height">480dip</dimen>
     <dimen name="postcard_max_width">640dip</dimen>
+    <!-- the following seems to look good on small screens -->
+    <dimen name="postcard_max_width_small">200dp</dimen>
+    <dimen name="postcard_max_height_small">200dp</dimen>
     <dimen name="bottom_bar_overflow">84dip</dimen>
 
 </resources>

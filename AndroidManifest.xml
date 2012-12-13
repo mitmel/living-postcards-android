@@ -57,7 +57,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <uses-library android:name="com.google.android.maps" />
 
         <!-- Google Maps API v2 -->
 

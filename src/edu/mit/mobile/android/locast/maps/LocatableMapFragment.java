@@ -107,6 +107,14 @@ public class LocatableMapFragment extends SupportMapFragment implements OnMarker
         return mo;
     }
 
+    public Uri getItem(Marker marker) {
+        final Long id = mMarkerMapping.get(marker);
+        if (id != null) {
+            return ContentUris.withAppendedId(mLocatable, id);
+        }
+        return null;
+    }
+
     private final HashMap<Marker, Long> mMarkerMapping = new HashMap<Marker, Long>();
 
     private final LoaderCallbacks<Cursor> mLocatableLoader = new LoaderCallbacks<Cursor>() {
