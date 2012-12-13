@@ -91,6 +91,7 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
 
     private boolean mIsOwner;
     private boolean mIsCollaborative;
+    private boolean mSaveOnPause = false;
 
     @Override
     protected void onCreate(Bundle arg0) {
@@ -332,6 +333,20 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
         return true;
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mSaveOnPause) {
+            save();
+        }
+    }
+
+    /**
+     * Saves the card without any validation.
+     *
+     * @return true if save was successful.
+     */
     private boolean save() {
 
         final ContentValues cv = new ContentValues();
@@ -445,18 +460,22 @@ public class CardEditActivity extends FragmentActivity implements OnCreateOption
             mSherlock.dispatchInvalidateOptionsMenu();
             final int timing = c.getInt(c.getColumnIndexOrThrow(Card.COL_TIMING));
             mCardViewFragment.setAnimationTiming(timing);
+            mSaveOnPause = true;
         } else {
+            mSaveOnPause = false;
             finish();
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
+        mSaveOnPause = false;
     }
 
     @Override
     public void onDelete(Uri item, boolean deleted) {
         if (mCard.equals(item) && deleted) {
+            mSaveOnPause = false;
             setResult(RESULT_OK);
             // no need to call finish, as the loader will automatically reload, which will result in
             // no data being loaded, which will then call finish()
