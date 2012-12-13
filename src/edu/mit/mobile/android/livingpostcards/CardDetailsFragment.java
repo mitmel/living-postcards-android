@@ -192,7 +192,7 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
     }
 
     @Override
-    public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+    public void onImageLoaded(int id, Uri imageUri, Drawable image) {
         if (id == R.id.static_map) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "loaded " + imageUri + " (id " + id + ")");
@@ -200,5 +200,11 @@ public class CardDetailsFragment extends Fragment implements LoaderCallbacks<Cur
 
             setMapDrawable(image, true);
         }
+    }
+
+    @Override
+    public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+        // XXX
+
     }
 }

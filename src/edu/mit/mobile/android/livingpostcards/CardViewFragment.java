@@ -201,9 +201,9 @@ public class CardViewFragment extends Fragment implements LoaderCallbacks<Cursor
     }
 
     @Override
-    public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+    public void onImageLoaded(int id, Uri imageUri, Drawable image) {
         if (id == R.id.card_image) {
-
+            // TODO
         }
     }
 
@@ -226,5 +226,11 @@ public class CardViewFragment extends Fragment implements LoaderCallbacks<Cursor
 
         }
         return false;
+    }
+
+    @Override
+    public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+        // XXX
+
     }
 }

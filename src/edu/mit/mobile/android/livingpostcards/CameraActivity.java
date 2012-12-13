@@ -324,7 +324,7 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
     }
 
     @Override
-    public void onImageLoaded(final long id, Uri imageUri, Drawable image) {
+    public void onImageLoaded(final int id, Uri imageUri, Drawable image) {
         if (R.id.camera_preview == id) {
 
             loadOnionskinImage(image);
@@ -731,5 +731,11 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
         }
 
         return result;
+    }
+
+    @Override
+    public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -42,7 +42,7 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
     private static final String TAG = CardMediaEditFragment.class.getSimpleName();
 
-    private static final long NO_PENDING = -1;
+    private static final int NO_PENDING = -1;
 
     private Uri mUri;
 
@@ -52,7 +52,7 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
 
     private ImageCache mImageCache;
 
-    private long mShowBigId;
+    private int mShowBigId;
 
     private static final int THUMB_W = 160;
     private static final int THUMB_H = 120;
@@ -264,7 +264,7 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
         }
     };
 
-    private long mShowHighresId;
+    private int mShowHighresId;
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
@@ -288,7 +288,7 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
     }
 
     @Override
-    public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+    public void onImageLoaded(int id, Uri imageUri, Drawable image) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onImageLoaded(" + id + ", " + imageUri);
         }
@@ -304,7 +304,7 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
                 // days worth of loads. It's unlikely that this will ever roll over unless the ID
                 // generator changes to something other than a simple counter.
                 if (!mCMEFHandler.sendMessageDelayed(mCMEFHandler.obtainMessage(
-                        CMEFHandler.MSG_LOAD_HIGHRES, (int) mShowBigId, 0, imageUri),
+                        CMEFHandler.MSG_LOAD_HIGHRES, mShowBigId, 0, imageUri),
                         HIGHRES_LOAD_DELAY)) {
                     Log.e(TAG, "could not send highres load message");
                 }
@@ -355,5 +355,11 @@ public class CardMediaEditFragment extends Fragment implements LoaderCallbacks<C
             Log.w(TAG, "Did not load highres of image ID " + loadId + ": " + image
                     + " as ID didn't match");
         }
+    }
+
+    @Override
+    public void onImageLoaded(long id, Uri imageUri, Drawable image) {
+        // xxx
+
     }
 }
