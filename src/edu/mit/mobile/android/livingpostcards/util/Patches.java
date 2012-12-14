@@ -71,7 +71,8 @@ public class Patches {
 
     private static void patchV10FixLivingPostcardsDomain(Context context) {
         final Account me = Authenticator.getFirstAccount(context);
-
-        AccountSyncService.setApiUrl(context, me, "http://livingpostcards.org/api/");
+        if (me != null) {
+            AccountSyncService.setApiUrl(context, me, "http://livingpostcards.org/api/");
+        }
     }
 }
