@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="edu.mit.mobile.android.livingpostcards"
     android:installLocation="auto"
-    android:versionCode="9"
-    android:versionName="0.6" >
+    android:versionCode="10"
+    android:versionName="0.6.1" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -51,7 +51,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name="edu.mit.mobile.android.locast.app.LocastApplication"
+        android:name="edu.mit.mobile.android.livingpostcards.app.LivingPostcardsApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
@@ -72,7 +72,7 @@
             android:value="http://livingpostcards.org/api/" />
         <meta-data
             android:name="edu.mit.mobile.android.maps.GOOGLE_STATIC_MAPS_API_KEY"
-            android:value="AIzaSyDBjmUDwMkjHFpIdGTIHcfM4fCESx3hwm0" />
+            android:value="AIzaSyD0281TVeLX0dG1q6e48VwDeW_aigT3LwU" />
 
         <activity
             android:name=".MainActivity"
