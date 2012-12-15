@@ -41,6 +41,7 @@ public class Patches {
 
         switch (thisVersion) {
             case 10:
+            case 11:
                 patchV10FixLivingPostcardsDomain(context);
                 break;
         }
