@@ -102,6 +102,12 @@ public class CardViewActivity extends FragmentActivity implements OnCreateOption
         loadCardDetails();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mHandler.removeMessages(MSG_LOAD_CARD_MEDIA);
+    };
+
     private void loadCardDetails() {
 
         final FragmentManager fm = getSupportFragmentManager();
