@@ -51,6 +51,16 @@ public class MainActivity extends SherlockFragmentActivity implements OnCreateOp
         if (savedInstanceState != null) {
             mSavedCurrentTab = savedInstanceState.getInt(INSTANCE_CURRENT_TAB, NO_SAVED_TAB);
         }
+
+        final FragmentManager fm = getSupportFragmentManager();
+
+        // start off with any fragments in a detached state
+        final Fragment f = fm.findFragmentById(android.R.id.content);
+        if (f != null && !f.isDetached()) {
+            final FragmentTransaction ft = fm.beginTransaction();
+            ft.detach(f);
+            ft.commit();
+        }
     }
 
     @Override
