@@ -42,7 +42,8 @@ public class Patches {
         switch (thisVersion) {
             case 10:
             case 11:
-                patchV10FixLivingPostcardsDomain(context);
+            case 12:
+                patchV10V12FixLivingPostcardsDomain(context);
                 break;
         }
 
@@ -70,10 +71,10 @@ public class Patches {
         return pInfo.versionCode;
     }
 
-    private static void patchV10FixLivingPostcardsDomain(Context context) {
+    private static void patchV10V12FixLivingPostcardsDomain(Context context) {
         final Account me = Authenticator.getFirstAccount(context);
         if (me != null) {
-            AccountSyncService.setApiUrl(context, me, "http://livingpostcards.org/api/");
+            AccountSyncService.setApiUrl(context, me, "https://livingpostcards.org/api/");
         }
     }
 }

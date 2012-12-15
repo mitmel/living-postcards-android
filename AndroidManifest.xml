@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="edu.mit.mobile.android.livingpostcards"
     android:installLocation="auto"
-    android:versionCode="11"
-    android:versionName="0.6.2" >
+    android:versionCode="12"
+    android:versionName="0.6.3" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -66,10 +66,15 @@
         <!-- end Google Maps API v2 -->
 
 
-        <!-- make sure to also update the URLs in the intent filters below for sync -->
+        <!--
+        Make sure to also update the URLs in the intent filters below for sync.
+        This URL will only be used when creating a new account, as the URL information
+         is stored in the account itself.
+        -->
+
         <meta-data
             android:name="edu.mit.mobile.android.locast.base_url"
-            android:value="http://livingpostcards.org/api/" />
+            android:value="https://livingpostcards.org/api/" />
         <meta-data
             android:name="edu.mit.mobile.android.maps.GOOGLE_STATIC_MAPS_API_KEY"
             android:value="AIzaSyD0281TVeLX0dG1q6e48VwDeW_aigT3LwU" />
