@@ -11,9 +11,7 @@ import edu.mit.mobile.android.content.GenericDBHelper;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.QuerystringWrapper;
 import edu.mit.mobile.android.livingpostcards.BuildConfig;
-import edu.mit.mobile.android.livingpostcards.auth.Authenticator;
 import edu.mit.mobile.android.locast.Constants;
-import edu.mit.mobile.android.locast.app.LocastApplication;
 import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.NoPublicPath;
 import edu.mit.mobile.android.locast.net.NetworkClient;
@@ -191,16 +189,16 @@ public class CardProvider extends SyncableSimpleContentProvider {
     }
 
     @Override
-    public String getPostPath(Context context, Uri uri) throws NoPublicPath {
+    public String getPostPath(Context context, Uri uri, NetworkClient nc) throws NoPublicPath {
         // item post paths are the public path of the dir
         if (getType(uri).startsWith(ProviderUtils.TYPE_ITEM_PREFIX)) {
             uri = ProviderUtils.removeLastPathSegment(uri);
         }
-        return getPublicPath(context, uri);
+        return getPublicPath(context, uri, nc);
     }
 
     @Override
-    public String getPublicPath(Context context, Uri uri) throws NoPublicPath {
+    public String getPublicPath(Context context, Uri uri, NetworkClient nc) throws NoPublicPath {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "getPublicPath " + uri);
         }
@@ -208,8 +206,6 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
         // TODO this is the only hard-coded URL. This should be removed eventually.
         if (Card.TYPE_DIR.equals(type)) {
-            final NetworkClient nc = LocastApplication.getNetworkClient(context,
-                    Authenticator.getFirstAccount(context));
             return nc.getFullUrlAsString("postcard/");
 
             // TODO find a way to make this generic. Inspect the SYNC_MAP somehow?
@@ -217,7 +213,7 @@ public class CardProvider extends SyncableSimpleContentProvider {
             return JsonSyncableItem.SyncChildRelation.getPathFromField(context,
                     CardMedia.getCard(uri), Card.COL_MEDIA_URL);
         } else {
-            return super.getPublicPath(context, uri);
+            return super.getPublicPath(context, uri, nc);
         }
     }
 
