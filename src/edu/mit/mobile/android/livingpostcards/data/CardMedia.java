@@ -9,11 +9,10 @@ import android.net.Uri;
 import edu.mit.mobile.android.content.DBSortOrder;
 import edu.mit.mobile.android.content.ProviderUtils;
 import edu.mit.mobile.android.content.UriPath;
-import edu.mit.mobile.android.content.column.DBColumn;
 import edu.mit.mobile.android.content.column.DBForeignKeyColumn;
-import edu.mit.mobile.android.content.column.TextColumn;
 import edu.mit.mobile.android.locast.data.Authorable;
 import edu.mit.mobile.android.locast.data.ImageContent;
+import edu.mit.mobile.android.locast.data.JsonSyncableItem;
 import edu.mit.mobile.android.locast.data.MediaProcessingException;
 import edu.mit.mobile.android.locast.data.SyncMap;
 
@@ -27,9 +26,6 @@ public class CardMedia extends ImageContent implements Authorable.Columns {
 
     public static final String TYPE_DIR = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.cardmedia";
     public static final String TYPE_ITEM = "vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.cardmedia";
-
-    @DBColumn(type = TextColumn.class, unique = true, notnull = true)
-    public static final String COL_UUID = "uuid";
 
     @DBForeignKeyColumn(parent = Card.class)
     public static final String COL_CARD = "card";
@@ -56,9 +52,7 @@ public class CardMedia extends ImageContent implements Authorable.Columns {
      */
     public static ContentValues createNewCardMedia(Context context, Account account) {
 
-        final ContentValues cv = new ContentValues();
-
-        cv.put(CardMedia.COL_UUID, java.util.UUID.randomUUID().toString());
+        final ContentValues cv = JsonSyncableItem.newContentItem();
 
         Authorable.putAuthorInformation(context, account, cv);
 
@@ -84,7 +78,6 @@ public class CardMedia extends ImageContent implements Authorable.Columns {
             super();
 
             putAll(Authorable.SYNC_MAP);
-            put(COL_UUID, new SyncFieldMap("uuid", SyncFieldMap.STRING));
             put("_title", new SyncLiteral("title", "untitled"));
         }
     };

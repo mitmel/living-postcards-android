@@ -43,9 +43,6 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
     // ///////////////////////////////////////////
     // columns
 
-    @DBColumn(type = TextColumn.class, unique = true, notnull = true)
-    public static final String COL_UUID = "uuid";
-
     public static final int DEFAULT_TIMING = 300;
 
     /**
@@ -105,7 +102,7 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
      */
     public static Uri createNewCard(Context context, Account account, ContentValues cv) {
 
-        cv.put(Card.COL_UUID, java.util.UUID.randomUUID().toString());
+        JsonSyncableItem.addUuid(cv);
 
         cv.put(Card.COL_DRAFT, true);
 
@@ -195,8 +192,6 @@ public class Card extends JsonSyncableItem implements PrivatelyAuthorable.Column
             putAll(Locatable.SYNC_MAP);
 
             put(COL_TIMING, new SyncFieldMap("frame_delay", SyncFieldMap.INTEGER));
-
-            put(COL_UUID, new SyncFieldMap("uuid", SyncFieldMap.STRING));
 
             put(COL_WEB_URL, new SyncFieldMap("url", SyncFieldMap.STRING, SyncFieldMap.SYNC_FROM));
 
