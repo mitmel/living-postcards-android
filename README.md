@@ -7,6 +7,15 @@ can contribute photos to, giving their own perspective on a location in the
 city. Use the Living Postcards web and mobile applications to engage with the
 urban environment in a meaningful way.
 
+Building
+========
+
+This project contains numerous submodules. As such, please clone it recursively:
+
+    git clone --recurse-submodules https://github.com/mitmel/living-postcards-android
+
+Each of the submodules needs to be imported into its own project in Eclipse.
+
 License
 =======
 
