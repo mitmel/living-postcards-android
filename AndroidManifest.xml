@@ -62,7 +62,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCHwCKGipl3VN3b-gXU92qO-xueLKaeTEk" />
+            android:value="" />
         <!-- end Google Maps API v2 -->
 
 
@@ -77,7 +77,7 @@
             android:value="https://livingpostcards.org/api/" />
         <meta-data
             android:name="edu.mit.mobile.android.maps.GOOGLE_STATIC_MAPS_API_KEY"
-            android:value="AIzaSyD0281TVeLX0dG1q6e48VwDeW_aigT3LwU" />
+            android:value="" />
 
         <activity
             android:name=".MainActivity"
