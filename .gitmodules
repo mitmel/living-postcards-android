@@ -1,15 +1,15 @@
 [submodule "libs-src/ImageCache"]
 	path = libs-src/ImageCache
-	url = http://mel-tools.mit.edu/git-ro/ImageCache.git
+	url = git://github.com/mitmel/Android-Image-Cache.git
 [submodule "libs-src/android-left-locked-gallery"]
 	path = libs-src/android-left-locked-gallery
-	url = http://mel-tools.mit.edu/git-ro/InfiniteGallery.git
+	url = git://github.com/mitmel/android-left-locked-gallery.git
 [submodule "libs-src/actionbar-sherlock"]
 	path = libs-src/actionbar-sherlock
 	url = https://github.com/JakeWharton/ActionBarSherlock.git
 [submodule "libs-src/LocastCore"]
 	path = libs-src/LocastCore
-	url = http://mel-tools.mit.edu/git-ro/LocastCoreAndroid.git
+	url = git://github.com/mitmel/Locast-Core-Android.git
 [submodule "libs-src/staticmap"]
 	path = libs-src/staticmap
-	url = http://mel-tools.mit.edu/git-ro/android-staticmap.git
+	url = git://github.com/mitmel/android-staticmap.git
