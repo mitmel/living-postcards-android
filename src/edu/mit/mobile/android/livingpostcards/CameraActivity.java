@@ -634,6 +634,11 @@ public class CameraActivity extends FragmentActivity implements OnClickListener,
             final File externalPicturesDir = StorageUtils
                     .getExternalPictureDir(CameraActivity.this);
 
+            if (externalPicturesDir == null) {
+                mErr = new RuntimeException("no external storage available");
+                return null;
+            }
+
             final String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss.SSSZ", Locale.US)
                     .format(new Date());
             final File outFile = new File(externalPicturesDir, "IMG_" + timeStamp + ".jpg");
