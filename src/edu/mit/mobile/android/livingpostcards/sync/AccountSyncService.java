@@ -25,6 +25,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.SyncResult;
 import android.os.Bundle;
@@ -64,6 +65,8 @@ public class AccountSyncService extends AbsLocastAccountSyncService {
             RemoteException, SyncException, JSONException, IOException, NetworkProtocolException,
             NoPublicPath, OperationApplicationException, InterruptedException {
         syncEngine.sync(Card.CONTENT_URI, account, extras, provider, syncResult);
+
+        startService(new Intent(MediaSyncService.ACTION_SYNC_RESOURCES));
 
     }
 }

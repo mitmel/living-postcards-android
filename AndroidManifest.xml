@@ -66,6 +66,13 @@
         <!-- end Google Maps API v2 -->
 
 
+        <!-- Google Static Maps API -->
+        <meta-data
+            android:name="edu.mit.mobile.android.maps.GOOGLE_STATIC_MAPS_API_KEY"
+            android:value="" />
+        <!-- end Google Static Maps API -->
+
+
         <!--
         Make sure to also update the URLs in the intent filters below for sync.
         This URL will only be used when creating a new account, as the URL information
@@ -74,10 +81,7 @@
 
         <meta-data
             android:name="edu.mit.mobile.android.locast.base_url"
-            android:value="https://livingpostcards.org/api/" />
-        <meta-data
-            android:name="edu.mit.mobile.android.maps.GOOGLE_STATIC_MAPS_API_KEY"
-            android:value="" />
+            android:value="http://livingpostcards.org/api/" />
 
         <activity
             android:name=".MainActivity"
@@ -224,6 +228,11 @@
 
                 <data android:mimeType="vnd.android.cursor.item/vnd.edu.mit.mobile.android.livingpostcards.cardmedia" />
                 <data android:mimeType="vnd.android.cursor.dir/vnd.edu.mit.mobile.android.livingpostcards.cardmedia" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="edu.mit.mobile.android.locast.ACTION_SYNC_RESOURCES" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
 
