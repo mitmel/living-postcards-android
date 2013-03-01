@@ -226,6 +226,9 @@ public class CardProvider extends SyncableSimpleContentProvider {
 
             // TODO find a way to make this generic. Inspect the SYNC_MAP somehow?
         } else if (CardMedia.TYPE_DIR.equals(type)) {
+            if (uri.toString().contains(ForeignKeyDBHelper.WILDCARD_PATH_SEGMENT)) {
+                throw new NoPublicPath("no public path for wildcard " + uri);
+            }
             return JsonSyncableItem.SyncChildRelation.getPathFromField(context,
                     CardMedia.getCard(uri), Card.COL_MEDIA_URL);
         } else {
