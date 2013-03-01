@@ -81,7 +81,7 @@
 
         <meta-data
             android:name="edu.mit.mobile.android.locast.base_url"
-            android:value="http://livingpostcards.org/api/" />
+            android:value="https://livingpostcards.org/api/" />
 
         <activity
             android:name=".MainActivity"
